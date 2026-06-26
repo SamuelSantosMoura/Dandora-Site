@@ -1,6 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script>
+window.onerror = function(msg, url, line, col, error) {
+    alert("ERRO no site:\n" + msg + "\nArquivo: " + url + "\nLinha: " + line);
+};
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dandora RPG - Dashboard</title>
@@ -1012,7 +1017,7 @@ Altura     Dano
     <script src="assets/js/app2.js?v=4"></script>
     <script src="assets/js/pdf-viewer.js?v=3"></script>
     <script src="assets/js/npc.js?v=3"></script>
-    <script src="assets/js/eventos.js?v=3"></script>
+    <script src="assets/js/eventos.js?v=4"></script>
     <script src="assets/js/iniciativa.js?v=3"></script>
     <script src="assets/js/itens.js?v=3"></script>
     <script src="assets/js/monstros.js?v=3"></script>
