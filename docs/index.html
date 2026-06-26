@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -39,13 +39,13 @@
     <nav class="main-nav">
         <div class="nav-container">
             <div class="logo" onclick="navigateTo('home-view')">
-                <!-- Símbolo oficial de Dandora -->
-                <!-- Símbolo oficial de Dandora (Imagem) -->
+                <!-- SÃ­mbolo oficial de Dandora -->
+                <!-- SÃ­mbolo oficial de Dandora (Imagem) -->
                 <img src="assets/images/dandora-icon.jpg" alt="Logo Dandora" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
                 Dandora RPG
             </div>
             <div class="nav-links">
-                <button class="nav-btn" onclick="navigateTo('home-view')"><i class="fa-solid fa-house"></i> Início</button>
+                <button class="nav-btn" onclick="navigateTo('home-view')"><i class="fa-solid fa-house"></i> InÃ­cio</button>
                 <button class="nav-btn" onclick="navigateTo('library-view')"><i class="fa-solid fa-book-journal-whills"></i> Livro do Sistema</button>
                 <button id="auth-btn" class="nav-btn primary-btn" onclick="navigateTo('login-view')">
                     <i class="fa-solid fa-user"></i> Entrar
@@ -72,31 +72,31 @@
         <section id="home-view" class="view active">
             <div class="hero">
                 <div class="hero-content">
-                    <h1 class="glitch" data-text="A Forja de Heróis">A Forja de Heróis</h1>
+                    <h1 class="glitch" data-text="A Forja de HerÃ³is">A Forja de HerÃ³is</h1>
                     <p>O seu portal definitivo para o universo de Dandora. Crie fichas, gerencie mesas e explore regras com um design medieval de ponta.</p>
                     <div class="hero-actions">
-                        <button class="btn-epic" onclick="navigateTo('login-view')">Começar Aventura <i class="fa-solid fa-arrow-right"></i></button>
+                        <button class="btn-epic" onclick="navigateTo('login-view')">ComeÃ§ar Aventura <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
 
             <div class="features-grid">
-                <!-- Área do Mestre -->
+                <!-- Ãrea do Mestre -->
                 <div class="feature-card glass-panel">
                     <div class="card-icon">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
-                    <h2>Área do Mestre</h2>
+                    <h2>Ãrea do Mestre</h2>
                     <p>Acesse o "Escudo do Mestre". Crie mesas, envie convites, gerencie as fichas dos jogadores e acompanhe o status da sua campanha em tempo real.</p>
                 </div>
 
-                <!-- Área do Jogador -->
+                <!-- Ãrea do Jogador -->
                 <div class="feature-card glass-panel">
                     <div class="card-icon">
                         <i class="fa-solid fa-dice-d20"></i>
                     </div>
-                    <h2>Área do Jogador</h2>
-                    <p>Entre em mesas com códigos de acesso, crie suas fichas de personagem personalizadas usando o modelo oficial e evolua seus atributos.</p>
+                    <h2>Ãrea do Jogador</h2>
+                    <p>Entre em mesas com cÃ³digos de acesso, crie suas fichas de personagem personalizadas usando o modelo oficial e evolua seus atributos.</p>
                 </div>
 
                 <!-- Livro do Sistema -->
@@ -105,7 +105,7 @@
                         <i class="fa-solid fa-scroll"></i>
                     </div>
                     <h2>Livro do Sistema</h2>
-                    <p>Tenha acesso direto aos PDFs oficiais de regras e bestiário. Leia online ou faça o download para não perder nenhum detalhe.</p>
+                    <p>Tenha acesso direto aos PDFs oficiais de regras e bestiÃ¡rio. Leia online ou faÃ§a o download para nÃ£o perder nenhum detalhe.</p>
                     <button class="btn-outline mt-4" onclick="navigateTo('library-view')">Acessar Biblioteca</button>
                 </div>
             </div>
@@ -133,7 +133,7 @@
                         <a href="#" onclick="forgotPassword(event)" style="font-size:0.8rem; color:var(--gold-primary); text-decoration:none;">Esqueci minha senha</a>
                     </div>
                     <div class="form-group">
-                        <input type="password" id="login-password" required placeholder="••••••••">
+                        <input type="password" id="login-password" required placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
                     </div>
                     <div class="form-group">
                         <label>Modo Inicial (Mestre ou Jogador)</label>
@@ -141,7 +141,7 @@
                             <option value="player">Modo Jogador</option>
                             <option value="master">Modo Mestre</option>
                         </select>
-                        <small style="color:var(--text-muted); font-size:0.75rem;">Sua conta é única. Você poderá alternar o modo no seu perfil depois.</small>
+                        <small style="color:var(--text-muted); font-size:0.75rem;">Sua conta Ã© Ãºnica. VocÃª poderÃ¡ alternar o modo no seu perfil depois.</small>
                     </div>
                     <button type="submit" class="btn-epic w-100">Entrar</button>
                 </form>
@@ -159,7 +159,7 @@
                     </div>
                     <div class="form-group">
                         <label>Senha</label>
-                        <input type="password" id="reg-password" required placeholder="••••••••">
+                        <input type="password" id="reg-password" required placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
                     </div>
                     <div class="form-group">
                         <label>Seu Papel Inicial</label>
@@ -167,7 +167,7 @@
                             <option value="player">Jogador (Criar fichas, entrar em mesas)</option>
                             <option value="master">Mestre (Criar mesas, gerenciar jogadores)</option>
                         </select>
-                        <small style="color:var(--text-muted); font-size:0.75rem;">Sua conta servirá para os dois modos. Isso apenas define como você começará agora.</small>
+                        <small style="color:var(--text-muted); font-size:0.75rem;">Sua conta servirÃ¡ para os dois modos. Isso apenas define como vocÃª comeÃ§arÃ¡ agora.</small>
                     </div>
                     <button type="submit" class="btn-epic w-100">Registrar</button>
                 </form>
@@ -198,7 +198,7 @@
                     
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
-                            <h3 style="margin:0 0 5px; font-size:1.1rem; color:var(--text-light);">Estatísticas da Conta</h3>
+                            <h3 style="margin:0 0 5px; font-size:1.1rem; color:var(--text-light);">EstatÃ­sticas da Conta</h3>
                             <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Sua jornada em Dandora</p>
                         </div>
                     </div>
@@ -220,7 +220,7 @@
                 <!-- Mode Switcher Card -->
                 <div class="table-card glass-panel" style="display:flex; flex-direction:column;">
                     <h3 style="margin:0 0 15px; font-size:1.2rem; color:var(--gold-primary); text-align:center;">Tipo de Conta</h3>
-                    <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; margin-bottom:20px;">Alterne entre os modos para acessar os recursos específicos. Seus dados são independentes e continuam salvos.</p>
+                    <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; margin-bottom:20px;">Alterne entre os modos para acessar os recursos especÃ­ficos. Seus dados sÃ£o independentes e continuam salvos.</p>
                     
                     <div style="display:flex; flex-direction:column; gap:10px;">
                         <div id="mode-card-player" onclick="switchMode('player')" class="mode-card">
@@ -267,7 +267,7 @@
                     <button class="btn-epic" onclick="createNewTable()"><i class="fa-solid fa-plus"></i> Criar Nova Mesa</button>
                 </div>
                 <div class="tables-grid" id="master-tables-list">
-                    <!-- Mesas serão injetadas via JS -->
+                    <!-- Mesas serÃ£o injetadas via JS -->
                 </div>
             </div>
         </section>
@@ -295,13 +295,13 @@
                     <button class="btn-epic" onclick="joinTable()"><i class="fa-solid fa-right-to-bracket"></i> Entrar em uma Mesa</button>
                 </div>
                 <div class="tables-grid" id="player-tables-list">
-                    <!-- Mesas do jogador serão injetadas aqui -->
+                    <!-- Mesas do jogador serÃ£o injetadas aqui -->
                 </div>
             </div>
         </section>
 
         <!-- ============================================== -->
-        <!-- VISÃO DA MESA DO JOGADOR                       -->
+        <!-- VISÃƒO DA MESA DO JOGADOR                       -->
         <!-- ============================================== -->
         <section id="player-table-view" class="view dashboard-layout">
             <aside class="sidebar glass-panel">
@@ -314,7 +314,7 @@
                 </div>
                 <ul class="sidebar-menu">
                     <li class="pt-tab active" onclick="switchPlayerTab('pt-sheet')"><i class="fa-solid fa-file-signature"></i> Minha Ficha</li>
-                    <li class="pt-tab" onclick="switchPlayerTab('pt-notes')"><i class="fa-solid fa-feather"></i> Anotações da Campanha</li>
+                    <li class="pt-tab" onclick="switchPlayerTab('pt-notes')"><i class="fa-solid fa-feather"></i> AnotaÃ§Ãµes da Campanha</li>
                 </ul>
             </aside>
             <div class="dashboard-content glass-panel" style="padding: 2rem; border-radius: 8px;">
@@ -349,9 +349,9 @@
 
                 <!-- TAB: NOTES -->
                 <div id="pt-notes" class="pt-content hidden">
-                    <h2>Anotações da Campanha</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas anotações pessoais. Apenas você tem acesso.</p>
-                    <textarea id="pt-notes-area" style="width: 100%; height: 500px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1.5rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6; font-size: 1.1rem;" oninput="savePlayerNotes()" placeholder="Escreva aqui detalhes sobre NPCs, missões ativas, pistas e eventos importantes..."></textarea>
+                    <h2>AnotaÃ§Ãµes da Campanha</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas anotaÃ§Ãµes pessoais. Apenas vocÃª tem acesso.</p>
+                    <textarea id="pt-notes-area" style="width: 100%; height: 500px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1.5rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6; font-size: 1.1rem;" oninput="savePlayerNotes()" placeholder="Escreva aqui detalhes sobre NPCs, missÃµes ativas, pistas e eventos importantes..."></textarea>
                 </div>
 
             </div>
@@ -363,7 +363,7 @@
         <section id="library-view" class="view">
             <div class="library-header">
                 <h2>Livro do Sistema</h2>
-                <p>Acesse as regras e compêndios oficiais de Dandora.</p>
+                <p>Acesse as regras e compÃªndios oficiais de Dandora.</p>
             </div>
             <div class="books-grid">
                 <div class="book-card glass-panel">
@@ -371,11 +371,11 @@
                         <i class="fa-solid fa-book-open"></i>
                     </div>
                     <div class="book-info">
-                        <h3>Dandora - Livro Básico</h3>
+                        <h3>Dandora - Livro BÃ¡sico</h3>
                         <p>150 MB - PDF</p>
                         <div class="book-actions">
-                            <button onclick="openPdf('assets/Dandora - Livro Básico.pdf')" class="btn-outline"><i class="fa-solid fa-eye"></i> Ler</button>
-                            <a href="assets/Dandora - Livro Básico.pdf" download class="btn-epic"><i class="fa-solid fa-download"></i> Baixar</a>
+                            <button onclick="openPdf('assets/Dandora - Livro BÃ¡sico.pdf')" class="btn-outline"><i class="fa-solid fa-eye"></i> Ler</button>
+                            <a href="assets/Dandora - Livro BÃ¡sico.pdf" download class="btn-epic"><i class="fa-solid fa-download"></i> Baixar</a>
                         </div>
                     </div>
                 </div>
@@ -385,7 +385,7 @@
                         <i class="fa-solid fa-dragon"></i>
                     </div>
                     <div class="book-info">
-                        <h3>Bestiário de Dandora</h3>
+                        <h3>BestiÃ¡rio de Dandora</h3>
                         <p>95 MB - PDF</p>
                         <div class="book-actions">
                             <button onclick="openPdf('assets/Bestiario de Dandora (1).pdf')" class="btn-outline"><i class="fa-solid fa-eye"></i> Ler</button>
@@ -407,7 +407,7 @@
                 
                 <div class="pdf-controls-group">
                     <button class="btn-outline small" id="prev-page" disabled style="opacity:0.4;"><i class="fa-solid fa-chevron-left"></i></button>
-                    <span class="pdf-page-info">Pág. <span id="page-num">—</span> / <span id="page-count">—</span></span>
+                    <span class="pdf-page-info">PÃ¡g. <span id="page-num">â€”</span> / <span id="page-count">â€”</span></span>
                     <button class="btn-outline small" id="next-page" disabled style="opacity:0.4;"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
 
@@ -419,7 +419,7 @@
             </div>
             
             <div class="pdf-viewer-container" id="pdf-viewer-container">
-                <!-- iframe para exibição nativa do PDF (funciona com file://) -->
+                <!-- iframe para exibiÃ§Ã£o nativa do PDF (funciona com file://) -->
                 <iframe id="pdf-iframe" src="" style="width:100%; height:100%; border:none; display:block;"></iframe>
                 <!-- canvas mantido como fallback para pdf.js em ambiente HTTP -->
                 <canvas id="pdf-canvas" style="display:none;"></canvas>
@@ -440,11 +440,11 @@
                 </div>
                 <ul class="sidebar-menu">
                     <li class="tm-tab active" onclick="switchTableTab('tm-players')"><i class="fa-solid fa-users"></i> Jogadores</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-notes')"><i class="fa-solid fa-scroll"></i> Anotações</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-notes')"><i class="fa-solid fa-scroll"></i> AnotaÃ§Ãµes</li>
                     
                     <div style="margin: 1.5rem 0 0.5rem 1.5rem; font-family: var(--font-epic); font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.1em; text-transform: uppercase;">Planejamento</div>
-                    <li class="tm-tab" onclick="switchTableTab('tm-missions')"><i class="fa-solid fa-map-location-dot"></i> Missões & One-Shots</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-sessions')"><i class="fa-solid fa-calendar-days"></i> Sessões</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-missions')"><i class="fa-solid fa-map-location-dot"></i> MissÃµes & One-Shots</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-sessions')"><i class="fa-solid fa-calendar-days"></i> SessÃµes</li>
                     
                     <div style="margin: 1.5rem 0 0.5rem 1.5rem; font-family: var(--font-epic); font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.1em; text-transform: uppercase;">Ferramentas do Mestre</div>
                     <li class="tm-tab" onclick="switchTableTab('tm-npc')"><i class="fa-solid fa-id-card"></i> Gerador de NPC</li>
@@ -453,7 +453,7 @@
                     <li class="tm-tab" onclick="switchTableTab('tm-itens')"><i class="fa-solid fa-gem"></i> Loot e Itens</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-monstros')"><i class="fa-solid fa-dragon"></i> Monstros</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-dados')"><i class="fa-solid fa-dice-d20"></i> Dados</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-regras')"><i class="fa-solid fa-book"></i> Regras Rápidas</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-regras')"><i class="fa-solid fa-book"></i> Regras RÃ¡pidas</li>
                 </ul>
             </aside>
             <div class="dashboard-content glass-panel" style="padding: 2rem; border-radius: 8px;">
@@ -465,14 +465,14 @@
                         <button class="btn-outline" onclick="generateInviteLink()"><i class="fa-solid fa-link"></i> Convidar</button>
                     </div>
                     <div class="tables-grid" id="tm-players-list">
-                        <!-- Jogadores serão injetados aqui -->
+                        <!-- Jogadores serÃ£o injetados aqui -->
                     </div>
                 </div>
 
                 <!-- TAB: NOTES -->
                 <div id="tm-notes" class="tm-content hidden">
-                    <h2>Anotações da Campanha</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Tudo o que você escrever aqui será salvo automaticamente.</p>
+                    <h2>AnotaÃ§Ãµes da Campanha</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Tudo o que vocÃª escrever aqui serÃ¡ salvo automaticamente.</p>
                     <textarea id="tm-notes-area" style="width: 100%; height: 400px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6;" oninput="saveTableNotes()"></textarea>
                 </div>
 
@@ -480,13 +480,13 @@
                 <div id="tm-missions" class="tm-content hidden">
                     <div class="dashboard-header" style="margin-bottom:1.8rem;">
                         <div>
-                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">CARTAS DE MISSÃO</h2>
-                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Crie e gerencie missões e one-shots para sua campanha</p>
+                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">CARTAS DE MISSÃƒO</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Crie e gerencie missÃµes e one-shots para sua campanha</p>
                         </div>
-                        <button class="btn-epic" onclick="openMissionGenerator()"><i class="fa-solid fa-plus"></i> Nova Missão</button>
+                        <button class="btn-epic" onclick="openMissionGenerator()"><i class="fa-solid fa-plus"></i> Nova MissÃ£o</button>
                     </div>
                     <div class="missions-grid" id="tm-missions-list">
-                        <!-- Missões serão injetadas aqui -->
+                        <!-- MissÃµes serÃ£o injetadas aqui -->
                     </div>
                 </div>
 
@@ -494,13 +494,13 @@
                 <div id="tm-sessions" class="tm-content hidden">
                     <div class="dashboard-header" style="margin-bottom:1.8rem;">
                         <div>
-                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">DIÁRIO DE CAMPANHA</h2>
-                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Planeje e organize os eventos de cada sessão</p>
+                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">DIÃRIO DE CAMPANHA</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Planeje e organize os eventos de cada sessÃ£o</p>
                         </div>
-                        <button class="btn-epic" onclick="createNewSession()"><i class="fa-solid fa-scroll"></i> Nova Sessão</button>
+                        <button class="btn-epic" onclick="createNewSession()"><i class="fa-solid fa-scroll"></i> Nova SessÃ£o</button>
                     </div>
                     <div class="sessions-timeline" id="tm-sessions-list">
-                        <!-- Sessões serão injetadas aqui -->
+                        <!-- SessÃµes serÃ£o injetadas aqui -->
                     </div>
                 </div>
 
@@ -518,31 +518,31 @@
                         </button>
                     </div>
                     <div style="text-align:center; margin-bottom:28px;">
-                        <button onclick="gerarNPC()" class="btn-epic" style="font-size:16px; padding:13px 36px; letter-spacing:0.12em;">✦ Invocar NPC ✦</button>
+                        <button onclick="gerarNPC()" class="btn-epic" style="font-size:16px; padding:13px 36px; letter-spacing:0.12em;">âœ¦ Invocar NPC âœ¦</button>
                     </div>
                     <div class="box" id="npc" style="display:none; background: rgba(20,20,25,0.8); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 2rem; box-shadow: var(--glass-shadow);">
-                        <!-- Conteúdo gerado aqui -->
+                        <!-- ConteÃºdo gerado aqui -->
                     </div>
                 </div>
                 <!-- TAB: INICIATIVA -->
                 <div id="tm-iniciativa" class="tm-content hidden">
                     <div class="dashboard-header">
                         <h2>Ordem de Combate</h2>
-                        <button id="resetBtn" class="btn-epic" style="padding: 0.5rem 1rem; font-size: 0.9rem;">🗑️ Limpar Lista</button>
+                        <button id="resetBtn" class="btn-epic" style="padding: 0.5rem 1rem; font-size: 0.9rem;">ðŸ—‘ï¸ Limpar Lista</button>
                     </div>
                     <section class="table-card">
                       <div class="controls" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
                         <input id="nameInput" class="input-modern" type="text" placeholder="Nome" style="flex:1; min-width:150px;" />
                         <input id="initInput" class="input-modern" type="number" placeholder="Iniciativa" style="width:100px;" />
-                        <button id="addBtn" class="btn-outline">➕ Adicionar</button>
-                        <button id="rollBtn" class="btn-outline">🎲 d20 + mod</button>
+                        <button id="addBtn" class="btn-outline">âž• Adicionar</button>
+                        <button id="rollBtn" class="btn-outline">ðŸŽ² d20 + mod</button>
                       </div>
                       <table style="width:100%; text-align:left; border-collapse:collapse; color: var(--text-light);">
                         <thead>
                           <tr style="border-bottom:1px solid var(--gold-dim); color:var(--gold-primary);">
                             <th style="padding:10px;">Nome</th>
                             <th style="padding:10px;">Iniciativa</th>
-                            <th style="padding:10px;">Ações</th>
+                            <th style="padding:10px;">AÃ§Ãµes</th>
                           </tr>
                         </thead>
                         <tbody id="listBody"></tbody>
@@ -556,12 +556,12 @@
                         <h2>Gerador de Eventos</h2>
                     </div>
                     <div class="buttons" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-                      <button class="btn-outline" onclick="rolarEvento('urbano')">🏙 Urbano</button>
-                      <button class="btn-outline" onclick="rolarEvento('floresta')">🌲 Floresta</button>
-                      <button class="btn-outline" onclick="rolarEvento('deserto')">🏜 Deserto</button>
-                      <button class="btn-outline" onclick="rolarEvento('alto-mar')">⚓ Alto-Mar</button>
-                      <button class="btn-outline" onclick="rolarEvento('masmorra')">💀 Masmorra</button>
-                      <button class="btn-outline" onclick="rolarEvento('viagens')">🗺 Viagens</button>
+                      <button class="btn-outline" onclick="rolarEvento('urbano')">ðŸ™ Urbano</button>
+                      <button class="btn-outline" onclick="rolarEvento('floresta')">ðŸŒ² Floresta</button>
+                      <button class="btn-outline" onclick="rolarEvento('deserto')">ðŸœ Deserto</button>
+                      <button class="btn-outline" onclick="rolarEvento('alto-mar')">âš“ Alto-Mar</button>
+                      <button class="btn-outline" onclick="rolarEvento('masmorra')">ðŸ’€ Masmorra</button>
+                      <button class="btn-outline" onclick="rolarEvento('viagens')">ðŸ—º Viagens</button>
                     </div>
                     <div id="evento" class="table-card" style="margin-bottom:20px; min-height: 100px;"></div>
                 </div>
@@ -571,7 +571,7 @@
                     <div class="dashboard-header" style="margin-bottom:1.8rem;">
                         <div>
                             <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">LOOT E ITENS</h2>
-                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Gere tesouros, moedas e artefatos mágicos</p>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Gere tesouros, moedas e artefatos mÃ¡gicos</p>
                         </div>
                     </div>
 
@@ -580,15 +580,15 @@
                         <h3 style="color:var(--gold-primary); margin-bottom: 15px; font-family:var(--font-epic);"><i class="fa-solid fa-coins"></i> Gerar Tesouro</h3>
                         <div style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
                             <div>
-                                <label style="color:var(--gold-dim); display:block; margin-bottom:5px; font-size:0.85rem;">Tipo de Região / Inimigo</label>
+                                <label style="color:var(--gold-dim); display:block; margin-bottom:5px; font-size:0.85rem;">Tipo de RegiÃ£o / Inimigo</label>
                                 <select id="sel-tesouro-tipo" class="input-modern" style="min-width: 200px;">
                                     <option value="pobre">Vilarejos / Bandidos (Bronze e Prata)</option>
-                                    <option value="medio">Cidades / Mercenários (Prata e Ouro)</option>
+                                    <option value="medio">Cidades / MercenÃ¡rios (Prata e Ouro)</option>
                                     <option value="rico">Capitais / Nobres (Ouro pesado)</option>
-                                    <option value="epico">Feiras de Luxo / Dragões (Diamante e Ouro)</option>
+                                    <option value="epico">Feiras de Luxo / DragÃµes (Diamante e Ouro)</option>
                                 </select>
                             </div>
-                            <button class="btn-epic" onclick="gerarTesouro()" style="padding: 10px 20px;">💰 Gerar Moedas</button>
+                            <button class="btn-epic" onclick="gerarTesouro()" style="padding: 10px 20px;">ðŸ’° Gerar Moedas</button>
                         </div>
                         <div id="tesouro-resultado" style="margin-top: 20px; display:none; background: rgba(0,0,0,0.3); border:1px solid var(--gold-dim); border-radius:8px; padding: 15px;">
                             <div id="tesouro-valores" style="font-size: 1.2rem; margin-bottom: 15px;"></div>
@@ -602,17 +602,17 @@
 
                     <!-- GERADOR DE ITENS MAGICOS -->
                     <div class="table-card">
-                        <h3 style="color:var(--gold-primary); margin-bottom: 15px; font-family:var(--font-epic);"><i class="fa-solid fa-wand-sparkles"></i> Gerador de Itens Mágicos</h3>
+                        <h3 style="color:var(--gold-primary); margin-bottom: 15px; font-family:var(--font-epic);"><i class="fa-solid fa-wand-sparkles"></i> Gerador de Itens MÃ¡gicos</h3>
                       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
-                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Tipo</label><select id="sel-tipo" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatório</option><option value="arma">⚔ Arma</option><option value="armadura">🛡 Armadura</option><option value="acessorio">💍 Acessório</option><option value="consumivel">🧪 Consumível</option><option value="reliquia">✦ Relíquia</option><option value="cajado">🪄 Cajado / Varinha</option><option value="escudo">🛡 Escudo</option></select></div>
-                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Raridade</label><select id="sel-raridade" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatória</option><option value="comum">Comum</option><option value="incomum">Incomum</option><option value="raro">Raro</option><option value="muito-raro">Muito Raro</option><option value="lendario">Lendário</option><option value="artefato">Artefato</option></select></div>
-                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Escola</label><select id="sel-escola" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatória</option><option value="abjuracao">Abjuração</option><option value="conjuracao">Conjuração</option><option value="divinacao">Divinação</option><option value="encantamento">Encantamento</option><option value="evocacao">Evocação</option><option value="ilusao">Ilusão</option><option value="necromancia">Necromancia</option><option value="transmutacao">Transmutação</option></select></div>
-                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Maldição</label><select id="sel-maldicao" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatória</option><option value="nenhuma">Sem maldição</option><option value="forcada">Com maldição</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Tipo</label><select id="sel-tipo" class="input-modern" style="width:100%;"><option value="aleatorio">ðŸŽ² AleatÃ³rio</option><option value="arma">âš” Arma</option><option value="armadura">ðŸ›¡ Armadura</option><option value="acessorio">ðŸ’ AcessÃ³rio</option><option value="consumivel">ðŸ§ª ConsumÃ­vel</option><option value="reliquia">âœ¦ RelÃ­quia</option><option value="cajado">ðŸª„ Cajado / Varinha</option><option value="escudo">ðŸ›¡ Escudo</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Raridade</label><select id="sel-raridade" class="input-modern" style="width:100%;"><option value="aleatorio">ðŸŽ² AleatÃ³ria</option><option value="comum">Comum</option><option value="incomum">Incomum</option><option value="raro">Raro</option><option value="muito-raro">Muito Raro</option><option value="lendario">LendÃ¡rio</option><option value="artefato">Artefato</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Escola</label><select id="sel-escola" class="input-modern" style="width:100%;"><option value="aleatorio">ðŸŽ² AleatÃ³ria</option><option value="abjuracao">AbjuraÃ§Ã£o</option><option value="conjuracao">ConjuraÃ§Ã£o</option><option value="divinacao">DivinaÃ§Ã£o</option><option value="encantamento">Encantamento</option><option value="evocacao">EvocaÃ§Ã£o</option><option value="ilusao">IlusÃ£o</option><option value="necromancia">Necromancia</option><option value="transmutacao">TransmutaÃ§Ã£o</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">MaldiÃ§Ã£o</label><select id="sel-maldicao" class="input-modern" style="width:100%;"><option value="aleatorio">ðŸŽ² AleatÃ³ria</option><option value="nenhuma">Sem maldiÃ§Ã£o</option><option value="forcada">Com maldiÃ§Ã£o</option></select></div>
                       </div>
                       <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                         <label style="color:var(--gold-dim);">Quantidade:</label>
                         <input type="number" id="qty-itens" class="input-modern" value="1" min="1" max="10" style="width: 80px; text-align:center;">
-                        <button class="btn-epic" onclick="gerarItens()" id="btn-gerar-item" style="margin-left:auto;">✦ Invocar Item</button>
+                        <button class="btn-epic" onclick="gerarItens()" id="btn-gerar-item" style="margin-left:auto;">âœ¦ Invocar Item</button>
                       </div>
                     </div>
                     <div id="item-resultado" class="table-card" style="margin-top:20px; display:none;"></div>
@@ -689,18 +689,18 @@
                             <div class="md-card md-custom-card">
                                 <div class="md-card-title"><i class="fa-solid fa-sliders"></i> Mesa Customizada</div>
                                 <div class="md-counters-grid">
-                                    <div class="md-counter-item"><span class="md-counter-label">d4</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(4,-1)">−</button><span class="md-cnt-val" id="md-cnt-d4">0</span><button class="md-cnt-btn" onclick="mdAdjDie(4,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d6</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(6,-1)">−</button><span class="md-cnt-val" id="md-cnt-d6">0</span><button class="md-cnt-btn" onclick="mdAdjDie(6,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d8</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(8,-1)">−</button><span class="md-cnt-val" id="md-cnt-d8">0</span><button class="md-cnt-btn" onclick="mdAdjDie(8,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d10</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(10,-1)">−</button><span class="md-cnt-val" id="md-cnt-d10">0</span><button class="md-cnt-btn" onclick="mdAdjDie(10,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d12</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(12,-1)">−</button><span class="md-cnt-val" id="md-cnt-d12">0</span><button class="md-cnt-btn" onclick="mdAdjDie(12,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d20</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(20,-1)">−</button><span class="md-cnt-val" id="md-cnt-d20">0</span><button class="md-cnt-btn" onclick="mdAdjDie(20,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d100</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(100,-1)">−</button><span class="md-cnt-val" id="md-cnt-d100">0</span><button class="md-cnt-btn" onclick="mdAdjDie(100,1)">+</button></div></div>
-                                    <div class="md-counter-item md-bonus-item"><span class="md-counter-label">Bonus</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjBonus(-1)">−</button><input type="number" id="md-bonus" value="0" class="md-bonus-input" oninput="mdBonusInput()"><button class="md-cnt-btn" onclick="mdAdjBonus(1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d4</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(4,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d4">0</span><button class="md-cnt-btn" onclick="mdAdjDie(4,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d6</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(6,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d6">0</span><button class="md-cnt-btn" onclick="mdAdjDie(6,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d8</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(8,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d8">0</span><button class="md-cnt-btn" onclick="mdAdjDie(8,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d10</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(10,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d10">0</span><button class="md-cnt-btn" onclick="mdAdjDie(10,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d12</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(12,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d12">0</span><button class="md-cnt-btn" onclick="mdAdjDie(12,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d20</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(20,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d20">0</span><button class="md-cnt-btn" onclick="mdAdjDie(20,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d100</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(100,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d100">0</span><button class="md-cnt-btn" onclick="mdAdjDie(100,1)">+</button></div></div>
+                                    <div class="md-counter-item md-bonus-item"><span class="md-counter-label">Bonus</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjBonus(-1)">âˆ’</button><input type="number" id="md-bonus" value="0" class="md-bonus-input" oninput="mdBonusInput()"><button class="md-cnt-btn" onclick="mdAdjBonus(1)">+</button></div></div>
                                 </div>
                                 <div class="md-formula-display">
                                     <span class="md-formula-label">Formula</span>
-                                    <div class="md-preview" id="md-preview">—</div>
+                                    <div class="md-preview" id="md-preview">â€”</div>
                                 </div>
                                 <div class="md-action-row">
                                     <button class="md-btn-clear" onclick="mdClearRoller()"><i class="fa-solid fa-rotate-left"></i> Limpar</button>
@@ -716,68 +716,68 @@
                 <!-- TAB: REGRAS -->
                 <div id="tm-regras" class="tm-content hidden">
                     <div class="dashboard-header">
-                        <h2>Regras Rápidas</h2>
+                        <h2>Regras RÃ¡pidas</h2>
                     </div>
                     
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🎯 Dificuldade</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸŽ¯ Dificuldade</h3>
                         <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
 Tarefa              DT    Exemplo
-Fácil               5     Escutar uma conversa atrás da porta (Percepção)
-Média              10     Subir um barranco (Atletismo)
-Muito difícil      20     Estancar um Sangramento fatal (Medicina)
-Quase Impossível   30     Convencer alguém que não gosta de você a lutar para protegê-lo (Diplomacia)
+FÃ¡cil               5     Escutar uma conversa atrÃ¡s da porta (PercepÃ§Ã£o)
+MÃ©dia              10     Subir um barranco (Atletismo)
+Muito difÃ­cil      20     Estancar um Sangramento fatal (Medicina)
+Quase ImpossÃ­vel   30     Convencer alguÃ©m que nÃ£o gosta de vocÃª a lutar para protegÃª-lo (Diplomacia)
                         </pre>
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">⚔️ Reações</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">âš”ï¸ ReaÃ§Ãµes</h3>
                         <p style="margin-bottom:0.5rem;"><strong>Contra-Ataque:</strong><br>
-                        Condição: Um inimigo precisa errar um ataque corpo a corpo em você.<br>
+                        CondiÃ§Ã£o: Um inimigo precisa errar um ataque corpo a corpo em vocÃª.<br>
                         Efeito: O personagem faz um ataque corpo a corpo contra o atacante. Se o contra-ataque for bem-sucedido, ele causa 50% do dano normal.</p>
                         <p style="margin-bottom:0.5rem;"><strong>Bloqueio:</strong><br>
-                        Condição: Usar escudo ou arma em mãos.<br>
-                        Efeito: Reduz o dano do ataque em um valor igual bônus do escudo + metade da sua CA + Força ou Constituição. Se não estiver usando um escudo não some o bônus do escudo.</p>
+                        CondiÃ§Ã£o: Usar escudo ou arma em mÃ£os.<br>
+                        Efeito: Reduz o dano do ataque em um valor igual bÃ´nus do escudo + metade da sua CA + ForÃ§a ou ConstituiÃ§Ã£o. Se nÃ£o estiver usando um escudo nÃ£o some o bÃ´nus do escudo.</p>
                         <p style="margin-bottom:0.5rem;"><strong>Esquiva:</strong><br>
-                        Condição: Estar consciente e livre.<br>
+                        CondiÃ§Ã£o: Estar consciente e livre.<br>
                         Efeito: Teste de Destreza contra o ataque. Se vencer, evita o dano. Se empatar, reduz pela metade.</p>
                         <p style="margin-bottom:0.5rem;"><strong>Ataque de Oportunidade:</strong><br>
-                        Condição: Inimigo se afasta ou se expõe.<br>
-                        Efeito: Ataque com -2 no teste. Causa 100% do dano normal, sem qualquer modificação adicional de bônus ou penalidade.</p>
+                        CondiÃ§Ã£o: Inimigo se afasta ou se expÃµe.<br>
+                        Efeito: Ataque com -2 no teste. Causa 100% do dano normal, sem qualquer modificaÃ§Ã£o adicional de bÃ´nus ou penalidade.</p>
                         <p style="margin-bottom:0.5rem;"><strong>Passo Acelerado:</strong><br>
                         Teste de Atletismo (DT 15) para dobrar o deslocamento. Se falhar, anda metade.</p>
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🎲 Vantagem &amp; Desvantagem</h3>
-                        <p><strong>Vantagem:</strong> +1 dado (máx. 5d20), usa o maior.<br>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸŽ² Vantagem &amp; Desvantagem</h3>
+                        <p><strong>Vantagem:</strong> +1 dado (mÃ¡x. 5d20), usa o maior.<br>
                         <strong>Desvantagem:</strong> Usa o menor valor entre os dados rolados.</p>
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🧠 Pontos de Loucura (PL)</h3>
-                        <p style="margin-bottom:0.5rem;">Ganhos por falhas em testes de Vontade em eventos traumáticos.</p>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸ§  Pontos de Loucura (PL)</h3>
+                        <p style="margin-bottom:0.5rem;">Ganhos por falhas em testes de Vontade em eventos traumÃ¡ticos.</p>
                         <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
 PL Total   Efeito
-1–3        Loucura curta
-4–6        Loucura temporária
-7–10       Permanente (moderada)
+1â€“3        Loucura curta
+4â€“6        Loucura temporÃ¡ria
+7â€“10       Permanente (moderada)
 11+        Permanente (grave)
                         </pre>
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">💤 Descanso e Recuperação</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸ’¤ Descanso e RecuperaÃ§Ã£o</h3>
                         <p style="margin-bottom:0.5rem;"><strong>Descanso Curto:</strong><br>
-                        • PV: 1d4 + Con<br>
-                        • PA: Recupera 2d8 + o modificador de Vontade (Von) do personagem</p>
+                        â€¢ PV: 1d4 + Con<br>
+                        â€¢ PA: Recupera 2d8 + o modificador de Vontade (Von) do personagem</p>
                         <p style="margin-bottom:0.5rem;"><strong>Descanso Longo:</strong><br>
-                        • Recupera tudo de PV<br>
-                        • PA: Recupera metade dos pontos de ação gastados (arredondado para baixo).</p>
+                        â€¢ Recupera tudo de PV<br>
+                        â€¢ PA: Recupera metade dos pontos de aÃ§Ã£o gastados (arredondado para baixo).</p>
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">☠️ Dano por Queda</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">â˜ ï¸ Dano por Queda</h3>
                         <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
 Altura     Dano
 2m         1d4
@@ -792,18 +792,18 @@ Altura     Dano
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🌟 Inspiração (1d10 após morte de aliado)</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸŒŸ InspiraÃ§Ã£o (1d10 apÃ³s morte de aliado)</h3>
                         <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
-1:  Determinação Inquebrantável – Resistência 10 contra controle.
-2:  Força do Ódio – +2 For e 1 ação padrão extra.
-3:  Vingança Sombria – +3 Destreza e ataques ignoram resistência.
-4:  Chamas da Vingança – +5 ataque contra o inimigo que matou o aliado.
-5:  Ecos da Morte – Inimigos -3 em ataque e resistência (10m).
-6:  Mente em Luto – Resistência mental 10.
-7:  Resoluto – Recupera 4d8+4 PV e 4d6 PM/PA.
-8:  Renascimento Espiritual – +3 Destreza e +3m deslocamento.
-9:  Loucura Selvagem – Ganha 2 PL, +4 em dano, ignora armadura.
-10: Espírito de Sacrifício – Um aliado pode agir imediatamente com +3 em todos os testes até o final do turno.
+1:  DeterminaÃ§Ã£o InquebrantÃ¡vel â€“ ResistÃªncia 10 contra controle.
+2:  ForÃ§a do Ã“dio â€“ +2 For e 1 aÃ§Ã£o padrÃ£o extra.
+3:  VinganÃ§a Sombria â€“ +3 Destreza e ataques ignoram resistÃªncia.
+4:  Chamas da VinganÃ§a â€“ +5 ataque contra o inimigo que matou o aliado.
+5:  Ecos da Morte â€“ Inimigos -3 em ataque e resistÃªncia (10m).
+6:  Mente em Luto â€“ ResistÃªncia mental 10.
+7:  Resoluto â€“ Recupera 4d8+4 PV e 4d6 PM/PA.
+8:  Renascimento Espiritual â€“ +3 Destreza e +3m deslocamento.
+9:  Loucura Selvagem â€“ Ganha 2 PL, +4 em dano, ignora armadura.
+10: EspÃ­rito de SacrifÃ­cio â€“ Um aliado pode agir imediatamente com +3 em todos os testes atÃ© o final do turno.
                         </pre>
                     </div>
                 </div>
@@ -824,19 +824,19 @@ Altura     Dano
                 <div class="md-final-value" id="md-final-value">0</div>
                 <div class="md-calculation" id="md-calculation"></div>
             </div>
-            <button class="btn-outline" onclick="mdCloseOverlay()" style="margin-top:1.5rem;">✦ Fechar</button>
+            <button class="btn-outline" onclick="mdCloseOverlay()" style="margin-top:1.5rem;">âœ¦ Fechar</button>
         </div>
     </div>
 
-    <!-- ===== HISTÓRICO SIDEBAR (MESTRE) ===== -->
+    <!-- ===== HISTÃ“RICO SIDEBAR (MESTRE) ===== -->
     <div class="md-history-sidebar" id="md-history-sidebar">
         <div class="md-history-head">
-            <h3>📜 Histórico de Rolagens</h3>
-            <button class="btn-outline small" onclick="mdToggleHistory()">✕</button>
+            <h3>ðŸ“œ HistÃ³rico de Rolagens</h3>
+            <button class="btn-outline small" onclick="mdToggleHistory()">âœ•</button>
         </div>
         <div id="md-history-list" class="md-history-list"></div>
         <div style="padding:1rem; border-top:1px solid var(--gold-dim);">
-            <button class="btn-outline small w-100" onclick="mdClearHistory()" style="border-color:#e07060; color:#e07060;"><i class="fa-solid fa-trash"></i> Limpar Histórico</button>
+            <button class="btn-outline small w-100" onclick="mdClearHistory()" style="border-color:#e07060; color:#e07060;"><i class="fa-solid fa-trash"></i> Limpar HistÃ³rico</button>
         </div>
     </div>
 
@@ -859,7 +859,7 @@ Altura     Dano
     <div id="sheet-modal" class="hidden" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 1000; display:flex; justify-content:center; align-items:center;">
         <div class="glass-panel" style="width: 95%; height: 95%; position: relative; background: var(--bg-dark); border: 2px solid var(--gold-dim); display:flex; flex-direction:column; overflow:hidden;">
             <div style="padding: 1rem; border-bottom: 1px solid var(--gold-dim); display:flex; justify-content:space-between; align-items:center; background: rgba(10,10,12,0.9);">
-                <h3 style="margin:0;"><i class="fa-solid fa-scroll"></i> Edição de Ficha (Visão do Mestre)</h3>
+                <h3 style="margin:0;"><i class="fa-solid fa-scroll"></i> EdiÃ§Ã£o de Ficha (VisÃ£o do Mestre)</h3>
                 <button onclick="closeSheetModal()" style="background:none; border:none; color: var(--text-muted); font-size: 1.5rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <iframe src="Ficha site/index.html" style="width:100%; height:100%; border:none; flex:1;"></iframe>
@@ -872,22 +872,22 @@ Altura     Dano
         <td class="name" style="padding:10px;"></td>
         <td class="num initiative" style="padding:10px;"></td>
         <td class="num actions" style="padding:10px;">
-            <button class="btn-outline edit" style="padding: 4px 8px; font-size: 12px; margin-right:5px;" title="Editar">✏️</button>
-            <button class="btn-outline danger remove" style="padding: 4px 8px; font-size: 12px; color: var(--red-blood); border-color: var(--red-blood);" title="Remover">🗑️</button>
+            <button class="btn-outline edit" style="padding: 4px 8px; font-size: 12px; margin-right:5px;" title="Editar">âœï¸</button>
+            <button class="btn-outline danger remove" style="padding: 4px 8px; font-size: 12px; color: var(--red-blood); border-color: var(--red-blood);" title="Remover">ðŸ—‘ï¸</button>
         </td>
         </tr>
     </template>
 
     <dialog id="editDialog" style="background:transparent; border:none;">
         <form method="dialog" id="editForm" class="glass-panel" style="min-width:320px; background:var(--bg-dark); color:var(--text-light); border:1px solid var(--gold-dim); border-radius:6px; padding:24px;">
-        <h3 style="margin:0 0 16px;">✦ Editar Entrada</h3>
+        <h3 style="margin:0 0 16px;">âœ¦ Editar Entrada</h3>
         <label style="display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.06em;color:var(--gold-dark);text-transform:uppercase;">Nome</label>
         <input id="editName" type="text" style="width:100%;margin:6px 0 14px; background:rgba(0,0,0,0.5); color:white; border:1px solid var(--gold-dim); padding: 8px;">
-        <label style="display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.06em;color:var(--gold-dark);text-transform:uppercase;">Iniciativa (número)</label>
+        <label style="display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.06em;color:var(--gold-dark);text-transform:uppercase;">Iniciativa (nÃºmero)</label>
         <input id="editInit" type="number" step="1" style="width:100%;margin:6px 0 20px; background:rgba(0,0,0,0.5); color:white; border:1px solid var(--gold-dim); padding: 8px;">
         <div style="display:flex;gap:10px;justify-content:flex-end;">
             <button class="btn-outline" value="cancel">Cancelar</button>
-            <button class="btn-outline" value="ok" style="color:var(--gold-primary); border-color:var(--gold-primary);">✦ Salvar</button>
+            <button class="btn-outline" value="ok" style="color:var(--gold-primary); border-color:var(--gold-primary);">âœ¦ Salvar</button>
         </div>
         </form>
     </dialog>
@@ -895,15 +895,15 @@ Altura     Dano
     <!-- MISSION GENERATOR MODAL -->
     <dialog id="mission-modal" class="glass-panel" style="width:90%; max-width:800px; padding:2rem; background:var(--bg-dark); border:1px solid var(--gold-dim); border-radius:12px; color:var(--text-light); top:50%; left:50%; transform:translate(-50%, -50%); position:fixed; z-index:1000; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(212,175,55,0.2); padding-bottom:1rem; margin-bottom:1.5rem;">
-            <h2 id="mission-modal-title" style="margin:0; font-family:'Cinzel',serif; color:var(--gold-primary);">Criar Missão</h2>
+            <h2 id="mission-modal-title" style="margin:0; font-family:'Cinzel',serif; color:var(--gold-primary);">Criar MissÃ£o</h2>
             <div>
-                <button class="btn-outline" onclick="generateRandomMission()" title="Preencher com ideia aleatória" style="margin-right:10px;"><i class="fa-solid fa-dice"></i> Gerar Aleatória</button>
+                <button class="btn-outline" onclick="generateRandomMission()" title="Preencher com ideia aleatÃ³ria" style="margin-right:10px;"><i class="fa-solid fa-dice"></i> Gerar AleatÃ³ria</button>
                 <button class="btn-outline" onclick="closeMissionModal()" style="border-color:#e07060; color:#e07060;"><i class="fa-solid fa-xmark"></i></button>
             </div>
         </div>
         <form id="mission-form" onsubmit="saveMission(event)" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
             <div style="grid-column: 1 / -1;">
-                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Título da Missão</label>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">TÃ­tulo da MissÃ£o</label>
                 <input type="text" id="ms-title" required style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--gold-dim); color:white; border-radius:4px; font-family:'Cinzel',serif; font-size:1.1rem;">
             </div>
             <div>
@@ -911,11 +911,11 @@ Altura     Dano
                 <input type="text" id="ms-objective" required style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
             </div>
             <div>
-                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Localização</label>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">LocalizaÃ§Ã£o</label>
                 <input type="text" id="ms-location" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
             </div>
             <div style="grid-column: 1 / -1;">
-                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Descrição / Ganchos</label>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">DescriÃ§Ã£o / Ganchos</label>
                 <textarea id="ms-description" rows="4" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px; resize:vertical;"></textarea>
             </div>
             <div>
@@ -933,15 +933,15 @@ Altura     Dano
             <div>
                 <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Dificuldade</label>
                 <select id="ms-difficulty" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
-                    <option value="Fácil">Fácil (Iniciantes)</option>
-                    <option value="Média">Média (Aventureiros)</option>
-                    <option value="Difícil">Difícil (Veteranos)</option>
+                    <option value="FÃ¡cil">FÃ¡cil (Iniciantes)</option>
+                    <option value="MÃ©dia">MÃ©dia (Aventureiros)</option>
+                    <option value="DifÃ­cil">DifÃ­cil (Veteranos)</option>
                     <option value="Mortal">Mortal (Lendas)</option>
                 </select>
             </div>
             <div style="grid-column: 1 / -1; display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
                 <button type="button" class="btn-outline" onclick="closeMissionModal()">Cancelar</button>
-                <button type="submit" class="btn-epic">Salvar Missão</button>
+                <button type="submit" class="btn-epic">Salvar MissÃ£o</button>
             </div>
         </form>
     </dialog>
@@ -949,13 +949,13 @@ Altura     Dano
     <!-- SESSION MODAL -->
     <dialog id="session-modal" class="glass-panel" style="width:90%; max-width:800px; padding:2rem; background:var(--bg-dark); border:1px solid var(--gold-dim); border-radius:12px; color:var(--text-light); top:50%; left:50%; transform:translate(-50%, -50%); position:fixed; z-index:1000; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(212,175,55,0.2); padding-bottom:1rem; margin-bottom:1.5rem;">
-            <h2 id="session-modal-title" style="margin:0; font-family:'Cinzel',serif; color:var(--gold-primary);">Planejar Sessão</h2>
+            <h2 id="session-modal-title" style="margin:0; font-family:'Cinzel',serif; color:var(--gold-primary);">Planejar SessÃ£o</h2>
             <button type="button" class="btn-outline" onclick="closeSessionModal()" style="border-color:#e07060; color:#e07060;"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form id="session-form" onsubmit="saveSession(event)" style="display:flex; flex-direction:column; gap:1.2rem;">
             <div style="display:flex; gap:1rem;">
                 <div style="flex:2;">
-                    <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Título da Sessão</label>
+                    <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">TÃ­tulo da SessÃ£o</label>
                     <input type="text" id="ss-title" required style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--gold-dim); color:white; border-radius:4px; font-family:'Cinzel',serif; font-size:1.1rem;">
                 </div>
                 <div style="flex:1;">
@@ -963,7 +963,7 @@ Altura     Dano
                     <select id="ss-status" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
                         <option value="Planejada">Planejada</option>
                         <option value="Em andamento">Em andamento</option>
-                        <option value="Concluída">Concluída</option>
+                        <option value="ConcluÃ­da">ConcluÃ­da</option>
                     </select>
                 </div>
             </div>
@@ -996,28 +996,28 @@ Altura     Dano
             </div>
 
             <div>
-                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Anotações Livres</label>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">AnotaÃ§Ãµes Livres</label>
                 <textarea id="ss-notes" rows="4" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px; resize:vertical;"></textarea>
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:0.5rem;">
                 <button type="button" class="btn-outline" onclick="closeSessionModal()">Cancelar</button>
-                <button type="submit" class="btn-epic">Salvar Sessão</button>
+                <button type="submit" class="btn-epic">Salvar SessÃ£o</button>
             </div>
         </form>
     </dialog>
 
 
-    <script src="assets/js/firebase-sync.js?v=1"></script>
-    <script src="assets/js/app.js?v=2"></script>
-    <script src="assets/js/pdf-viewer.js?v=2"></script>
-    <script src="assets/js/npc.js?v=2"></script>
-    <script src="assets/js/eventos.js?v=2"></script>
-    <script src="assets/js/iniciativa.js?v=2"></script>
-    <script src="assets/js/itens.js?v=2"></script>
-    <script src="assets/js/monstros.js?v=2"></script>
-    <script src="assets/js/dados.js?v=1"></script>
-    <script src="assets/js/missoes.js?v=1"></script>
-    <script src="assets/js/sessoes.js?v=1"></script>
+    <script src="assets/js/firebase-sync2.js?v=4"></script>
+    <script src="assets/js/app2.js?v=4"></script>
+    <script src="assets/js/pdf-viewer.js?v=3"></script>
+    <script src="assets/js/npc.js?v=3"></script>
+    <script src="assets/js/eventos.js?v=3"></script>
+    <script src="assets/js/iniciativa.js?v=3"></script>
+    <script src="assets/js/itens.js?v=3"></script>
+    <script src="assets/js/monstros.js?v=3"></script>
+    <script src="assets/js/dados.js?v=3"></script>
+    <script src="assets/js/missoes.js?v=3"></script>
+    <script src="assets/js/sessoes.js?v=3"></script>
 </body>
 </html>
