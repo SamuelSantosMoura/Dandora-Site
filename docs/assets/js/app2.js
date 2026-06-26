@@ -1,4 +1,4 @@
-// State Management
+﻿// State Management
 let currentUser = null; // null | { name: string, role: 'master' | 'player', email: string }
 
 // ==========================================
@@ -74,13 +74,13 @@ function handleLogin(event) {
     const userIndex = usersDB.findIndex(u => u.email === email && u.password === password);
     
     if (userIndex !== -1) {
-        // Atualiza último acesso
+        // Atualiza Ãºltimo acesso
         usersDB[userIndex].lastAccess = new Date().toISOString();
         localStorage.setItem('dandora_users', JSON.stringify(usersDB));
         
         loginUser(usersDB[userIndex], mode);
     } else {
-        alert("Credenciais inválidas. Verifique seus dados ou crie uma nova conta.");
+        alert("Credenciais invÃ¡lidas. Verifique seus dados ou crie uma nova conta.");
     }
 }
 
@@ -95,7 +95,7 @@ function handleRegister(event) {
     const usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
     
     if (usersDB.find(u => u.email === email)) {
-        alert("Este email já está cadastrado no sistema!");
+        alert("Este email jÃ¡ estÃ¡ cadastrado no sistema!");
         return;
     }
     
@@ -124,25 +124,25 @@ function forgotPassword(event) {
     const userIndex = usersDB.findIndex(u => u.email === email);
     
     if (userIndex === -1) {
-        alert("Não encontramos nenhuma conta com esse e-mail.");
+        alert("NÃ£o encontramos nenhuma conta com esse e-mail.");
         return;
     }
     
     // Simula o envio de e-mail e clique no link
-    alert(`[Simulação de E-mail]\nUm link de redefinição foi enviado para ${email}.\n(Clique em OK para simular que você abriu o link)`);
+    alert(`[SimulaÃ§Ã£o de E-mail]\nUm link de redefiniÃ§Ã£o foi enviado para ${email}.\n(Clique em OK para simular que vocÃª abriu o link)`);
     
     const newPassword = prompt("Insira sua nova senha:");
     if (newPassword && newPassword.trim().length > 0) {
         usersDB[userIndex].password = newPassword.trim();
         localStorage.setItem('dandora_users', JSON.stringify(usersDB));
-        alert("Senha redefinida com sucesso! Você pode fazer login com sua nova senha.");
+        alert("Senha redefinida com sucesso! VocÃª pode fazer login com sua nova senha.");
         
-        // Se a pessoa estiver logada e alterar a própria senha, desconecta por segurança
+        // Se a pessoa estiver logada e alterar a prÃ³pria senha, desconecta por seguranÃ§a
         if (currentUser && currentUser.email === email) {
             logout();
         }
     } else {
-        alert("Operação cancelada.");
+        alert("OperaÃ§Ã£o cancelada.");
     }
 }
 
@@ -207,7 +207,7 @@ function switchMode(newMode) {
     document.getElementById('mode-card-player').classList.toggle('active', newMode === 'player');
     document.getElementById('mode-card-master').classList.toggle('active', newMode === 'master');
     
-    // Se o usuário já estava num dashboard e trocou de modo, redirecionamos para o correto
+    // Se o usuÃ¡rio jÃ¡ estava num dashboard e trocou de modo, redirecionamos para o correto
     if (currentView === 'dashboard-player-view' || currentView === 'dashboard-master-view' || currentView === 'table-manager-view') {
         openDashboard();
     }
@@ -229,7 +229,7 @@ function renderProfile() {
         document.getElementById('prof-created').textContent = `Conta criada em: ${d.toLocaleDateString()}`;
     }
     
-    // Conta estatísticas (local mock)
+    // Conta estatÃ­sticas (local mock)
     // 1. Quantas mesas (Mestre)
     const allTables = JSON.parse(localStorage.getItem('dandora_tables')) || [];
     const myTables = allTables.filter(t => t.masterEmail === currentUser.email);
@@ -253,7 +253,7 @@ navigateTo = function(viewId, isBack = false) {
         renderProfile();
     }
     
-    // Controle de Permissões Básicas na UI
+    // Controle de PermissÃµes BÃ¡sicas na UI
     if (viewId === 'table-manager-view') {
         if (getMode() !== 'master') {
             alert('Acesso negado. Apenas o Mestre pode acessar o gerenciamento da mesa.');
@@ -317,7 +317,7 @@ function renderMasterTables() {
     const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
     
     if (userTables.length === 0) {
-        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Você ainda não possui mesas criadas. Clique em "Criar Nova Mesa" para começar.</p>`;
+        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">VocÃª ainda nÃ£o possui mesas criadas. Clique em "Criar Nova Mesa" para comeÃ§ar.</p>`;
         return;
     }
     
@@ -344,7 +344,7 @@ function renderMasterTables() {
     }).join('');
 }
 
-// Função auxiliar para gerar código de 5 caracteres
+// FunÃ§Ã£o auxiliar para gerar cÃ³digo de 5 caracteres
 function generateInviteCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code = '';
@@ -356,7 +356,7 @@ function generateInviteCode() {
 
 // Criar Nova Mesa (LocalStorage)
 function createNewTable() {
-    const tableName = prompt("Qual será o nome da nova mesa?");
+    const tableName = prompt("Qual serÃ¡ o nome da nova mesa?");
     if (tableName) {
         const tablesKey = `dandora_tables_${currentUser.email}`;
         const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
@@ -453,7 +453,7 @@ function renderTablePlayers() {
     const members = JSON.parse(localStorage.getItem(membersKey)) || [];
     
     if (members.length === 0) {
-        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1; text-align:center; padding: 2rem;">Ainda não há jogadores nesta mesa.</p>`;
+        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1; text-align:center; padding: 2rem;">Ainda nÃ£o hÃ¡ jogadores nesta mesa.</p>`;
         return;
     }
     
@@ -468,7 +468,7 @@ function renderTablePlayers() {
                     ${portrait}
                     <div>
                         <h3 style="margin:0;">${p.nome} <span style="font-size: 0.8rem; color: var(--gold-dim);">${level}</span></h3>
-                        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">${pClass} • Jogador: ${m.playerName}</p>
+                        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">${pClass} â€¢ Jogador: ${m.playerName}</p>
                     </div>
                 </div>
                 <div style="display:flex; gap:8px; width: 100%; margin-top: 5px;">
@@ -524,7 +524,7 @@ function openSheetModal() {
 function closeSheetModal() {
     document.getElementById('sheet-modal').classList.add('hidden');
     
-    // Salvar as edições do mestre de volta na mesa em tempo real
+    // Salvar as ediÃ§Ãµes do mestre de volta na mesa em tempo real
     if (currentTableId) {
         const editedSheet = JSON.parse(localStorage.getItem('dandora-ficha-v1'));
         if (editedSheet) {
@@ -534,7 +534,7 @@ function closeSheetModal() {
             
             if (editingIdx !== null && members[editingIdx]) {
                 members[editingIdx].activeSheet = editedSheet;
-                localStorage.setItem(membersKey, JSON.stringify(members)); // Dispara a sincronização
+                localStorage.setItem(membersKey, JSON.stringify(members)); // Dispara a sincronizaÃ§Ã£o
             }
             sessionStorage.removeItem('master_editing_player_idx');
         }
@@ -558,7 +558,7 @@ function joinTable(inviteCodeParam = null) {
     if (!currentUser) return false;
     let tableCode = inviteCodeParam;
     if (!tableCode) {
-        tableCode = prompt("Digite o CÓDIGO de convite (5 dígitos) da mesa:");
+        tableCode = prompt("Digite o CÃ“DIGO de convite (5 dÃ­gitos) da mesa:");
     }
     if (!tableCode) return false;
     
@@ -569,7 +569,7 @@ function joinTable(inviteCodeParam = null) {
     const foundTable = globalTables.find(t => t.code === codeUpper);
     
     if (!foundTable) {
-        alert("Código de mesa inválido ou mesa não encontrada!");
+        alert("CÃ³digo de mesa invÃ¡lido ou mesa nÃ£o encontrada!");
         return false;
     }
 
@@ -578,7 +578,7 @@ function joinTable(inviteCodeParam = null) {
     
     // Prevent duplicate joins
     if(userTables.find(t => t.code === codeUpper)) {
-        alert("Você já está participando desta mesa!");
+        alert("VocÃª jÃ¡ estÃ¡ participando desta mesa!");
         return true;
     }
 
@@ -593,7 +593,7 @@ function joinTable(inviteCodeParam = null) {
     
     localStorage.setItem(tablesKey, JSON.stringify(userTables));
     
-    // Adicionar jogador à lista global da mesa do Mestre
+    // Adicionar jogador Ã  lista global da mesa do Mestre
     const membersKey = `dandora_table_members_${foundTable.tableId}`;
     let members = JSON.parse(localStorage.getItem(membersKey)) || [];
     members.push({
@@ -612,7 +612,7 @@ function joinTable(inviteCodeParam = null) {
         localStorage.setItem(masterTablesKey, JSON.stringify(masterTables));
     }
     
-    alert(`Você entrou na mesa: ${foundTable.tableName} (Mestre: ${foundTable.masterName})`);
+    alert(`VocÃª entrou na mesa: ${foundTable.tableName} (Mestre: ${foundTable.masterName})`);
     renderPlayerTables();
     return true;
 }
@@ -625,7 +625,7 @@ function renderPlayerTables() {
     const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
     
     if (userTables.length === 0) {
-        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Você ainda não participa de nenhuma mesa. Clique em "Entrar em uma Mesa" para começar.</p>`;
+        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">VocÃª ainda nÃ£o participa de nenhuma mesa. Clique em "Entrar em uma Mesa" para comeÃ§ar.</p>`;
         return;
     }
     
@@ -726,7 +726,7 @@ function renderActiveSheet() {
         const rawData = localStorage.getItem('dandora-ficha-v1');
         const data = rawData ? JSON.parse(rawData) : null;
         
-        // Enviar cópia atualizada da ficha para o Mestre da Mesa (backup ao renderizar)
+        // Enviar cÃ³pia atualizada da ficha para o Mestre da Mesa (backup ao renderizar)
         syncPlayerSheetToTable(data);
         
         if (data && data.nome) {
@@ -762,7 +762,7 @@ function saveActiveSheetToVault() {
     try {
         const rawData = localStorage.getItem('dandora-ficha-v1');
         if (!rawData) {
-            alert("Não há ficha ativa para salvar.");
+            alert("NÃ£o hÃ¡ ficha ativa para salvar.");
             return;
         }
         const data = JSON.parse(rawData);
@@ -796,7 +796,7 @@ function renderVaultSheets() {
     const vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
     
     if (vault.length === 0) {
-        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Seu cofre está vazio. Salve a ficha atual para guardá-la aqui.</p>`;
+        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Seu cofre estÃ¡ vazio. Salve a ficha atual para guardÃ¡-la aqui.</p>`;
         return;
     }
     
@@ -826,7 +826,7 @@ function renderVaultSheets() {
 }
 
 function loadSheetFromVault(id) {
-    if(!confirm("Atenção: Carregar essa ficha vai substituir a sua 'Ficha Ativa'. Você salvou o progresso atual no cofre?")) return;
+    if(!confirm("AtenÃ§Ã£o: Carregar essa ficha vai substituir a sua 'Ficha Ativa'. VocÃª salvou o progresso atual no cofre?")) return;
     
     const vaultKey = `dandora_vault_${currentUser.email}`;
     const vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
@@ -835,7 +835,7 @@ function loadSheetFromVault(id) {
     if (sheet) {
         localStorage.setItem('dandora-ficha-v1', JSON.stringify(sheet));
         renderActiveSheet();
-        alert(`A ficha de ${sheet.nome} foi carregada e está ativa.`);
+        alert(`A ficha de ${sheet.nome} foi carregada e estÃ¡ ativa.`);
     }
 }
 
@@ -851,7 +851,7 @@ function deleteSheetFromVault(id) {
 }
 
 function createNewBlankSheet() {
-    if(!confirm("Isso limpará sua Ficha Ativa atual. Se não a salvou no cofre, ela será perdida! Continuar?")) return;
+    if(!confirm("Isso limparÃ¡ sua Ficha Ativa atual. Se nÃ£o a salvou no cofre, ela serÃ¡ perdida! Continuar?")) return;
     localStorage.removeItem('dandora-ficha-v1');
     renderActiveSheet();
     openSheetModal();
@@ -872,19 +872,19 @@ function generateInviteLink() {
     if (table && table.code) {
         const inviteUrl = window.location.origin + window.location.pathname + "?invite=" + table.code;
         navigator.clipboard.writeText(inviteUrl).then(() => {
-            alert("Link de convite copiado para a área de transferência!\n" + inviteUrl);
+            alert("Link de convite copiado para a Ã¡rea de transferÃªncia!\n" + inviteUrl);
         }).catch(err => {
             prompt("Copie o link abaixo e envie para seus jogadores:", inviteUrl);
         });
     } else {
-        alert("Erro ao gerar link de convite. Esta mesa não possui um código válido.");
+        alert("Erro ao gerar link de convite. Esta mesa nÃ£o possui um cÃ³digo vÃ¡lido.");
     }
 }
 
 /**
  * MESTRE: Exclui a mesa completamente.
  * Remove a mesa do registro do mestre, do registro global,
- * e remove a referência da mesa na lista de todos os jogadores membros.
+ * e remove a referÃªncia da mesa na lista de todos os jogadores membros.
  */
 function deleteTable(tableId) {
     if (!currentUser || currentUser.role !== 'master') return;
@@ -895,7 +895,7 @@ function deleteTable(tableId) {
     if (!table) return;
 
     const confirmed = confirm(
-        `⚠️ EXCLUIR MESA\n\n"${table.name}"\n\nIsso removerá a mesa para TODOS os jogadores que estão nela. Esta ação não pode ser desfeita!\n\nDeseja continuar?`
+        `âš ï¸ EXCLUIR MESA\n\n"${table.name}"\n\nIsso removerÃ¡ a mesa para TODOS os jogadores que estÃ£o nela. Esta aÃ§Ã£o nÃ£o pode ser desfeita!\n\nDeseja continuar?`
     );
     if (!confirmed) return;
 
@@ -909,14 +909,14 @@ function deleteTable(tableId) {
         playerTables = playerTables.filter(pt => pt.masterTableId !== tableId);
         localStorage.setItem(playerTablesKey, JSON.stringify(playerTables));
 
-        // Remover anotações do jogador nessa mesa
+        // Remover anotaÃ§Ãµes do jogador nessa mesa
         // (buscamos por masterTableId no player_tables, mas o notesKey usa o id local do jogador)
-        // Limpamos pelo código da mesa
+        // Limpamos pelo cÃ³digo da mesa
         const notesKey = `dandora_player_notes_${m.playerEmail}_${table.code}`;
         localStorage.removeItem(notesKey);
     });
 
-    // 2. Remover dados da mesa (membros e anotações do mestre)
+    // 2. Remover dados da mesa (membros e anotaÃ§Ãµes do mestre)
     localStorage.removeItem(membersKey);
     localStorage.removeItem(`dandora_notes_${tableId}`);
 
@@ -930,18 +930,18 @@ function deleteTable(tableId) {
     localStorage.setItem(tablesKey, JSON.stringify(userTables));
 
     renderMasterTables();
-    alert(`A mesa "${table.name}" foi excluída com sucesso.`);
+    alert(`A mesa "${table.name}" foi excluÃ­da com sucesso.`);
 }
 
 /**
- * MESTRE: Expulsa um jogador específico da mesa atual.
+ * MESTRE: Expulsa um jogador especÃ­fico da mesa atual.
  * Remove o jogador da lista de membros e da lista de mesas do jogador.
  */
 function kickPlayer(playerEmail, playerName) {
     if (!currentUser || currentUser.role !== 'master' || !currentTableId) return;
 
     const confirmed = confirm(
-        `🚫 EXPULSAR JOGADOR\n\n"${playerName}"\n\nEste jogador será removido desta mesa. Ele precisará de um novo convite para entrar novamente.\n\nDeseja continuar?`
+        `ðŸš« EXPULSAR JOGADOR\n\n"${playerName}"\n\nEste jogador serÃ¡ removido desta mesa. Ele precisarÃ¡ de um novo convite para entrar novamente.\n\nDeseja continuar?`
     );
     if (!confirmed) return;
 
@@ -972,7 +972,7 @@ function kickPlayer(playerEmail, playerName) {
 }
 
 /**
- * JOGADOR: Sai de uma mesa específica.
+ * JOGADOR: Sai de uma mesa especÃ­fica.
  * Remove apenas a entrada desse jogador; a mesa continua existindo para os outros.
  */
 function leaveTable(playerTableId, tableCode, masterEmail, masterTableId) {
@@ -984,7 +984,7 @@ function leaveTable(playerTableId, tableCode, masterEmail, masterTableId) {
     if (!table) return;
 
     const confirmed = confirm(
-        `🚪 SAIR DA MESA\n\n"${table.name}"\n\nVocê sairá desta mesa. Para voltar, precisará de um novo convite do Mestre.\n\nDeseja continuar?`
+        `ðŸšª SAIR DA MESA\n\n"${table.name}"\n\nVocÃª sairÃ¡ desta mesa. Para voltar, precisarÃ¡ de um novo convite do Mestre.\n\nDeseja continuar?`
     );
     if (!confirmed) return;
 
@@ -1007,11 +1007,11 @@ function leaveTable(playerTableId, tableCode, masterEmail, masterTableId) {
         localStorage.setItem(masterTablesKey, JSON.stringify(masterTables));
     }
 
-    // 4. Remover anotações pessoais do jogador nessa mesa
+    // 4. Remover anotaÃ§Ãµes pessoais do jogador nessa mesa
     localStorage.removeItem(`dandora_player_notes_${playerTableId}_${currentUser.email}`);
 
     renderPlayerTables();
-    alert(`Você saiu da mesa "${table.name}" com sucesso.`);
+    alert(`VocÃª saiu da mesa "${table.name}" com sucesso.`);
 }
 
 // Initialize checks on load
@@ -1138,13 +1138,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // FIREBASE SYNC LISTENER
 // ==========================================
 window.addEventListener('dandoraDataSync', () => {
-    // Restaurar currentUser se houver mudan�a externa
+    // Restaurar currentUser se houver mudanï¿½a externa
     const storedUser = sessionStorage.getItem('currentUser');
     if (storedUser) {
         currentUser = JSON.parse(storedUser);
     }
     
-    // Atualiza a interface baseada na tela atual sem recarregar a p�gina
+    // Atualiza a interface baseada na tela atual sem recarregar a pï¿½gina
     if (currentView === 'dashboard-master-view') {
         renderMasterTables();
     } else if (currentView === 'dashboard-player-view') {
@@ -1154,7 +1154,7 @@ window.addEventListener('dandoraDataSync', () => {
         
         const notesKey = `dandora_notes_${currentTableId}`;
         const notesEl = document.getElementById('tm-notes-area');
-        // S� atualiza o texto se o mestre n�o estiver digitando nele no momento
+        // Sï¿½ atualiza o texto se o mestre nï¿½o estiver digitando nele no momento
         if (notesEl && document.activeElement !== notesEl) {
             notesEl.value = localStorage.getItem(notesKey) || '';
         }
@@ -1163,5 +1163,10 @@ window.addEventListener('dandoraDataSync', () => {
         if (typeof renderSessions === 'function') renderSessions();
     } else if (currentView === 'table-player-view') {
         if (typeof renderPlayerCompanions === 'function') renderPlayerCompanions();
+    }
+});
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'DANDORA_SHEET_UPDATED') {
+        if (typeof syncPlayerSheetToTable === 'function') syncPlayerSheetToTable(event.data.data);
     }
 });

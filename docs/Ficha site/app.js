@@ -1,6 +1,6 @@
-/* ============================================================
-   DANDORA RPG — Ficha de Personagem — Lógica
-   Persistência LocalStorage + Exportar/Importar JSON
+﻿/* ============================================================
+   DANDORA RPG â€” Ficha de Personagem â€” LÃ³gica
+   PersistÃªncia LocalStorage + Exportar/Importar JSON
    ============================================================ */
 
 (function () {
@@ -10,7 +10,7 @@
   let saveTimeout = null;
 
   /* ==========================================================
-     INICIALIZAÇÃO
+     INICIALIZAÃ‡ÃƒO
   ========================================================== */
   document.addEventListener('DOMContentLoaded', () => {
     loadData();
@@ -22,7 +22,7 @@
   });
 
   /* ==========================================================
-     AUTO-SAVE — Debounced (500ms)
+     AUTO-SAVE â€” Debounced (500ms)
   ========================================================== */
   function bindAutoSave() {
     const container = document.querySelector('.container');
@@ -87,17 +87,17 @@
       // Armadura
       armadura: val('armadura-escudos'),
 
-      // Perícias
+      // PerÃ­cias
       pericias: collectSkills(),
 
       // Ataques
       ataques: collectAttacks(),
 
-      // Inventário
+      // InventÃ¡rio
       container_type: val('container-type'),
       itens: collectItems(),
 
-      // Anotações
+      // AnotaÃ§Ãµes
       anotacoes: val('anotacoes'),
 
       // Magias header
@@ -111,7 +111,7 @@
       // Habilidades
       habilidades: collectHabilidades(),
 
-      // Histórico e Favoritos
+      // HistÃ³rico e Favoritos
       history: window.rollHistory || [],
       customFavorites: window.customFavorites || []
     };
@@ -207,7 +207,7 @@
   function getPortraitData() {
     const img = document.getElementById('portrait-img');
     if (img && img.src && img.style.display !== 'none' && !img.src.endsWith('/')) {
-      // Verifica se é um data URL real (não vazio)
+      // Verifica se Ã© um data URL real (nÃ£o vazio)
       if (img.src.startsWith('data:')) return img.src;
     }
     return '';
@@ -220,10 +220,13 @@
     try {
       const data = collectData();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'DANDORA_SHEET_UPDATED', data: data }, '*');
+      }
     } catch (e) {
       console.error('Erro ao salvar:', e);
       if (e.name === 'QuotaExceededError') {
-        showToast('⚠ Armazenamento cheio! Tente reduzir a imagem.');
+        showToast('âš  Armazenamento cheio! Tente reduzir a imagem.');
       }
     }
   }
@@ -283,7 +286,7 @@
     // Armadura
     setVal('armadura-escudos', data.armadura);
 
-    // Perícias
+    // PerÃ­cias
     if (data.pericias) {
       Object.keys(data.pericias).forEach(key => {
         const row = document.querySelector(`.skill-row[data-skill="${key}"]`);
@@ -304,7 +307,7 @@
       }
     }
 
-    // Inventário
+    // InventÃ¡rio
     setVal('container-type', data.container_type);
     if (data.itens && data.itens.length > 0) {
       const list = document.getElementById('items-list');
@@ -314,7 +317,7 @@
       }
     }
 
-    // Anotações
+    // AnotaÃ§Ãµes
     setVal('anotacoes', data.anotacoes);
 
     // Magias header
@@ -340,7 +343,7 @@
       }
     }
 
-    // Histórico e Favoritos
+    // HistÃ³rico e Favoritos
     window.rollHistory = data.history || [];
     window.customFavorites = data.customFavorites || [];
     if(typeof renderFavorites === 'function') renderFavorites();
@@ -396,7 +399,7 @@
   }
 
   /* ==========================================================
-     DADOS D20 — Cálculo e Display
+     DADOS D20 â€” CÃ¡lculo e Display
   ========================================================== */
   function calcDiceConfig(value) {
     const v = parseInt(value) || 0;
@@ -424,11 +427,11 @@
     if (!iconsEl) return;
 
     if (count === 0) {
-      iconsEl.innerHTML = '<span class="dice-none">—</span>';
+      iconsEl.innerHTML = '<span class="dice-none">â€”</span>';
     } else {
       let html = '';
       for (let i = 0; i < count; i++) {
-        html += '<span class="dice-d20">⬡</span>';
+        html += '<span class="dice-d20">â¬¡</span>';
       }
       html += '<span class="dice-count">' + count + 'd20</span>';
       iconsEl.innerHTML = html;
@@ -458,7 +461,7 @@
     reader.onload = function (e) {
       const img = new Image();
       img.onload = function () {
-        // Redimensionar para max 400×400 para economizar espaço
+        // Redimensionar para max 400Ã—400 para economizar espaÃ§o
         const canvas = document.createElement('canvas');
         let w = img.width, h = img.height;
         const maxSize = 400;
@@ -478,7 +481,7 @@
         const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
         setPortrait(dataUrl);
         saveData();
-        showToast('✦ Imagem adicionada!');
+        showToast('âœ¦ Imagem adicionada!');
       };
       img.src = e.target.result;
     };
@@ -527,7 +530,7 @@
   }
 
   /* ==========================================================
-     ATAQUES DINÂMICOS
+     ATAQUES DINÃ‚MICOS
   ========================================================== */
   window.addAttackRow = function (data) {
     const tbody = document.getElementById('attacks-body');
@@ -543,7 +546,7 @@
       <td><input type="text" value="${esc(d.tipo)}" placeholder="Cortante"></td>
       <td><input type="text" value="${esc(d.alcance)}" placeholder="1,5m"></td>
       <td class="col-actions">
-        <button class="btn small danger" onclick="removeAttackRow(this)" title="Remover ataque">✕</button>
+        <button class="btn small danger" onclick="removeAttackRow(this)" title="Remover ataque">âœ•</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -563,7 +566,7 @@
   };
 
   /* ==========================================================
-     MAGIAS DINÂMICAS
+     MAGIAS DINÃ‚MICAS
   ========================================================== */
   window.addSpellCard = function (data) {
     const container = document.getElementById('spells-container');
@@ -573,7 +576,7 @@
     const card = document.createElement('div');
     card.className = 'spell-card';
     card.innerHTML = `
-      <button class="spell-remove" onclick="removeSpellCard(this)" title="Remover magia">✕</button>
+      <button class="spell-remove" onclick="removeSpellCard(this)" title="Remover magia">âœ•</button>
       <div class="spell-top">
         <div>
           <label class="field-label">Nome da Magia / Ritual</label>
@@ -586,8 +589,8 @@
       </div>
       <div class="spell-meta">
         <div>
-          <label class="field-label">Execução</label>
-          <input type="text" value="${esc(d.execucao)}" placeholder="Padrão">
+          <label class="field-label">ExecuÃ§Ã£o</label>
+          <input type="text" value="${esc(d.execucao)}" placeholder="PadrÃ£o">
         </div>
         <div>
           <label class="field-label">Alcance</label>
@@ -598,8 +601,8 @@
           <input type="text" value="${esc(d.alvo)}" placeholder="1 criatura">
         </div>
         <div>
-          <label class="field-label">Duração</label>
-          <input type="text" value="${esc(d.duracao)}" placeholder="Instantânea">
+          <label class="field-label">DuraÃ§Ã£o</label>
+          <input type="text" value="${esc(d.duracao)}" placeholder="InstantÃ¢nea">
         </div>
         <div>
           <label class="field-label">PA</label>
@@ -607,7 +610,7 @@
         </div>
       </div>
       <div class="spell-resistance">
-        <label class="field-label">Resistência</label>
+        <label class="field-label">ResistÃªncia</label>
         <input type="text" value="${esc(d.resistencia)}" placeholder="Vontade anula">
       </div>
       <div class="spell-effect">
@@ -639,7 +642,7 @@
     const card = document.createElement('div');
     card.className = 'spell-card';
     card.innerHTML = `
-      <button class="spell-remove" onclick="removeHabilidadeCard(this)" title="Remover habilidade">✕</button>
+      <button class="spell-remove" onclick="removeHabilidadeCard(this)" title="Remover habilidade">âœ•</button>
       <div class="spell-top">
         <div style="flex: 2;">
           <label class="field-label">Nome da Habilidade</label>
@@ -655,7 +658,7 @@
         </div>
       </div>
       <div class="spell-desc">
-        <label class="field-label">Descrição</label>
+        <label class="field-label">DescriÃ§Ã£o</label>
         <textarea placeholder="Como funciona essa habilidade?">${esc(d.desc)}</textarea>
       </div>
     `;
@@ -678,7 +681,7 @@
   };
 
   /* ==========================================================
-     INVENTÁRIO — Espaços de Itens (Slots)
+     INVENTÃRIO â€” EspaÃ§os de Itens (Slots)
   ========================================================== */
   window.addItem = function (data) {
     const list = document.getElementById('items-list');
@@ -698,7 +701,7 @@
         <input type="number" class="item-qty" value="${d.quantidade !== undefined ? d.quantidade : 1}" min="1" max="99">
       </div>
       <span class="item-slot-total"></span>
-      <button class="btn small danger item-remove-btn" onclick="removeItem(this)" title="Remover item">✕</button>
+      <button class="btn small danger item-remove-btn" onclick="removeItem(this)" title="Remover item">âœ•</button>
     `;
     list.appendChild(row);
 
@@ -788,7 +791,7 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    showToast('✦ Ficha exportada com sucesso!');
+    showToast('âœ¦ Ficha exportada com sucesso!');
   };
 
   /* ==========================================================
@@ -811,10 +814,10 @@
         updateAllBars();
         updateAllDice();
         updateSlots();
-        showToast('✦ Ficha importada com sucesso!');
+        showToast('âœ¦ Ficha importada com sucesso!');
       } catch (err) {
-        showToast('⚠ Erro ao ler o arquivo JSON');
-        console.error('Erro na importação:', err);
+        showToast('âš  Erro ao ler o arquivo JSON');
+        console.error('Erro na importaÃ§Ã£o:', err);
       }
     };
     reader.readAsText(file);
@@ -861,7 +864,7 @@
       for (let i = 0; i < 5; i++) addAttackRow();
     }
 
-    // Resetar inventário
+    // Resetar inventÃ¡rio
     const itemsList = document.getElementById('items-list');
     if (itemsList) itemsList.innerHTML = '';
 
@@ -879,7 +882,7 @@
     updateAllDice();
     updateSlots();
     cancelClear();
-    showToast('✦ Ficha limpa com sucesso!');
+    showToast('âœ¦ Ficha limpa com sucesso!');
   };
 
   /* ==========================================================
@@ -897,16 +900,16 @@
      SISTEMA DE ROLAGEM (BG3 STYLE)
   ========================================================== */
   
-  // Variáveis globais de rolagem
+  // VariÃ¡veis globais de rolagem
   window.rollHistory = [];
-  let pendingSkillData = null; // Guarda os dados da perícia enquanto o modal está aberto
+  let pendingSkillData = null; // Guarda os dados da perÃ­cia enquanto o modal estÃ¡ aberto
 
   // Mapeamento de siglas para IDs
   const attrMap = {
-    'For': { id: 'forca', name: 'Força' },
+    'For': { id: 'forca', name: 'ForÃ§a' },
     'Des': { id: 'destreza', name: 'Destreza' },
-    'Con': { id: 'constituicao', name: 'Constituição' },
-    'Int': { id: 'inteligencia', name: 'Inteligência' },
+    'Con': { id: 'constituicao', name: 'ConstituiÃ§Ã£o' },
+    'Int': { id: 'inteligencia', name: 'InteligÃªncia' },
     'Von': { id: 'vontade', name: 'Vontade' },
     'Car': { id: 'carisma', name: 'Carisma' }
   };
@@ -926,23 +929,23 @@
     let attrText = attrSpan ? attrSpan.textContent.replace('[', '').replace(']', '') : '';
     
     if (attrText === 'For/Des' || attrText === '') {
-      // Perícia dúbia ou sem atributo -> abrir modal
+      // PerÃ­cia dÃºbia ou sem atributo -> abrir modal
       pendingSkillData = { name: skillName, bonus: bonus };
       openAttrSelector(skillName, attrText === 'For/Des' ? ['For', 'Des'] : Object.keys(attrMap));
     } else {
-      // Perícia com atributo claro
+      // PerÃ­cia com atributo claro
       const mapped = attrMap[attrText];
       if (mapped) {
         const attrValue = parseInt(val('attr-' + mapped.id)) || 0;
-        executeRoll(`${skillName} [${mapped.name}]`, attrValue, bonus, `Rolagem de Perícia`);
+        executeRoll(`${skillName} [${mapped.name}]`, attrValue, bonus, `Rolagem de PerÃ­cia`);
       } else {
         // Fallback
-        executeRoll(skillName, 0, bonus, `Rolagem de Perícia`);
+        executeRoll(skillName, 0, bonus, `Rolagem de PerÃ­cia`);
       }
     }
   };
 
-  // --- Modal de Seleção de Atributo ---
+  // --- Modal de SeleÃ§Ã£o de Atributo ---
   function openAttrSelector(skillName, optionsKeys) {
     const overlay = document.getElementById('attr-selector-overlay');
     const title = document.getElementById('attr-selector-title');
@@ -975,10 +978,10 @@
     const { name, bonus } = pendingSkillData;
     
     closeAttrSelector();
-    executeRoll(`${name} [${mapped.name}]`, attrValue, bonus, `Rolagem de Perícia`);
+    executeRoll(`${name} [${mapped.name}]`, attrValue, bonus, `Rolagem de PerÃ­cia`);
   }
 
-  // --- Execução da Rolagem e Animação ---
+  // --- ExecuÃ§Ã£o da Rolagem e AnimaÃ§Ã£o ---
   function executeRoll(title, attrValue, bonus, subtitle) {
     const config = calcDiceConfig(attrValue);
     
@@ -1023,7 +1026,7 @@
     rolls.forEach((r, idx) => {
       const die = document.createElement('div');
       die.className = 'die-3d rolling';
-      die.textContent = r; // Número final que vai aparecer quando parar
+      die.textContent = r; // NÃºmero final que vai aparecer quando parar
       arena.appendChild(die);
       diceElements.push(die);
     });
@@ -1031,7 +1034,7 @@
     // Mostrar overlay
     overlay.classList.add('active');
     
-    // Parar animação após 1.5s
+    // Parar animaÃ§Ã£o apÃ³s 1.5s
     setTimeout(() => {
       diceElements.forEach((die, idx) => {
         die.classList.remove('rolling');
@@ -1050,12 +1053,12 @@
       document.getElementById('roller-final-value').textContent = finalResult;
       
       let calcStr = `Dado: ${d20Result}`;
-      if (bonus !== 0) calcStr += ` ${bonus > 0 ? '+' : ''}${bonus} (Bônus)`;
+      if (bonus !== 0) calcStr += ` ${bonus > 0 ? '+' : ''}${bonus} (BÃ´nus)`;
       document.getElementById('roller-calculation').textContent = calcStr;
       
       resultPanel.classList.add('show');
       
-      // Salvar histórico
+      // Salvar histÃ³rico
       addRollToHistory({
         date: new Date().toISOString(),
         title: title,
@@ -1072,7 +1075,7 @@
     document.getElementById('roller-overlay').classList.remove('active');
   };
 
-  // --- Histórico de Rolagem ---
+  // --- HistÃ³rico de Rolagem ---
   function addRollToHistory(rollData) {
     window.rollHistory.unshift(rollData);
     if (window.rollHistory.length > 50) {
@@ -1106,7 +1109,7 @@
         </div>
         <div class="history-item-title">${esc(r.title)}</div>
         <div class="history-item-calc">
-          🎲 ${diceStr} ${r.bonus !== 0 ? `| Bônus: ${r.bonus > 0 ? '+' : ''}${r.bonus}` : ''}
+          ðŸŽ² ${diceStr} ${r.bonus !== 0 ? `| BÃ´nus: ${r.bonus > 0 ? '+' : ''}${r.bonus}` : ''}
         </div>
         <div class="history-item-result">${r.finalResult}</div>
       `;
@@ -1120,7 +1123,7 @@
   };
 
   window.clearHistory = function() {
-    if(confirm('Tem certeza que deseja apagar o histórico de rolagens?')) {
+    if(confirm('Tem certeza que deseja apagar o histÃ³rico de rolagens?')) {
       window.rollHistory = [];
       renderHistory();
       saveData();
@@ -1277,7 +1280,7 @@
       item.innerHTML = `
         <span class="fav-name" onclick="rollFavorite(${i})">${esc(fav.name)}</span>
         <span class="fav-formula" onclick="rollFavorite(${i})">${esc(fav.formula)}</span>
-        <button class="fav-del-btn" onclick="deleteFavorite(${i})">✕</button>
+        <button class="fav-del-btn" onclick="deleteFavorite(${i})">âœ•</button>
       `;
       list.appendChild(item);
     });
@@ -1338,7 +1341,7 @@
         }
       }
       if(bonus !== 0) {
-        calcStr += `Bônus: ${bonus > 0 ? '+'+bonus : bonus}`;
+        calcStr += `BÃ´nus: ${bonus > 0 ? '+'+bonus : bonus}`;
       } else {
         calcStr = calcStr.replace(/ \| $/, '');
       }
