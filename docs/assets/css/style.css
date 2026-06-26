@@ -1784,3 +1784,41 @@ ul {
     opacity: 1;
     transform: scale(1);
 }
+
+/* ==========================================
+   MISSION & SESSION MANAGER STYLES
+   ========================================== */
+.missions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.sessions-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    padding-left: 1rem;
+    border-left: 2px dashed rgba(212,175,55,0.2);
+}
+
+.session-scroll {
+    transition: all 0.3s ease;
+}
+
+.session-scroll:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.6) !important;
+}
+
+.session-completed {
+    opacity: 0.7;
+    filter: grayscale(40%);
+}
+
+.session-completed:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+}

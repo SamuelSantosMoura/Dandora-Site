@@ -438,6 +438,10 @@
                     <li class="tm-tab active" onclick="switchTableTab('tm-players')"><i class="fa-solid fa-users"></i> Jogadores</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-notes')"><i class="fa-solid fa-scroll"></i> Anotações</li>
                     
+                    <div style="margin: 1.5rem 0 0.5rem 1.5rem; font-family: var(--font-epic); font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.1em; text-transform: uppercase;">Planejamento</div>
+                    <li class="tm-tab" onclick="switchTableTab('tm-missions')"><i class="fa-solid fa-map-location-dot"></i> Missões & One-Shots</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-sessions')"><i class="fa-solid fa-calendar-days"></i> Sessões</li>
+                    
                     <div style="margin: 1.5rem 0 0.5rem 1.5rem; font-family: var(--font-epic); font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.1em; text-transform: uppercase;">Ferramentas do Mestre</div>
                     <li class="tm-tab" onclick="switchTableTab('tm-npc')"><i class="fa-solid fa-id-card"></i> Gerador de NPC</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-iniciativa')"><i class="fa-solid fa-bolt"></i> Iniciativa</li>
@@ -466,6 +470,34 @@
                     <h2>Anotações da Campanha</h2>
                     <p style="color: var(--text-muted); margin-bottom: 1rem;">Tudo o que você escrever aqui será salvo automaticamente.</p>
                     <textarea id="tm-notes-area" style="width: 100%; height: 400px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6;" oninput="saveTableNotes()"></textarea>
+                </div>
+
+                <!-- TAB: MISSIONS -->
+                <div id="tm-missions" class="tm-content hidden">
+                    <div class="dashboard-header" style="margin-bottom:1.8rem;">
+                        <div>
+                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">CARTAS DE MISSÃO</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Crie e gerencie missões e one-shots para sua campanha</p>
+                        </div>
+                        <button class="btn-epic" onclick="openMissionGenerator()"><i class="fa-solid fa-plus"></i> Nova Missão</button>
+                    </div>
+                    <div class="missions-grid" id="tm-missions-list">
+                        <!-- Missões serão injetadas aqui -->
+                    </div>
+                </div>
+
+                <!-- TAB: SESSIONS -->
+                <div id="tm-sessions" class="tm-content hidden">
+                    <div class="dashboard-header" style="margin-bottom:1.8rem;">
+                        <div>
+                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">DIÁRIO DE CAMPANHA</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Planeje e organize os eventos de cada sessão</p>
+                        </div>
+                        <button class="btn-epic" onclick="createNewSession()"><i class="fa-solid fa-scroll"></i> Nova Sessão</button>
+                    </div>
+                    <div class="sessions-timeline" id="tm-sessions-list">
+                        <!-- Sessões serão injetadas aqui -->
+                    </div>
                 </div>
 
                 <!-- TAB: NPC GENERATOR -->
@@ -856,6 +888,122 @@ Altura     Dano
         </form>
     </dialog>
 
+    <!-- MISSION GENERATOR MODAL -->
+    <dialog id="mission-modal" class="glass-panel" style="width:90%; max-width:800px; padding:2rem; background:var(--bg-dark); border:1px solid var(--gold-dim); border-radius:12px; color:var(--text-light); top:50%; left:50%; transform:translate(-50%, -50%); position:fixed; z-index:1000; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(212,175,55,0.2); padding-bottom:1rem; margin-bottom:1.5rem;">
+            <h2 id="mission-modal-title" style="margin:0; font-family:'Cinzel',serif; color:var(--gold-primary);">Criar Missão</h2>
+            <div>
+                <button class="btn-outline" onclick="generateRandomMission()" title="Preencher com ideia aleatória" style="margin-right:10px;"><i class="fa-solid fa-dice"></i> Gerar Aleatória</button>
+                <button class="btn-outline" onclick="closeMissionModal()" style="border-color:#e07060; color:#e07060;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+        <form id="mission-form" onsubmit="saveMission(event)" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+            <div style="grid-column: 1 / -1;">
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Título da Missão</label>
+                <input type="text" id="ms-title" required style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--gold-dim); color:white; border-radius:4px; font-family:'Cinzel',serif; font-size:1.1rem;">
+            </div>
+            <div>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Objetivo Principal</label>
+                <input type="text" id="ms-objective" required style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
+            </div>
+            <div>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Localização</label>
+                <input type="text" id="ms-location" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
+            </div>
+            <div style="grid-column: 1 / -1;">
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Descrição / Ganchos</label>
+                <textarea id="ms-description" rows="4" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px; resize:vertical;"></textarea>
+            </div>
+            <div>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">NPCs Envolvidos</label>
+                <textarea id="ms-npcs" rows="3" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px; resize:vertical;"></textarea>
+            </div>
+            <div>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Reviravoltas / Dificuldades</label>
+                <textarea id="ms-twists" rows="3" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px; resize:vertical;"></textarea>
+            </div>
+            <div>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Recompensas</label>
+                <input type="text" id="ms-rewards" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
+            </div>
+            <div>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Dificuldade</label>
+                <select id="ms-difficulty" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
+                    <option value="Fácil">Fácil (Iniciantes)</option>
+                    <option value="Média">Média (Aventureiros)</option>
+                    <option value="Difícil">Difícil (Veteranos)</option>
+                    <option value="Mortal">Mortal (Lendas)</option>
+                </select>
+            </div>
+            <div style="grid-column: 1 / -1; display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
+                <button type="button" class="btn-outline" onclick="closeMissionModal()">Cancelar</button>
+                <button type="submit" class="btn-epic">Salvar Missão</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- SESSION MODAL -->
+    <dialog id="session-modal" class="glass-panel" style="width:90%; max-width:800px; padding:2rem; background:var(--bg-dark); border:1px solid var(--gold-dim); border-radius:12px; color:var(--text-light); top:50%; left:50%; transform:translate(-50%, -50%); position:fixed; z-index:1000; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(212,175,55,0.2); padding-bottom:1rem; margin-bottom:1.5rem;">
+            <h2 id="session-modal-title" style="margin:0; font-family:'Cinzel',serif; color:var(--gold-primary);">Planejar Sessão</h2>
+            <button type="button" class="btn-outline" onclick="closeSessionModal()" style="border-color:#e07060; color:#e07060;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="session-form" onsubmit="saveSession(event)" style="display:flex; flex-direction:column; gap:1.2rem;">
+            <div style="display:flex; gap:1rem;">
+                <div style="flex:2;">
+                    <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Título da Sessão</label>
+                    <input type="text" id="ss-title" required style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--gold-dim); color:white; border-radius:4px; font-family:'Cinzel',serif; font-size:1.1rem;">
+                </div>
+                <div style="flex:1;">
+                    <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Status</label>
+                    <select id="ss-status" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
+                        <option value="Planejada">Planejada</option>
+                        <option value="Em andamento">Em andamento</option>
+                        <option value="Concluída">Concluída</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Resumo / Objetivo Principal</label>
+                <textarea id="ss-summary" rows="3" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px; resize:vertical;"></textarea>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div>
+                    <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Eventos e Cenas Importantes</label>
+                    <textarea id="ss-events" rows="4" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px; resize:vertical;"></textarea>
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Combates / Encontros</label>
+                    <textarea id="ss-combats" rows="4" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px; resize:vertical;"></textarea>
+                </div>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div>
+                    <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">NPCs Presentes</label>
+                    <input type="text" id="ss-npcs" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Locais Visitados</label>
+                    <input type="text" id="ss-locations" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px;">
+                </div>
+            </div>
+
+            <div>
+                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Anotações Livres</label>
+                <textarea id="ss-notes" rows="4" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; border-radius:4px; resize:vertical;"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:0.5rem;">
+                <button type="button" class="btn-outline" onclick="closeSessionModal()">Cancelar</button>
+                <button type="submit" class="btn-epic">Salvar Sessão</button>
+            </div>
+        </form>
+    </dialog>
+
+
     <script src="assets/js/app.js?v=2"></script>
     <script src="assets/js/pdf-viewer.js?v=2"></script>
     <script src="assets/js/npc.js?v=2"></script>
@@ -864,5 +1012,7 @@ Altura     Dano
     <script src="assets/js/itens.js?v=2"></script>
     <script src="assets/js/monstros.js?v=2"></script>
     <script src="assets/js/dados.js?v=1"></script>
+    <script src="assets/js/missoes.js?v=1"></script>
+    <script src="assets/js/sessoes.js?v=1"></script>
 </body>
 </html>
