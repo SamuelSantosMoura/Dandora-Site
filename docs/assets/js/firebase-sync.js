@@ -90,7 +90,37 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
                 const localValue = localStorage.getItem(originalKey);
                 
                 if (localValue !== cloudValue) {
-                    originalSetItem.call(localStorage, originalKey, cloudValue);
+                    let finalValue = cloudValue;
+                    
+                    // Prevenir que o celular apague os usuários do PC (Race Condition de Arrays)
+                    try {
+                        const localParsed = JSON.parse(localValue);
+                        const cloudParsed = JSON.parse(cloudValue);
+                        
+                        if (Array.isArray(localParsed) && Array.isArray(cloudParsed)) {
+                            // Se a nuvem tem menos itens que o local, e o local não está vazio
+                            // Isso geralmente ocorre quando um dispositivo vazio sobrescreve a nuvem
+                            if (cloudParsed.length < localParsed.length) {
+                                // Fundir os dois arrays mantendo os itens locais que sumiram
+                                // (Isso é uma fusão simples para evitar perda de dados)
+                                const combined = [...cloudParsed];
+                                localParsed.forEach(localItem => {
+                                    // Compara por string para evitar duplicatas simples
+                                    if (!combined.some(cItem => JSON.stringify(cItem) === JSON.stringify(localItem))) {
+                                        combined.push(localItem);
+                                    }
+                                });
+                                finalValue = JSON.stringify(combined);
+                                
+                                // Como fundimos e o local tem mais dados, precisamos devolver para a nuvem
+                                database.ref('dandora_data/' + safeKey).set(finalValue);
+                            }
+                        }
+                    } catch (e) {
+                        // Não é JSON ou não é array, ignora a fusão
+                    }
+
+                    originalSetItem.call(localStorage, originalKey, finalValue);
                     dataChanged = true;
                 }
             } catch (e) {
