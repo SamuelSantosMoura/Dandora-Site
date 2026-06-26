@@ -754,9 +754,6 @@ function renderActiveSheet() {
     } catch (e) {
         console.error(e);
     }
-}catch (e) {
-        console.error(e);
-    }
 }
 
 function saveActiveSheetToVault() {
