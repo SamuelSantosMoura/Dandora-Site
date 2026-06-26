@@ -1,4 +1,4 @@
-﻿// State Management
+// State Management
 let currentUser = null; // null | { name: string, role: 'master' | 'player', email: string }
 
 // ==========================================
@@ -1129,7 +1129,7 @@ window.addEventListener('dandoraDataSync', () => {
     } else if (currentView === 'table-manager-view') {
         renderTablePlayers();
         
-        const notesKey = \dandora_notes_\ + currentTableId;
+        const notesKey = `dandora_notes_${currentTableId}`;
         const notesEl = document.getElementById('tm-notes-area');
         // Só atualiza o texto se o mestre não estiver digitando nele no momento
         if (notesEl && document.activeElement !== notesEl) {
