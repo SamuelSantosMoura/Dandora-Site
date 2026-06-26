@@ -14,15 +14,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     
     <!-- PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 
     <!-- Site Icon -->
-    <link rel="icon" href="img/dandora-icon.jpg" type="image/jpeg">
+    <link rel="icon" href="assets/images/dandora-icon.jpg" type="image/jpeg">
 </head>
 <body>
     
@@ -37,7 +37,7 @@
             <div class="logo" onclick="navigateTo('home-view')">
                 <!-- Símbolo oficial de Dandora -->
                 <!-- Símbolo oficial de Dandora (Imagem) -->
-                <img src="img/dandora-icon.jpg" alt="Logo Dandora" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                <img src="assets/images/dandora-icon.jpg" alt="Logo Dandora" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
                 Dandora RPG
             </div>
             <div class="nav-links">
@@ -371,8 +371,8 @@
                         <h3>Dandora - Livro Básico</h3>
                         <p>150 MB - PDF</p>
                         <div class="book-actions">
-                            <button onclick="openPdf('../Dandora - Livro Básico.pdf')" class="btn-outline"><i class="fa-solid fa-eye"></i> Ler</button>
-                            <a href="../Dandora - Livro Básico.pdf" download class="btn-epic"><i class="fa-solid fa-download"></i> Baixar</a>
+                            <button onclick="openPdf('assets/Dandora - Livro Básico.pdf')" class="btn-outline"><i class="fa-solid fa-eye"></i> Ler</button>
+                            <a href="assets/Dandora - Livro Básico.pdf" download class="btn-epic"><i class="fa-solid fa-download"></i> Baixar</a>
                         </div>
                     </div>
                 </div>
@@ -385,8 +385,8 @@
                         <h3>Bestiário de Dandora</h3>
                         <p>95 MB - PDF</p>
                         <div class="book-actions">
-                            <button onclick="openPdf('../Bestiario de Dandora (1).pdf')" class="btn-outline"><i class="fa-solid fa-eye"></i> Ler</button>
-                            <a href="../Bestiario de Dandora (1).pdf" download class="btn-epic"><i class="fa-solid fa-download"></i> Baixar</a>
+                            <button onclick="openPdf('assets/Bestiario de Dandora (1).pdf')" class="btn-outline"><i class="fa-solid fa-eye"></i> Ler</button>
+                            <a href="assets/Bestiario de Dandora (1).pdf" download class="btn-epic"><i class="fa-solid fa-download"></i> Baixar</a>
                         </div>
                     </div>
                 </div>
@@ -827,7 +827,7 @@ Altura     Dano
                 <h3 style="margin:0;"><i class="fa-solid fa-scroll"></i> Edição de Ficha (Visão do Mestre)</h3>
                 <button onclick="closeSheetModal()" style="background:none; border:none; color: var(--text-muted); font-size: 1.5rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <iframe src="../Ficha site/index.html" style="width:100%; height:100%; border:none; flex:1;"></iframe>
+            <iframe src="Ficha site/index.html" style="width:100%; height:100%; border:none; flex:1;"></iframe>
         </div>
     </div>
 
@@ -857,13 +857,13 @@ Altura     Dano
         </form>
     </dialog>
 
-    <script src="js/app.js?v=2"></script>
-    <script src="js/pdf-viewer.js?v=2"></script>
-    <script src="js/npc.js?v=2"></script>
-    <script src="js/eventos.js?v=2"></script>
-    <script src="js/iniciativa.js?v=2"></script>
-    <script src="js/itens.js?v=2"></script>
-    <script src="js/monstros.js?v=2"></script>
-    <script src="js/dados.js?v=1"></script>
+    <script src="assets/js/app.js?v=2"></script>
+    <script src="assets/js/pdf-viewer.js?v=2"></script>
+    <script src="assets/js/npc.js?v=2"></script>
+    <script src="assets/js/eventos.js?v=2"></script>
+    <script src="assets/js/iniciativa.js?v=2"></script>
+    <script src="assets/js/itens.js?v=2"></script>
+    <script src="assets/js/monstros.js?v=2"></script>
+    <script src="assets/js/dados.js?v=1"></script>
 </body>
 </html>
