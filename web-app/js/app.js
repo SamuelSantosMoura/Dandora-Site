@@ -1,0 +1,1053 @@
+// State Management
+let currentUser = null; // null | { name: string, role: 'master' | 'player', email: string }
+
+// ==========================================
+// NAVIGATION & HISTORY
+// ==========================================
+let globalHistory = [];
+let currentView = 'login-view';
+
+function navigateTo(viewId, isBack = false) {
+    if (!isBack && currentView && currentView !== viewId) {
+        globalHistory.push(currentView);
+    }
+    
+    // Hide all views
+    document.querySelectorAll('.view').forEach(view => {
+        view.classList.remove('active');
+    });
+    
+    // Show target view
+    const target = document.getElementById(viewId);
+    if(target) {
+        target.classList.add('active');
+        currentView = viewId;
+    }
+    
+    // Show or hide back button
+    const backBtn = document.getElementById('global-back-btn');
+    if (backBtn) {
+        backBtn.style.display = globalHistory.length > 0 ? 'flex' : 'none';
+    }
+    
+    sessionStorage.setItem('currentView', currentView);
+    sessionStorage.setItem('globalHistory', JSON.stringify(globalHistory));
+    
+    window.scrollTo(0, 0);
+}
+
+function goBack() {
+    if (globalHistory.length > 0) {
+        const prevView = globalHistory.pop();
+        navigateTo(prevView, true);
+    }
+}
+
+// Authentication Tabs
+function switchAuthTab(tab) {
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const tabs = document.querySelectorAll('.tab-btn');
+    
+    tabs.forEach(t => t.classList.remove('active'));
+    
+    if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+        tabs[0].classList.add('active');
+    } else {
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+        tabs[1].classList.add('active');
+    }
+}
+
+// Login Handler
+function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const mode = document.getElementById('login-role').value; // Apenas o modo inicial
+    
+    let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+    
+    const userIndex = usersDB.findIndex(u => u.email === email && u.password === password);
+    
+    if (userIndex !== -1) {
+        // Atualiza último acesso
+        usersDB[userIndex].lastAccess = new Date().toISOString();
+        localStorage.setItem('dandora_users', JSON.stringify(usersDB));
+        
+        loginUser(usersDB[userIndex], mode);
+    } else {
+        alert("Credenciais inválidas. Verifique seus dados ou crie uma nova conta.");
+    }
+}
+
+// Register Handler
+function handleRegister(event) {
+    event.preventDefault();
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const mode = document.getElementById('reg-role').value; // Apenas o modo inicial
+    
+    const usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+    
+    if (usersDB.find(u => u.email === email)) {
+        alert("Este email já está cadastrado no sistema!");
+        return;
+    }
+    
+    const newUser = { 
+        name, 
+        email, 
+        password, 
+        createdAt: new Date().toISOString(),
+        lastAccess: new Date().toISOString()
+    };
+    usersDB.push(newUser);
+    
+    localStorage.setItem('dandora_users', JSON.stringify(usersDB));
+    
+    alert("Conta criada com sucesso! Bem-vindo(a) a Dandora.");
+    loginUser(newUser, mode);
+}
+
+// Forgot Password Flow
+function forgotPassword(event) {
+    event.preventDefault();
+    const email = prompt("Digite o e-mail da sua conta para recuperar a senha:");
+    if (!email) return;
+    
+    let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+    const userIndex = usersDB.findIndex(u => u.email === email);
+    
+    if (userIndex === -1) {
+        alert("Não encontramos nenhuma conta com esse e-mail.");
+        return;
+    }
+    
+    // Simula o envio de e-mail e clique no link
+    alert(`[Simulação de E-mail]\nUm link de redefinição foi enviado para ${email}.\n(Clique em OK para simular que você abriu o link)`);
+    
+    const newPassword = prompt("Insira sua nova senha:");
+    if (newPassword && newPassword.trim().length > 0) {
+        usersDB[userIndex].password = newPassword.trim();
+        localStorage.setItem('dandora_users', JSON.stringify(usersDB));
+        alert("Senha redefinida com sucesso! Você pode fazer login com sua nova senha.");
+        
+        // Se a pessoa estiver logada e alterar a própria senha, desconecta por segurança
+        if (currentUser && currentUser.email === email) {
+            logout();
+        }
+    } else {
+        alert("Operação cancelada.");
+    }
+}
+
+// Login Logic
+function loginUser(userData, initialMode) {
+    currentUser = userData;
+    sessionStorage.setItem('currentUser', JSON.stringify(userData));
+    sessionStorage.setItem('currentMode', initialMode || 'player');
+    
+    // Update Navbar UI
+    document.getElementById('auth-btn').classList.add('hidden');
+    document.getElementById('dashboard-btn').classList.remove('hidden');
+    document.getElementById('profile-btn').classList.remove('hidden');
+    document.getElementById('logout-btn').classList.remove('hidden');
+    
+    updateNavBadge();
+    
+    // Redirect to respective dashboard
+    openDashboard();
+}
+
+// Mode / Profile Management
+function getMode() {
+    return sessionStorage.getItem('currentMode') || 'player';
+}
+
+function updateNavBadge() {
+    const badge = document.getElementById('nav-mode-badge');
+    if (!badge) return;
+    const mode = getMode();
+    if (mode === 'master') {
+        badge.textContent = 'MESTRE';
+        badge.style.background = '#e07060'; // Vermelho para mestre
+        badge.style.color = '#fff';
+    } else {
+        badge.textContent = 'JOGADOR';
+        badge.style.background = 'var(--gold-primary)'; // Dourado
+        badge.style.color = '#000';
+    }
+    badge.style.display = 'block';
+}
+
+function switchMode(newMode) {
+    if (!currentUser) return;
+    sessionStorage.setItem('currentMode', newMode);
+    updateNavBadge();
+    
+    // Atualiza os cards visuais na aba Perfil
+    document.getElementById('mode-card-player').classList.toggle('active', newMode === 'player');
+    document.getElementById('mode-card-master').classList.toggle('active', newMode === 'master');
+    
+    // Se o usuário já estava num dashboard e trocou de modo, redirecionamos para o correto
+    if (currentView === 'dashboard-player-view' || currentView === 'dashboard-master-view' || currentView === 'table-manager-view') {
+        openDashboard();
+    }
+    
+    // Adiciona feedback visual
+    const msg = newMode === 'master' ? 'Trocado para Modo Mestre' : 'Trocado para Modo Jogador';
+    alert(msg);
+}
+
+// Renderizar dados do Perfil
+function renderProfile() {
+    if (!currentUser) return;
+    
+    document.getElementById('prof-name').textContent = currentUser.name;
+    document.getElementById('prof-email').textContent = currentUser.email;
+    
+    if (currentUser.createdAt) {
+        const d = new Date(currentUser.createdAt);
+        document.getElementById('prof-created').textContent = `Conta criada em: ${d.toLocaleDateString()}`;
+    }
+    
+    // Conta estatísticas (local mock)
+    // 1. Quantas mesas (Mestre)
+    const allTables = JSON.parse(localStorage.getItem('dandora_tables')) || [];
+    const myTables = allTables.filter(t => t.masterEmail === currentUser.email);
+    document.getElementById('prof-stat-tables').textContent = myTables.length;
+    
+    // 2. Quantas fichas (Jogador)
+    const playerFichasKey = `dandora_fichas_${currentUser.email}`;
+    const myFichas = JSON.parse(localStorage.getItem(playerFichasKey)) || [];
+    document.getElementById('prof-stat-chars').textContent = myFichas.length;
+    
+    // Setar o card ativo
+    const mode = getMode();
+    document.getElementById('mode-card-player').classList.toggle('active', mode === 'player');
+    document.getElementById('mode-card-master').classList.toggle('active', mode === 'master');
+}
+
+// Interceptamos o navigateTo original caso seja a view de perfil
+const originalNavigateTo = navigateTo;
+navigateTo = function(viewId, isBack = false) {
+    if (viewId === 'profile-view') {
+        renderProfile();
+    }
+    
+    // Controle de Permissões Básicas na UI
+    if (viewId === 'table-manager-view') {
+        if (getMode() !== 'master') {
+            alert('Acesso negado. Apenas o Mestre pode acessar o gerenciamento da mesa.');
+            return;
+        }
+    }
+    
+    originalNavigateTo(viewId, isBack);
+};
+
+// Logout
+function logout() {
+    currentUser = null;
+    sessionStorage.removeItem('currentUser');
+    sessionStorage.removeItem('currentMode');
+    sessionStorage.removeItem('currentTableId');
+    sessionStorage.removeItem('currentTableTab');
+    globalHistory = [];
+    sessionStorage.removeItem('globalHistory');
+    
+    // Update Navbar UI
+    document.getElementById('auth-btn').classList.remove('hidden');
+    document.getElementById('dashboard-btn').classList.add('hidden');
+    document.getElementById('profile-btn').classList.add('hidden');
+    const badge = document.getElementById('nav-mode-badge');
+    if (badge) badge.style.display = 'none';
+    
+    document.getElementById('logout-btn').classList.add('hidden');
+    
+    originalNavigateTo('home-view');
+}
+
+// Open Dashboard
+function openDashboard() {
+    if (!currentUser) {
+        originalNavigateTo('login-view');
+        return;
+    }
+    
+    const mode = getMode();
+    
+    if (mode === 'master') {
+        const masterNameEl = document.getElementById('master-name');
+        if (masterNameEl) masterNameEl.textContent = currentUser.name;
+        renderMasterTables();
+        originalNavigateTo('dashboard-master-view');
+    } else {
+        const playerNameEl = document.getElementById('player-name');
+        if (playerNameEl) playerNameEl.textContent = currentUser.name;
+        renderPlayerTables();
+        originalNavigateTo('dashboard-player-view');
+    }
+}
+
+// Render Master Data
+function renderMasterTables() {
+    const list = document.getElementById('master-tables-list');
+    
+    // Obter mesas do LocalStorage baseadas no email do Mestre
+    const tablesKey = `dandora_tables_${currentUser.email}`;
+    const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+    
+    if (userTables.length === 0) {
+        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Você ainda não possui mesas criadas. Clique em "Criar Nova Mesa" para começar.</p>`;
+        return;
+    }
+    
+    list.innerHTML = userTables.map(t => {
+        const inviteCode = t.code ? t.code : '-----';
+        return `
+        <div class="table-card glass-panel" style="position: relative;">
+            <div style="position: absolute; top: 10px; right: 10px; background: rgba(212,175,55,0.15); border: 1px solid var(--gold-dim); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-family: monospace; letter-spacing: 2px; color: var(--gold-primary);">
+                <i class="fa-solid fa-key"></i> ${inviteCode}
+            </div>
+            <h3>${t.name}</h3>
+            <p><i class="fa-solid fa-users"></i> ${t.players} Jogadores ativos</p>
+            <div class="tags">
+                ${t.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+            <div style="display:flex; gap: 8px; margin-top: 0.5rem;">
+                <button class="btn-outline" style="flex:1;" onclick="openTableManager(${t.id})">Acessar Painel</button>
+                <button class="btn-outline" style="border-color:#e07060; color:#e07060; padding: 0.5rem 0.8rem; flex-shrink:0;" onclick="deleteTable(${t.id})" title="Excluir mesa">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+// Função auxiliar para gerar código de 5 caracteres
+function generateInviteCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 5; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+}
+
+// Criar Nova Mesa (LocalStorage)
+function createNewTable() {
+    const tableName = prompt("Qual será o nome da nova mesa?");
+    if (tableName) {
+        const tablesKey = `dandora_tables_${currentUser.email}`;
+        const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+        
+        const inviteCode = generateInviteCode();
+        const newTableId = userTables.length + 1;
+        
+        userTables.push({
+            id: newTableId,
+            name: tableName,
+            code: inviteCode,
+            players: 0,
+            tags: ["Nova Campanha"]
+        });
+        
+        localStorage.setItem(tablesKey, JSON.stringify(userTables));
+        
+        // Adicionar ao registro global (para os jogadores encontrarem)
+        let globalTables = JSON.parse(localStorage.getItem('dandora_global_tables')) || [];
+        globalTables.push({
+            code: inviteCode,
+            masterEmail: currentUser.email,
+            masterName: currentUser.name,
+            tableName: tableName,
+            tableId: newTableId
+        });
+        localStorage.setItem('dandora_global_tables', JSON.stringify(globalTables));
+        
+        renderMasterTables();
+    }
+}
+
+// ==========================================
+// TABLE MANAGER LOGIC
+// ==========================================
+let currentTableId = null;
+
+function openTableManager(tableId) {
+    currentTableId = tableId;
+    sessionStorage.setItem('currentTableId', tableId);
+    const tablesKey = `dandora_tables_${currentUser.email}`;
+    const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+    const table = userTables.find(t => t.id === tableId);
+    
+    if(!table) return;
+    
+    // Update Header
+    document.getElementById('tm-table-name').textContent = table.name;
+    
+    // Load Notes
+    const notesKey = `dandora_notes_${tableId}`;
+    const notes = localStorage.getItem(notesKey) || '';
+    document.getElementById('tm-notes-area').value = notes;
+    
+    // Render Mock Players (We don't have a real DB of players yet)
+    renderTablePlayers();
+    
+    // Reset Tabs
+    switchTableTab('tm-players');
+    
+    // Navigate
+    navigateTo('table-manager-view');
+}
+
+function switchTableTab(tabId) {
+    document.querySelectorAll('.tm-tab').forEach(t => t.classList.remove('active'));
+    
+    if (window.event && window.event.currentTarget) {
+        window.event.currentTarget.classList.add('active');
+    } else {
+        document.querySelectorAll('.tm-tab').forEach(t => {
+            if(t.getAttribute('onclick') && t.getAttribute('onclick').includes(tabId)) t.classList.add('active');
+        });
+    }
+    
+    document.querySelectorAll('.tm-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+    
+    sessionStorage.setItem('currentTableTab', tabId);
+}
+
+function saveTableNotes() {
+    if(!currentTableId) return;
+    const content = document.getElementById('tm-notes-area').value;
+    const notesKey = `dandora_notes_${currentTableId}`;
+    localStorage.setItem(notesKey, content);
+}
+
+function renderTablePlayers() {
+    const list = document.getElementById('tm-players-list');
+    if (!currentTableId) return;
+    
+    const membersKey = `dandora_table_members_${currentTableId}`;
+    const members = JSON.parse(localStorage.getItem(membersKey)) || [];
+    
+    if (members.length === 0) {
+        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1; text-align:center; padding: 2rem;">Ainda não há jogadores nesta mesa.</p>`;
+        return;
+    }
+    
+    list.innerHTML = members.map((m, idx) => {
+        if (m.activeSheet && m.activeSheet.nome) {
+            const p = m.activeSheet;
+            const level = p.nivel ? `Nv. ${p.nivel}` : '';
+            const pClass = p.classe || 'Aventureiro';
+            const portrait = p.portrait ? `<img src="${p.portrait}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-dim); margin-right: 10px;">` : `<i class="fa-solid fa-user-shield" style="font-size: 1.5rem; color: var(--gold-primary); margin-right: 10px;"></i>`;
+            
+            return `
+            <div class="table-card glass-panel" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; flex:1;">
+                    ${portrait}
+                    <div>
+                        <h3 style="margin:0;">${p.nome} <span style="font-size: 0.8rem; color: var(--gold-dim);">${level}</span></h3>
+                        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">${pClass} • Jogador: ${m.playerName}</p>
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-outline" onclick="masterViewPlayerSheet(${idx})"><i class="fa-solid fa-eye"></i> Ver Ficha</button>
+                    <button class="btn-outline" style="border-color:#e07060; color:#e07060;" onclick="kickPlayer('${m.playerEmail}', '${m.playerName}')" title="Expulsar jogador">
+                        <i class="fa-solid fa-user-xmark"></i> Expulsar
+                    </button>
+                </div>
+            </div>
+            `;
+        } else {
+            return `
+            <div class="table-card glass-panel" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; flex:1;">
+                    <i class="fa-solid fa-user-clock" style="font-size: 1.5rem; color: var(--text-muted); margin-right: 10px;"></i>
+                    <div>
+                        <h3 style="margin:0; color: var(--text-muted);">Aguardando Ficha...</h3>
+                        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">Jogador: ${m.playerName}</p>
+                    </div>
+                </div>
+                <button class="btn-outline" style="border-color:#e07060; color:#e07060;" onclick="kickPlayer('${m.playerEmail}', '${m.playerName}')" title="Expulsar jogador">
+                    <i class="fa-solid fa-user-xmark"></i> Expulsar
+                </button>
+            </div>
+            `;
+        }
+    }).join('');
+}
+
+function masterViewPlayerSheet(memberIdx) {
+    if(!currentTableId) return;
+    const membersKey = `dandora_table_members_${currentTableId}`;
+    const members = JSON.parse(localStorage.getItem(membersKey)) || [];
+    const member = members[memberIdx];
+    
+    if(member && member.activeSheet) {
+        const backup = localStorage.getItem('dandora-ficha-v1');
+        if (backup && !sessionStorage.getItem('master_sheet_backup')) {
+            sessionStorage.setItem('master_sheet_backup', backup);
+        }
+        
+        localStorage.setItem('dandora-ficha-v1', JSON.stringify(member.activeSheet));
+        openSheetModal();
+    }
+}
+
+function openSheetModal() {
+    document.getElementById('sheet-modal').classList.remove('hidden');
+}
+
+function closeSheetModal() {
+    document.getElementById('sheet-modal').classList.add('hidden');
+    
+    const backup = sessionStorage.getItem('master_sheet_backup');
+    if (backup) {
+        localStorage.setItem('dandora-ficha-v1', backup);
+        sessionStorage.removeItem('master_sheet_backup');
+    }
+    
+    if (typeof renderActiveSheet === 'function') renderActiveSheet();
+}
+
+// ==========================================
+// PLAYER TABLE LOGIC
+// ==========================================
+let currentPlayerTableId = null;
+
+function joinTable() {
+    if (!currentUser) return;
+    const tableCode = prompt("Digite o CÓDIGO de convite (5 dígitos) da mesa:");
+    if (!tableCode) return;
+    
+    const codeUpper = tableCode.toUpperCase().trim();
+    
+    // Buscar no registro global de mesas
+    const globalTables = JSON.parse(localStorage.getItem('dandora_global_tables')) || [];
+    const foundTable = globalTables.find(t => t.code === codeUpper);
+    
+    if (!foundTable) {
+        alert("Código de mesa inválido ou mesa não encontrada!");
+        return;
+    }
+
+    const tablesKey = `dandora_player_tables_${currentUser.email}`;
+    const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+    
+    // Prevent duplicate joins
+    if(userTables.find(t => t.code === codeUpper)) {
+        alert("Você já está participando desta mesa!");
+        return;
+    }
+
+    userTables.push({
+        id: userTables.length + 1,
+        name: foundTable.tableName,
+        master: foundTable.masterName,
+        code: codeUpper,
+        masterEmail: foundTable.masterEmail,
+        masterTableId: foundTable.tableId
+    });
+    
+    localStorage.setItem(tablesKey, JSON.stringify(userTables));
+    
+    // Adicionar jogador à lista global da mesa do Mestre
+    const membersKey = `dandora_table_members_${foundTable.tableId}`;
+    let members = JSON.parse(localStorage.getItem(membersKey)) || [];
+    members.push({
+        playerEmail: currentUser.email,
+        playerName: currentUser.name,
+        activeSheet: null
+    });
+    localStorage.setItem(membersKey, JSON.stringify(members));
+
+    // Incrementar contagem de jogadores na mesa do Mestre
+    const masterTablesKey = `dandora_tables_${foundTable.masterEmail}`;
+    let masterTables = JSON.parse(localStorage.getItem(masterTablesKey)) || [];
+    let mTable = masterTables.find(t => t.id === foundTable.tableId);
+    if(mTable) {
+        mTable.players = (mTable.players || 0) + 1;
+        localStorage.setItem(masterTablesKey, JSON.stringify(masterTables));
+    }
+    
+    alert(`Você entrou na mesa: ${foundTable.tableName} (Mestre: ${foundTable.masterName})`);
+    renderPlayerTables();
+}
+
+function renderPlayerTables() {
+    const list = document.getElementById('player-tables-list');
+    if (!list || !currentUser) return;
+    
+    const tablesKey = `dandora_player_tables_${currentUser.email}`;
+    const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+    
+    if (userTables.length === 0) {
+        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Você ainda não participa de nenhuma mesa. Clique em "Entrar em uma Mesa" para começar.</p>`;
+        return;
+    }
+    
+    list.innerHTML = userTables.map(t => `
+        <div class="table-card glass-panel">
+            <h3>${t.name}</h3>
+            <p><i class="fa-solid fa-crown"></i> ${t.master}</p>
+            <div style="display:flex; gap:8px; margin-top:1rem;">
+                <button class="btn-outline" style="flex:1;" onclick="openPlayerTable(${t.id})">Acessar Aventura</button>
+                <button class="btn-outline" style="border-color:#e07060; color:#e07060; padding:0.5rem 0.8rem; flex-shrink:0;" onclick="leaveTable(${t.id}, '${t.code}', '${t.masterEmail}', ${t.masterTableId})" title="Sair da mesa">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function openPlayerTable(tableId) {
+    currentPlayerTableId = tableId;
+    sessionStorage.setItem('currentPlayerTableId', tableId);
+    
+    const tablesKey = `dandora_player_tables_${currentUser.email}`;
+    const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+    const table = userTables.find(t => t.id === tableId);
+    
+    if(!table) return;
+    
+    // Update Header
+    document.getElementById('pt-table-name').textContent = table.name;
+    
+    // Load Notes
+    const notesKey = `dandora_player_notes_${tableId}_${currentUser.email}`;
+    const notes = localStorage.getItem(notesKey) || '';
+    document.getElementById('pt-notes-area').value = notes;
+    
+    // Reset Tabs
+    switchPlayerTab('pt-sheet');
+    
+    // Navigate
+    navigateTo('player-table-view');
+}
+
+function switchPlayerTab(tabId) {
+    document.querySelectorAll('.pt-tab').forEach(t => t.classList.remove('active'));
+    
+    if (window.event && window.event.currentTarget) {
+        window.event.currentTarget.classList.add('active');
+    } else {
+        document.querySelectorAll('.pt-tab').forEach(t => {
+            if(t.getAttribute('onclick') && t.getAttribute('onclick').includes(tabId)) t.classList.add('active');
+        });
+    }
+    
+    document.querySelectorAll('.pt-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+    
+    if (tabId === 'pt-sheet') {
+        if(typeof renderActiveSheet === 'function') renderActiveSheet();
+        if(typeof renderVaultSheets === 'function') renderVaultSheets();
+    }
+    
+    sessionStorage.setItem('currentPlayerTableTab', tabId);
+}
+
+function savePlayerNotes() {
+    if(!currentPlayerTableId || !currentUser) return;
+    const content = document.getElementById('pt-notes-area').value;
+    const notesKey = `dandora_player_notes_${currentPlayerTableId}_${currentUser.email}`;
+    localStorage.setItem(notesKey, content);
+}
+
+// ==========================================
+// CHARACTER VAULT LOGIC
+// ==========================================
+function renderActiveSheet() {
+    const infoContainer = document.getElementById('pt-active-sheet-info');
+    if (!infoContainer) return;
+
+    try {
+        const rawData = localStorage.getItem('dandora-ficha-v1');
+        const data = rawData ? JSON.parse(rawData) : null;
+        
+        // Enviar cópia atualizada da ficha para o Mestre da Mesa
+        if (currentPlayerTableId && currentUser) {
+            const playerTablesKey = `dandora_player_tables_${currentUser.email}`;
+            const playerTables = JSON.parse(localStorage.getItem(playerTablesKey)) || [];
+            const pTable = playerTables.find(t => t.id === currentPlayerTableId);
+            
+            if (pTable && pTable.masterTableId) {
+                const membersKey = `dandora_table_members_${pTable.masterTableId}`;
+                let members = JSON.parse(localStorage.getItem(membersKey)) || [];
+                let member = members.find(m => m.playerEmail === currentUser.email);
+                if (member) {
+                    member.activeSheet = data;
+                    localStorage.setItem(membersKey, JSON.stringify(members));
+                }
+            }
+        }
+        
+        if (data && data.nome) {
+            const nivel = data.nivel ? `Nv. ${data.nivel}` : '';
+            const classe = data.classe || 'Aventureiro';
+            const portrait = data.portrait ? `<img src="${data.portrait}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid var(--gold-dim);">` : `<i class="fa-solid fa-user-shield" style="font-size: 2.5rem; color: var(--gold-primary);"></i>`;
+            
+            infoContainer.innerHTML = `
+                ${portrait}
+                <div>
+                    <h3 style="margin:0;">${data.nome} <span style="font-size: 0.8rem; color: var(--gold-dim);">${nivel}</span></h3>
+                    <p style="margin:0; color: var(--text-muted);">${classe}</p>
+                </div>
+            `;
+        } else {
+            infoContainer.innerHTML = `
+                <i class="fa-solid fa-file-circle-question" style="font-size: 2.5rem; color: var(--text-muted);"></i>
+                <div>
+                    <h3 style="margin:0; color: var(--text-muted);">Slot Vazio</h3>
+                    <p style="margin:0; color: var(--text-muted);">Nenhuma ficha em uso</p>
+                </div>
+            `;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function saveActiveSheetToVault() {
+    try {
+        const rawData = localStorage.getItem('dandora-ficha-v1');
+        if (!rawData) {
+            alert("Não há ficha ativa para salvar.");
+            return;
+        }
+        const data = JSON.parse(rawData);
+        if (!data.nome) {
+            alert("A ficha precisa ter pelo menos um Nome para ser salva.");
+            return;
+        }
+        
+        const vaultKey = `dandora_vault_${currentUser.email}`;
+        let vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+        
+        const saveId = Date.now().toString();
+        data._vaultId = saveId;
+        data._saveDate = new Date().toLocaleString();
+        
+        vault.push(data);
+        localStorage.setItem(vaultKey, JSON.stringify(vault));
+        
+        alert(`A ficha de ${data.nome} foi salva no cofre com sucesso!`);
+        renderVaultSheets();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function renderVaultSheets() {
+    const list = document.getElementById('pt-vault-list');
+    if (!list || !currentUser) return;
+    
+    const vaultKey = `dandora_vault_${currentUser.email}`;
+    const vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+    
+    if (vault.length === 0) {
+        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Seu cofre está vazio. Salve a ficha atual para guardá-la aqui.</p>`;
+        return;
+    }
+    
+    list.innerHTML = vault.map(sheet => {
+        const classe = sheet.classe || 'Aventureiro';
+        const nivel = sheet.nivel ? `Nv. ${sheet.nivel}` : '';
+        const portrait = sheet.portrait ? `<img src="${sheet.portrait}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-dim); margin-right: 10px;">` : `<i class="fa-solid fa-user" style="font-size: 1.5rem; color: var(--gold-primary); margin-right: 10px;"></i>`;
+        
+        return `
+        <div class="table-card glass-panel" style="position: relative;">
+            <div style="display:flex; align-items:center; margin-bottom: 10px;">
+                ${portrait}
+                <div>
+                    <h3 style="font-size:1.1rem; margin:0;">${sheet.nome} <span style="font-size:0.8rem; color:var(--gold-dim);">${nivel}</span></h3>
+                    <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">${classe}</p>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Salvo em: ${sheet._saveDate}</p>
+            
+            <div style="display:flex; gap: 5px;">
+                <button class="btn-epic w-100" onclick="loadSheetFromVault('${sheet._vaultId}')"><i class="fa-solid fa-upload"></i> Carregar</button>
+                <button class="btn-outline" style="border-color: #f57878; color: #f57878; padding: 10px;" onclick="deleteSheetFromVault('${sheet._vaultId}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+function loadSheetFromVault(id) {
+    if(!confirm("Atenção: Carregar essa ficha vai substituir a sua 'Ficha Ativa'. Você salvou o progresso atual no cofre?")) return;
+    
+    const vaultKey = `dandora_vault_${currentUser.email}`;
+    const vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+    const sheet = vault.find(s => s._vaultId === id);
+    
+    if (sheet) {
+        localStorage.setItem('dandora-ficha-v1', JSON.stringify(sheet));
+        renderActiveSheet();
+        alert(`A ficha de ${sheet.nome} foi carregada e está ativa.`);
+    }
+}
+
+function deleteSheetFromVault(id) {
+    if(!confirm("Tem certeza que deseja excluir essa ficha do seu cofre permanentemente?")) return;
+    
+    const vaultKey = `dandora_vault_${currentUser.email}`;
+    let vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+    vault = vault.filter(s => s._vaultId !== id);
+    
+    localStorage.setItem(vaultKey, JSON.stringify(vault));
+    renderVaultSheets();
+}
+
+function createNewBlankSheet() {
+    if(!confirm("Isso limpará sua Ficha Ativa atual. Se não a salvou no cofre, ela será perdida! Continuar?")) return;
+    localStorage.removeItem('dandora-ficha-v1');
+    renderActiveSheet();
+    openSheetModal();
+}
+
+
+
+// ==========================================
+// TABLE MANAGEMENT ACTIONS
+// ==========================================
+
+/**
+ * MESTRE: Exclui a mesa completamente.
+ * Remove a mesa do registro do mestre, do registro global,
+ * e remove a referência da mesa na lista de todos os jogadores membros.
+ */
+function deleteTable(tableId) {
+    if (!currentUser || currentUser.role !== 'master') return;
+
+    const tablesKey = `dandora_tables_${currentUser.email}`;
+    let userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+    const table = userTables.find(t => t.id === tableId);
+    if (!table) return;
+
+    const confirmed = confirm(
+        `⚠️ EXCLUIR MESA\n\n"${table.name}"\n\nIsso removerá a mesa para TODOS os jogadores que estão nela. Esta ação não pode ser desfeita!\n\nDeseja continuar?`
+    );
+    if (!confirmed) return;
+
+    // 1. Buscar todos os membros e remover a mesa da lista de cada jogador
+    const membersKey = `dandora_table_members_${tableId}`;
+    const members = JSON.parse(localStorage.getItem(membersKey)) || [];
+
+    members.forEach(m => {
+        const playerTablesKey = `dandora_player_tables_${m.playerEmail}`;
+        let playerTables = JSON.parse(localStorage.getItem(playerTablesKey)) || [];
+        playerTables = playerTables.filter(pt => pt.masterTableId !== tableId);
+        localStorage.setItem(playerTablesKey, JSON.stringify(playerTables));
+
+        // Remover anotações do jogador nessa mesa
+        // (buscamos por masterTableId no player_tables, mas o notesKey usa o id local do jogador)
+        // Limpamos pelo código da mesa
+        const notesKey = `dandora_player_notes_${m.playerEmail}_${table.code}`;
+        localStorage.removeItem(notesKey);
+    });
+
+    // 2. Remover dados da mesa (membros e anotações do mestre)
+    localStorage.removeItem(membersKey);
+    localStorage.removeItem(`dandora_notes_${tableId}`);
+
+    // 3. Remover do registro global de mesas
+    let globalTables = JSON.parse(localStorage.getItem('dandora_global_tables')) || [];
+    globalTables = globalTables.filter(gt => gt.code !== table.code);
+    localStorage.setItem('dandora_global_tables', JSON.stringify(globalTables));
+
+    // 4. Remover da lista de mesas do mestre
+    userTables = userTables.filter(t => t.id !== tableId);
+    localStorage.setItem(tablesKey, JSON.stringify(userTables));
+
+    renderMasterTables();
+    alert(`A mesa "${table.name}" foi excluída com sucesso.`);
+}
+
+/**
+ * MESTRE: Expulsa um jogador específico da mesa atual.
+ * Remove o jogador da lista de membros e da lista de mesas do jogador.
+ */
+function kickPlayer(playerEmail, playerName) {
+    if (!currentUser || currentUser.role !== 'master' || !currentTableId) return;
+
+    const confirmed = confirm(
+        `🚫 EXPULSAR JOGADOR\n\n"${playerName}"\n\nEste jogador será removido desta mesa. Ele precisará de um novo convite para entrar novamente.\n\nDeseja continuar?`
+    );
+    if (!confirmed) return;
+
+    // 1. Remover da lista de membros da mesa
+    const membersKey = `dandora_table_members_${currentTableId}`;
+    let members = JSON.parse(localStorage.getItem(membersKey)) || [];
+    const kicked = members.find(m => m.playerEmail === playerEmail);
+    members = members.filter(m => m.playerEmail !== playerEmail);
+    localStorage.setItem(membersKey, JSON.stringify(members));
+
+    // 2. Remover a mesa da lista do jogador
+    const playerTablesKey = `dandora_player_tables_${playerEmail}`;
+    let playerTables = JSON.parse(localStorage.getItem(playerTablesKey)) || [];
+    playerTables = playerTables.filter(pt => pt.masterTableId !== currentTableId);
+    localStorage.setItem(playerTablesKey, JSON.stringify(playerTables));
+
+    // 3. Decrementar contador de jogadores na mesa do mestre
+    const masterTablesKey = `dandora_tables_${currentUser.email}`;
+    let masterTables = JSON.parse(localStorage.getItem(masterTablesKey)) || [];
+    let mTable = masterTables.find(t => t.id === currentTableId);
+    if (mTable && mTable.players > 0) {
+        mTable.players -= 1;
+        localStorage.setItem(masterTablesKey, JSON.stringify(masterTables));
+    }
+
+    renderTablePlayers();
+    alert(`${playerName} foi expulso da mesa.`);
+}
+
+/**
+ * JOGADOR: Sai de uma mesa específica.
+ * Remove apenas a entrada desse jogador; a mesa continua existindo para os outros.
+ */
+function leaveTable(playerTableId, tableCode, masterEmail, masterTableId) {
+    if (!currentUser || currentUser.role !== 'player') return;
+
+    const tablesKey = `dandora_player_tables_${currentUser.email}`;
+    let userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+    const table = userTables.find(t => t.id === playerTableId);
+    if (!table) return;
+
+    const confirmed = confirm(
+        `🚪 SAIR DA MESA\n\n"${table.name}"\n\nVocê sairá desta mesa. Para voltar, precisará de um novo convite do Mestre.\n\nDeseja continuar?`
+    );
+    if (!confirmed) return;
+
+    // 1. Remover da lista de mesas do jogador
+    userTables = userTables.filter(t => t.id !== playerTableId);
+    localStorage.setItem(tablesKey, JSON.stringify(userTables));
+
+    // 2. Remover da lista de membros da mesa do mestre
+    const membersKey = `dandora_table_members_${masterTableId}`;
+    let members = JSON.parse(localStorage.getItem(membersKey)) || [];
+    members = members.filter(m => m.playerEmail !== currentUser.email);
+    localStorage.setItem(membersKey, JSON.stringify(members));
+
+    // 3. Decrementar contador de jogadores na mesa do mestre
+    const masterTablesKey = `dandora_tables_${masterEmail}`;
+    let masterTables = JSON.parse(localStorage.getItem(masterTablesKey)) || [];
+    let mTable = masterTables.find(t => t.id === masterTableId);
+    if (mTable && mTable.players > 0) {
+        mTable.players -= 1;
+        localStorage.setItem(masterTablesKey, JSON.stringify(masterTables));
+    }
+
+    // 4. Remover anotações pessoais do jogador nessa mesa
+    localStorage.removeItem(`dandora_player_notes_${playerTableId}_${currentUser.email}`);
+
+    renderPlayerTables();
+    alert(`Você saiu da mesa "${table.name}" com sucesso.`);
+}
+
+// Initialize checks on load
+document.addEventListener('DOMContentLoaded', () => {
+    // Restore user
+    const storedUser = sessionStorage.getItem('currentUser');
+    if (storedUser) {
+        currentUser = JSON.parse(storedUser);
+        
+        // Update Navbar UI
+        const authBtn = document.getElementById('auth-btn');
+        if(authBtn) authBtn.classList.add('hidden');
+        const dashBtn = document.getElementById('dashboard-btn');
+        if(dashBtn) dashBtn.classList.remove('hidden');
+        const outBtn = document.getElementById('logout-btn');
+        if(outBtn) outBtn.classList.remove('hidden');
+        
+        if (currentUser.role === 'master') {
+            const mName = document.getElementById('master-name');
+            if(mName) mName.textContent = currentUser.name;
+            renderMasterTables();
+        } else {
+            const pName = document.getElementById('player-name');
+            if(pName) pName.textContent = currentUser.name;
+            renderPlayerTables();
+        }
+    }
+
+    // Restore History
+    const storedHistory = sessionStorage.getItem('globalHistory');
+    if (storedHistory) {
+        globalHistory = JSON.parse(storedHistory);
+    }
+
+    // Restore View
+    const storedView = sessionStorage.getItem('currentView');
+    if (storedView) {
+        if (storedView === 'table-manager-view') {
+            const storedTableId = sessionStorage.getItem('currentTableId');
+            if (storedTableId && currentUser) {
+                currentTableId = parseInt(storedTableId);
+                const tablesKey = `dandora_tables_${currentUser.email}`;
+                const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+                const table = userTables.find(t => t.id === currentTableId);
+                
+                if (table) {
+                    const tableNameEl = document.getElementById('tm-table-name');
+                    if(tableNameEl) tableNameEl.textContent = table.name;
+                    
+                    const notesKey = `dandora_notes_${currentTableId}`;
+                    const notesEl = document.getElementById('tm-notes-area');
+                    if(notesEl) notesEl.value = localStorage.getItem(notesKey) || '';
+                    
+                    renderTablePlayers();
+                    
+                    const storedTab = sessionStorage.getItem('currentTableTab');
+                    if (storedTab) {
+                        switchTableTab(storedTab);
+                    } else {
+                        switchTableTab('tm-players');
+                    }
+                }
+            }
+        } else if (storedView === 'player-table-view') {
+            const storedPlayerTableId = sessionStorage.getItem('currentPlayerTableId');
+            if (storedPlayerTableId && currentUser) {
+                currentPlayerTableId = parseInt(storedPlayerTableId);
+                const tablesKey = `dandora_player_tables_${currentUser.email}`;
+                const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+                const table = userTables.find(t => t.id === currentPlayerTableId);
+                
+                if (table) {
+                    const tableNameEl = document.getElementById('pt-table-name');
+                    if(tableNameEl) tableNameEl.textContent = table.name;
+                    
+                    const notesKey = `dandora_player_notes_${currentPlayerTableId}_${currentUser.email}`;
+                    const notesEl = document.getElementById('pt-notes-area');
+                    if(notesEl) notesEl.value = localStorage.getItem(notesKey) || '';
+                    
+                    const storedTab = sessionStorage.getItem('currentPlayerTableTab');
+                    if (storedTab) {
+                        switchPlayerTab(storedTab);
+                    } else {
+                        switchPlayerTab('pt-sheet');
+                    }
+                }
+            }
+        }
+        // Force navigation without modifying history again
+        const tempHistory = [...globalHistory];
+        navigateTo(storedView, true);
+        globalHistory = tempHistory;
+        sessionStorage.setItem('globalHistory', JSON.stringify(globalHistory));
+    } else {
+        navigateTo('home-view');
+    }
+});

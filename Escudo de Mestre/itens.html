@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gerador de Itens Mágicos Aleatórios para o RPG Dandora — crie armas, armaduras, acessórios e relíquias com propriedades mágicas únicas.">
+  <title>Itens Mágicos — Dandora</title>
+  <link rel="stylesheet" href="Aparencia.css">
+  <link rel="shortcut icon" href="Image/Logo/favicon.ico" type="image/x-icon">
+  <style>
+    /* === ESTILOS ESPECÍFICOS DA PÁGINA DE ITENS === */
+
+    .filtros-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .filtro-grupo label {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold-dark);
+      margin-bottom: 6px;
+    }
+
+    .filtro-grupo select {
+      width: 100%;
+      margin-top: 0;
+    }
+
+    .btn-gerar-item {
+      font-size: 17px;
+      padding: 14px 42px;
+      letter-spacing: 0.14em;
+      display: block;
+      margin: 0 auto 32px;
+      background: linear-gradient(180deg, rgba(201,168,76,0.22) 0%, rgba(201,168,76,0.07) 100%);
+      border: 1px solid rgba(201,168,76,0.7);
+      box-shadow: 0 0 24px rgba(201,168,76,0.18), 0 4px 16px rgba(0,0,0,0.5);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-gerar-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.12) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .btn-gerar-item:hover::before {
+      transform: translateX(100%);
+    }
+
+    .btn-gerar-item:hover {
+      border-color: var(--gold);
+      box-shadow: 0 0 36px rgba(201,168,76,0.35), 0 4px 20px rgba(0,0,0,0.5);
+      transform: translateY(-2px);
+    }
+
+    /* === CARD DO ITEM GERADO === */
+    #item-resultado {
+      display: none;
+      animation: fadeInUp 0.45s ease both;
+    }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .item-icone {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      flex-shrink: 0;
+      box-shadow: 0 0 18px rgba(201,168,76,0.25), 0 4px 12px rgba(0,0,0,0.6);
+    }
+
+    .item-titulo-bloco { flex: 1; min-width: 180px; }
+
+    .item-nome {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      letter-spacing: 0.06em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .item-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .badge {
+      font-family: var(--font-heading);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid;
+    }
+
+    /* Raridade cores */
+    .badge-comum       { background: rgba(120,120,120,0.15); border-color: rgba(120,120,120,0.5); color: #aaa; }
+    .badge-incomum     { background: rgba(70,180,70,0.12); border-color: rgba(70,180,70,0.45); color: #7de87d; }
+    .badge-raro        { background: rgba(60,110,210,0.12); border-color: rgba(60,110,210,0.5); color: #78a4f5; }
+    .badge-muito-raro  { background: rgba(140,60,200,0.12); border-color: rgba(140,60,200,0.5); color: #c07ef5; }
+    .badge-lendario    { background: rgba(201,168,76,0.14); border-color: rgba(201,168,76,0.6); color: var(--gold-bright); }
+    .badge-artefato    { background: rgba(220,60,60,0.12); border-color: rgba(220,60,60,0.5); color: #f57878; }
+
+    /* Tipo badge */
+    .badge-tipo {
+      background: rgba(201,168,76,0.08);
+      border-color: rgba(201,168,76,0.3);
+      color: var(--gold-dark);
+    }
+
+    /* === PROPRIEDADES DO ITEM === */
+    .item-corpo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 640px) {
+      .item-corpo { grid-template-columns: 1fr; }
+    }
+
+    .item-stat {
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(201,168,76,0.18);
+      border-radius: 4px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .item-stat .label {
+      font-family: var(--font-heading);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+    }
+
+    .item-stat .valor {
+      font-family: var(--font-heading);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gold-bright);
+    }
+
+    /* === PROPRIEDADES MÁGICAS === */
+    .propriedades-lista {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .propriedades-lista li {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      font-size: 15px;
+      color: var(--text-main);
+      line-height: 1.7;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .propriedades-lista li:last-child { border-bottom: none; }
+
+    .prop-icone {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* === MALDIÇÃO === */
+    .maldicao-box {
+      background: rgba(180, 30, 30, 0.08);
+      border: 1px solid rgba(180, 30, 30, 0.35);
+      border-left: 4px solid rgba(200, 50, 50, 0.7);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-top: 14px;
+    }
+
+    .maldicao-box .label {
+      color: #e07070;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+
+    .maldicao-box p {
+      color: #f5a0a0;
+      font-size: 15px;
+      margin: 6px 0 0;
+      line-height: 1.7;
+    }
+
+    /* === HISTÓRIA DO ITEM === */
+    .item-historia {
+      font-style: italic;
+      color: var(--text-main);
+      opacity: 0.82;
+      line-height: 1.85;
+      font-size: 15px;
+      padding-top: 4px;
+    }
+
+    /* === BARRA DE QUANTIDADE DE ITENS === */
+    .qty-controles {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .qty-controles label {
+      font-family: var(--font-heading);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold-dark);
+    }
+
+    .qty-controles input[type="number"] {
+      width: 64px;
+      text-align: center;
+      font-size: 16px;
+      padding: 8px;
+    }
+
+    /* === LISTA DE MÚLTIPLOS ITENS === */
+    #lista-itens { margin-top: 10px; }
+
+    .mini-item {
+      background: linear-gradient(135deg, rgba(201,168,76,0.05) 0%, transparent 40%), rgba(13,27,46,0.75);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .mini-item:hover {
+      border-color: rgba(201,168,76,0.6);
+      box-shadow: 0 0 18px rgba(201,168,76,0.1);
+    }
+
+    .mini-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mini-item-nome {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      color: var(--gold-light);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .mini-item-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* === ÍCONE RARIDADE NO MINI-CARD === */
+    .rarity-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px currentColor;
+    }
+
+    /* === ANIMAÇÃO DE SURGIMENTO DA MAGIA === */
+    @keyframes magicReveal {
+      0%   { opacity: 0; transform: scale(0.92) translateY(10px); filter: brightness(2); }
+      60%  { filter: brightness(1.2); }
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: brightness(1); }
+    }
+
+    #item-resultado.revealed {
+      animation: magicReveal 0.55s cubic-bezier(0.22,0.61,0.36,1) both;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Dandora</h1>
+    <p style="text-align:center; font-family:'Cinzel',serif; color:var(--gold-dark); letter-spacing:0.2em; font-size:13px; margin-top:-18px; margin-bottom:28px;">GERADOR DE ITENS MÁGICOS</p>
+
+    <nav class="buttons">
+      <a class="button-link" href="index.html">⚔ Gerar NPC</a>
+      <a class="button-link" href="Escudo.html">📜 Escudo do Mestre</a>
+      <a class="button-link" href="Monstros.html">🐉 Monstros</a>
+      <a class="button-link" href="eventos.html">🎲 Eventos</a>
+      <a class="button-link" href="iniciativa.html">⚡ Iniciativa</a>
+      <a class="button-link" href="itens.html">✨ Itens Mágicos</a>
+    </nav>
+
+    <!-- Filtros -->
+    <div class="box">
+      <h3>⚙ Configurações de Geração</h3>
+      <div class="filtros-grid">
+        <div class="filtro-grupo">
+          <label for="sel-tipo">Tipo de Item</label>
+          <select id="sel-tipo">
+            <option value="aleatorio">🎲 Aleatório</option>
+            <option value="arma">⚔ Arma</option>
+            <option value="armadura">🛡 Armadura</option>
+            <option value="acessorio">💍 Acessório</option>
+            <option value="consumivel">🧪 Consumível</option>
+            <option value="reliquia">✦ Relíquia</option>
+            <option value="cajado">🪄 Cajado / Varinha</option>
+            <option value="escudo">🛡 Escudo</option>
+          </select>
+        </div>
+        <div class="filtro-grupo">
+          <label for="sel-raridade">Raridade</label>
+          <select id="sel-raridade">
+            <option value="aleatorio">🎲 Aleatória</option>
+            <option value="comum">Comum</option>
+            <option value="incomum">Incomum</option>
+            <option value="raro">Raro</option>
+            <option value="muito-raro">Muito Raro</option>
+            <option value="lendario">Lendário</option>
+            <option value="artefato">Artefato</option>
+          </select>
+        </div>
+        <div class="filtro-grupo">
+          <label for="sel-escola">Escola de Magia</label>
+          <select id="sel-escola">
+            <option value="aleatorio">🎲 Aleatória</option>
+            <option value="abjuracao">Abjuração</option>
+            <option value="conjuracao">Conjuração</option>
+            <option value="divinacao">Divinação</option>
+            <option value="encantamento">Encantamento</option>
+            <option value="evocacao">Evocação</option>
+            <option value="ilusao">Ilusão</option>
+            <option value="necromancia">Necromancia</option>
+            <option value="transmutacao">Transmutação</option>
+          </select>
+        </div>
+        <div class="filtro-grupo">
+          <label for="sel-maldicao">Maldição</label>
+          <select id="sel-maldicao">
+            <option value="aleatorio">🎲 Aleatória</option>
+            <option value="nenhuma">Sem maldição</option>
+            <option value="forcada">Com maldição</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quantidade -->
+      <div class="qty-controles">
+        <label for="qty-itens">Quantidade:</label>
+        <input type="number" id="qty-itens" value="1" min="1" max="10">
+      </div>
+
+      <button class="btn-gerar-item" onclick="gerarItens()" id="btn-gerar-item">
+        ✦ Invocar Item Mágico ✦
+      </button>
+    </div>
+
+    <!-- Resultado único -->
+    <div id="item-resultado" class="box"></div>
+
+    <!-- Lista de múltiplos -->
+    <div id="lista-itens"></div>
+
+  </div>
+
+  <script>
+    /* ========================================================
+       BANCO DE DADOS DE ITENS
+    ======================================================== */
+
+    const TIPOS = {
+      arma:      { nome: 'Arma',          icones: ['⚔','🗡','🏹','🪓','🔱','🗺'] },
+      armadura:  { nome: 'Armadura',       icones: ['🛡','🪬','🦺'] },
+      acessorio: { nome: 'Acessório',      icones: ['💍','📿','🧣','🪬','👁'] },
+      consumivel:{ nome: 'Consumível',     icones: ['🧪','⚗️','🫙','💊','🌿'] },
+      reliquia:  { nome: 'Relíquia',       icones: ['✦','🔮','💀','🧿','📜'] },
+      cajado:    { nome: 'Cajado/Varinha', icones: ['🪄','🌟','🔯','🎇'] },
+      escudo:    { nome: 'Escudo',         icones: ['🛡','🔰','⬡'] },
+    };
+
+    const RARIDADES = ['comum','incomum','raro','muito-raro','lendario','artefato'];
+    const RARIDADE_PESO = [25, 30, 22, 13, 7, 3]; // porcentagens de chance
+
+    const RARIDADE_LABEL = {
+      'comum':      'Comum',
+      'incomum':    'Incomum',
+      'raro':       'Raro',
+      'muito-raro': 'Muito Raro',
+      'lendario':   'Lendário',
+      'artefato':   'Artefato'
+    };
+
+    const RARIDADE_COR = {
+      'comum':      '#aaa',
+      'incomum':    '#7de87d',
+      'raro':       '#78a4f5',
+      'muito-raro': '#c07ef5',
+      'lendario':   '#f5d87a',
+      'artefato':   '#f57878'
+    };
+
+    const ESCOLAS = {
+      'abjuracao':    { nome: 'Abjuração',    icone: '🔵' },
+      'conjuracao':   { nome: 'Conjuração',   icone: '🟣' },
+      'divinacao':    { nome: 'Divinação',    icone: '🟡' },
+      'encantamento': { nome: 'Encantamento', icone: '💜' },
+      'evocacao':     { nome: 'Evocação',     icone: '🔴' },
+      'ilusao':       { nome: 'Ilusão',       icone: '⚪' },
+      'necromancia':  { nome: 'Necromancia',  icone: '⚫' },
+      'transmutacao': { nome: 'Transmutação', icone: '🟢' },
+    };
+
+    const PREFIXOS_NOME = [
+      'Anciã','Sombria','Sagrada','Maldita','Lendária','Etérea','Venerada',
+      'Esquecida','Verdadeira','Flamejante','Glacial','Reluzente','Amaldiçoada',
+      'Profética','Abissal','Divina','Corrompida','Ancestral','Arcana','Profana'
+    ];
+
+    const NOMES_ARMA = [
+      'Espada','Lâmina','Gládio','Machado','Alabarda','Arco','Besta','Adaga',
+      'Lança','Martelo de Guerra','Foice','Tridente','Bastão','Mangualde','Rapieira'
+    ];
+    const NOMES_ARMADURA = [
+      'Armadura','Couraça','Brunea','Malha','Cota','Peitoral','Vestes','Manto'
+    ];
+    const NOMES_ACESSORIO = [
+      'Anel','Amuleto','Colar','Bracelete','Tiara','Braçal','Fivela','Broche','Pendente'
+    ];
+    const NOMES_CONSUMIVEL = [
+      'Poção','Elixir','Bálsamo','Tintura','Pó','Filtro','Frasco','Taça','Vial'
+    ];
+    const NOMES_RELIQUIA = [
+      'Orbe','Tomo','Cristal','Fragmento','Pedra','Ossada','Relicário','Caveira','Espelho'
+    ];
+    const NOMES_CAJADO = [
+      'Cajado','Varinha','Bordão','Báculo','Totem','Foco Arcano','Cetro'
+    ];
+    const NOMES_ESCUDO = [
+      'Escudo','Broquel','Égide','Pavês','Rodela','Testudo'
+    ];
+
+    const SUFIXOS_NOME = [
+      'das Sombras','da Lua Sangrenta','do Abismo','das Estrelas Mortas',
+      'do Eterno Gelo','do Inferno','dos Deuses Caídos','da Tempestade',
+      'da Última Batalha','do Juízo Final','do Esquecimento','da Criação',
+      'da Ruína','do Alvorecer','do Crepúsculo','das Eras','dos Titãs',
+      'do Profeta','da Profecia','do Destino','da Vingança','da Redenção'
+    ];
+
+    const PROPRIEDADES_POR_ESCOLA = {
+      abjuracao: [
+        { icone:'🔵', texto: 'Concede +{n} na Classe de Armadura.', n:[1,3] },
+        { icone:'🔵', texto: 'Reduz o dano mágico sofrido em {n}.', n:[1,6] },
+        { icone:'🔵', texto: 'Uma vez por descanso longo, anula um feitiço de nível {n} ou inferior.', n:[1,5] },
+        { icone:'🔵', texto: 'Resistência a dano de um elemento à escolha do portador.', n:null },
+        { icone:'🔵', texto: 'Imune ao status Amedrontado enquanto equipado.', n:null },
+        { icone:'🔵', texto: 'Cria um escudo invisível; reduz dano de projéteis em {n}.', n:[2,8] },
+      ],
+      conjuracao: [
+        { icone:'🟣', texto: 'Teleporta o portador até {n} metros como ação bônus (1x/descanso).', n:[5,30] },
+        { icone:'🟣', texto: 'Invoca um familiar etéreo que concede vantagem em Percepção.', n:null },
+        { icone:'🟣', texto: 'Pode convocar um arma conjurada que dura {n} turnos.', n:[3,10] },
+        { icone:'🟣', texto: 'Portões dimensionais custam {n} PM a menos para abrir.', n:[2,5] },
+        { icone:'🟣', texto: 'Uma vez por dia, conjura um escudo de força (CA +{n} por 1 minuto).', n:[2,4] },
+      ],
+      divinacao: [
+        { icone:'🟡', texto: 'Permite fazer uma pergunta de sim/não ao Mestre uma vez por sessão.', n:null },
+        { icone:'🟡', texto: 'Concede Vantagem em testes de Percepção e Intuição.', n:null },
+        { icone:'🟡', texto: 'Detecta mentiras automaticamente em um raio de {n} metros.', n:[5,20] },
+        { icone:'🟡', texto: 'Uma vez por descanso, revela a localização de um objeto ou pessoa desejada.', n:null },
+        { icone:'🟡', texto: 'O portador nunca é surpreendido em combate.', n:null },
+        { icone:'🟡', texto: 'Vê através de ilusões; imune ao status Enfeitiçado.', n:null },
+      ],
+      encantamento: [
+        { icone:'💜', texto: 'Concede +{n} em testes de Carisma e Diplomacia.', n:[2,6] },
+        { icone:'💜', texto: 'Uma vez por dia, encanta uma criatura (Teste de Vontade DT {n} para resistir).', n:[12,18] },
+        { icone:'💜', texto: 'Inimigos atacados sofrem Desvantagem no próximo ataque contra o portador.', n:null },
+        { icone:'💜', texto: 'O portador inspira aliados a 15m; eles ganham +{n} em ataques por 1 rodada.', n:[1,3] },
+        { icone:'💜', texto: 'Gera uma aura de calma; criaturas neutras preferem não atacar o portador.', n:null },
+      ],
+      evocacao: [
+        { icone:'🔴', texto: 'Acrescenta {n}d{d} de dano de fogo a ataques físicos.', n:[1,4], d:[4,8] },
+        { icone:'🔴', texto: 'Acrescenta {n}d{d} de dano de raio a ataques físicos.', n:[1,4], d:[4,8] },
+        { icone:'🔴', texto: 'Uma vez por descanso, solta uma explosão de {n}d6 de dano em cone de 6m.', n:[3,10] },
+        { icone:'🔴', texto: 'Projéteis ou ataques à distância ganham {n}m de alcance adicional.', n:[10,30] },
+        { icone:'🔴', texto: 'Causa {n}d4 de dano elemental extra em críticos.', n:[1,6] },
+        { icone:'🔴', texto: 'Acrescenta {n}d6 de dano de gelo a ataques físicos.', n:[1,4] },
+      ],
+      ilusao: [
+        { icone:'⚪', texto: 'Concede Invisibilidade por {n} rodadas (1x/descanso).', n:[2,6] },
+        { icone:'⚪', texto: 'O portador pode alterar sua aparência à vontade (ilusão menor).', n:null },
+        { icone:'⚪', texto: 'Ataques contra o portador têm Desvantagem na primeira rodada de combate.', n:null },
+        { icone:'⚪', texto: 'Cria duplicatas ilusórias (1d{n}); inimigos escolhem alvo aleatoriamente.', n:[4,6] },
+        { icone:'⚪', texto: 'Sons produzidos pelo portador podem ser silenciados à vontade.', n:null },
+      ],
+      necromancia: [
+        { icone:'⚫', texto: 'Ataques que causam dano drenam {n} PV do alvo e curam o portador.', n:[2,8] },
+        { icone:'⚫', texto: 'Uma vez por descanso, anima um cadáver como Morto-Vivo sob sua ordem por {n} horas.', n:[1,8] },
+        { icone:'⚫', texto: 'Imune a efeitos de morte instantânea e dreno de nível.', n:null },
+        { icone:'⚫', texto: 'Concede visão no escuro de {n} metros.', n:[10,30] },
+        { icone:'⚫', texto: 'Quando o portador morre, ressurge com {n} PV após {m} rodadas (1x/semana).', n:[5,20], m:[1,3] },
+        { icone:'⚫', texto: 'Aura de pavor; criaturas a 3m sofrem -2 em ataques e testes.', n:null },
+      ],
+      transmutacao: [
+        { icone:'🟢', texto: 'Aumenta a Força em +{n} enquanto equipado.', n:[1,4] },
+        { icone:'🟢', texto: 'Aumenta a Destreza em +{n} enquanto equipado.', n:[1,4] },
+        { icone:'🟢', texto: 'Permite ao portador respirar sob água e nadar a velocidade normal.', n:null },
+        { icone:'🟢', texto: 'Uma vez por dia, converte-se em névoa por {n} rodadas.', n:[1,4] },
+        { icone:'🟢', texto: 'O material do item se adapta: conta como metal, madeira ou couro conforme necessário.', n:null },
+        { icone:'🟢', texto: 'Aumenta a Constituição em +{n}; ganha +{m} PV por nível.', n:[1,3], m:[1,5] },
+      ],
+    };
+
+    const MALDICOES = [
+      'O portador não pode se desfazer do item voluntariamente.',
+      'Cada amanhecer, o portador sofre {n}d4 de dano psíquico.', // n
+      'O portador sente um desejo irrefreável de atacar aliados quando abaixo de 25% de PV.',
+      'Sonhos perturbadores impedem descanso longo; o portador recupera apenas metade dos PV.',
+      'O item sussurra vozes que concedem -2 em testes de Vontade permanentemente.',
+      'O portador envelhece {n} anos a cada uso da propriedade principal do item.', // n
+      'Qualquer cura mágica recebida pelo portador é reduzida à metade.',
+      'O portador torna-se alvo preferencial de não-mortos e demônios.',
+      'Usar o item cria uma marca sombria visível, revelando ao mundo que o item é maldito.',
+      'O item drena {n} PM/PA do portador ao início de cada combate.', // n
+      'O portador tem Desvantagem em testes de Carisma enquanto equipar o item.',
+      'Uma sombra maligna emerge do item a cada lua cheia, atacando criaturas ao redor.',
+    ];
+
+    const HISTORIAS_SUFIXO = {
+      arma: [
+        'Foi forjada nas entranhas de um vulcão adormecido por um ferreiro que vendeu a alma ao deus da guerra.',
+        'Pertenceu a um general lendário que nunca perdeu uma batalha — até sua última.',
+        'Emana um fraco gemido quando a batalha se aproxima, como se clamasse por sangue.',
+        'Dizem que seus golpes atravessam ilusões e revelam a forma verdadeira dos seres.',
+        'A lâmina escurece na presença de traidores, como se absolvesse os leais.',
+        'Foi rachada numa batalha mítica e remendada com metal de um meteorito.',
+      ],
+      armadura: [
+        'Moldada a partir das escamas de um dragão ancião, carrega o orgulho bestial de sua criadora.',
+        'Quem a veste sente um peso invisível de batalhas passadas — e a determinação de sobrevivê-las.',
+        'Suas runas foram gravadas por um anão cego cujos dedos liam o futuro pelo toque.',
+        'Mantém a temperatura do portador constante, seja no deserto abrasador ou nas tundras glaciais.',
+      ],
+      acessorio: [
+        'Pertenceu a uma rainha que governou por três séculos sem envelhecer uma ruga.',
+        'Foi encontrado num cofre submerso no fundo de um lago sem nome.',
+        'Quando removido, revela marcas de fogo na pele de quem o usou por mais de um dia.',
+        'Cria um elo tênue entre o portador e algo além do plano material.',
+      ],
+      consumivel: [
+        'Produzido por uma alquimista reclusa que desapareceu antes de revelar o segredo da receita.',
+        'O líquido brilha tenuemente na escuridão, pulsando no ritmo do coração de quem o segura.',
+        'Diz-se que só funciona plenamente sob luz de lua cheia.',
+        'Tem sabor diferente para cada pessoa — refletindo sua memória mais feliz.',
+      ],
+      reliquia: [
+        'Sobreviveu à queda de um império inteiro, circulando de ruína em ruína através dos séculos.',
+        'Emana um calor suave na presença de magia, como se reconhecesse seus semelhantes.',
+        'Seu propósito verdadeiro ainda é desconhecido; estudiosos discutem há gerações.',
+        'Reage à presença de deuses — vibrando de alegria ou tremendo de medo.',
+      ],
+      cajado: [
+        'O núcleo de cristal contém um fragmento de estrela capturado por um mago moribundo.',
+        'Talhado de madeira de uma árvore que cresceu no centro de uma explosão arcana.',
+        'Responde ao humor do portador, brilhando mais forte quando ele está determinado.',
+        'Cada entalhe representa um feitiço perdido que pode ser redescoberto pelo portador certo.',
+      ],
+      escudo: [
+        'Carrega o brasão de uma família extinta — mas alguns dizem ver seus espíritos na superfície polida.',
+        'Sobreviveu a assédios incontáveis; cada amassado conta uma história de resistência.',
+        'Ressoa com um toque baixo quando o portador está prestes a ser atingido.',
+        'Foi presenteado por uma divindade a um paladino como sinal de aprovação divina.',
+      ],
+    };
+
+    /* ========================================================
+       UTILITÁRIOS
+    ======================================================== */
+
+    function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+    function escolherRaridade(sel) {
+      if (sel !== 'aleatorio') return sel;
+      const total = RARIDADE_PESO.reduce((a,b) => a+b, 0);
+      let r = Math.random() * total;
+      for (let i = 0; i < RARIDADES.length; i++) {
+        r -= RARIDADE_PESO[i];
+        if (r <= 0) return RARIDADES[i];
+      }
+      return 'incomum';
+    }
+
+    function escolherEscola(sel) {
+      if (sel !== 'aleatorio') return sel;
+      const escolas = Object.keys(ESCOLAS);
+      return rand(escolas);
+    }
+
+    function escolherTipo(sel) {
+      if (sel !== 'aleatorio') return sel;
+      return rand(Object.keys(TIPOS));
+    }
+
+    function numPropriedades(raridade) {
+      const map = { comum:1, incomum:1, raro:2, 'muito-raro':3, lendario:4, artefato:5 };
+      return map[raridade] || 1;
+    }
+
+    function temMaldicao(selMaldicao, raridade) {
+      if (selMaldicao === 'forcada') return true;
+      if (selMaldicao === 'nenhuma') return false;
+      // Aleatório: chance aumenta com raridade
+      const chances = { comum:3, incomum:8, raro:18, 'muito-raro':30, lendario:45, artefato:65 };
+      return Math.random() * 100 < (chances[raridade] || 10);
+    }
+
+    function gerarNomeItem(tipo, prefixo, sufixo) {
+      const nomes = {
+        arma: NOMES_ARMA, armadura: NOMES_ARMADURA, acessorio: NOMES_ACESSORIO,
+        consumivel: NOMES_CONSUMIVEL, reliquia: NOMES_RELIQUIA,
+        cajado: NOMES_CAJADO, escudo: NOMES_ESCUDO
+      };
+      const base = rand(nomes[tipo] || NOMES_ARMA);
+      return `${prefixo} ${base} ${sufixo}`;
+    }
+
+    function formatarPropriedade(prop) {
+      let texto = prop.texto;
+      if (prop.n) {
+        const val = Array.isArray(prop.n) ? randInt(prop.n[0], prop.n[1]) : prop.n;
+        texto = texto.replace('{n}', val);
+      }
+      if (prop.d) {
+        const val = Array.isArray(prop.d) ? rand([4,6,8]) : prop.d;
+        texto = texto.replace('{d}', val);
+      }
+      if (prop.m) {
+        const val = Array.isArray(prop.m) ? randInt(prop.m[0], prop.m[1]) : prop.m;
+        texto = texto.replace('{m}', val);
+      }
+      return texto;
+    }
+
+    function formatarMaldicao(maldicao) {
+      return maldicao
+        .replace('{n}', randInt(1,4))
+        .replace('{m}', randInt(1,3));
+    }
+
+    function gerarBonus(raridade) {
+      const bonusMap = { comum:0, incomum:1, raro:1, 'muito-raro':2, lendario:3, artefato:3 };
+      const base = bonusMap[raridade];
+      if (raridade === 'artefato' && Math.random() > 0.5) return '+4';
+      if (base === 0) return null;
+      return `+${base}`;
+    }
+
+    /* ========================================================
+       GERADOR PRINCIPAL
+    ======================================================== */
+
+    function gerarItem() {
+      const selTipo      = document.getElementById('sel-tipo').value;
+      const selRaridade  = document.getElementById('sel-raridade').value;
+      const selEscola    = document.getElementById('sel-escola').value;
+      const selMaldicao  = document.getElementById('sel-maldicao').value;
+
+      const tipo     = escolherTipo(selTipo);
+      const raridade = escolherRaridade(selRaridade);
+      const escola   = escolherEscola(selEscola);
+      const maldito  = temMaldicao(selMaldicao, raridade);
+      const bonus    = gerarBonus(raridade);
+
+      const prefixo = rand(PREFIXOS_NOME);
+      const sufixo  = rand(SUFIXOS_NOME);
+      const nome    = gerarNomeItem(tipo, prefixo, sufixo);
+      const icone   = rand(TIPOS[tipo].icones);
+
+      // Propriedades mágicas
+      const poolPropriedades = PROPRIEDADES_POR_ESCOLA[escola] || [];
+      const qtdProps = Math.min(numPropriedades(raridade), poolPropriedades.length);
+      const usadas = new Set();
+      const propriedades = [];
+      while (propriedades.length < qtdProps) {
+        const idx = Math.floor(Math.random() * poolPropriedades.length);
+        if (!usadas.has(idx)) {
+          usadas.add(idx);
+          propriedades.push(formatarPropriedade(poolPropriedades[idx]));
+        }
+        if (usadas.size >= poolPropriedades.length) break;
+      }
+
+      // Maldição
+      let maldicaoTexto = null;
+      if (maldito) {
+        maldicaoTexto = formatarMaldicao(rand(MALDICOES));
+      }
+
+      // História
+      const historiaPool = HISTORIAS_SUFIXO[tipo] || HISTORIAS_SUFIXO.reliquia;
+      const historia = rand(historiaPool);
+
+      // Valor estimado
+      const valoresBase = { comum:'5–50 po', incomum:'51–500 po', raro:'501–5.000 po', 'muito-raro':'5.001–50.000 po', lendario:'50.001–500.000 po', artefato:'Inestimável' };
+
+      return { nome, tipo, raridade, escola, bonus, icone, propriedades, maldicaoTexto, historia, valor: valoresBase[raridade] };
+    }
+
+    /* ========================================================
+       RENDERIZAÇÃO
+    ======================================================== */
+
+    function badgeRaridadeClass(r) {
+      return 'badge badge-' + r;
+    }
+
+    function iconeBgCor(raridade) {
+      const cores = {
+        'comum':      'rgba(120,120,120,0.18)',
+        'incomum':    'rgba(70,180,70,0.18)',
+        'raro':       'rgba(60,110,210,0.18)',
+        'muito-raro': 'rgba(140,60,200,0.18)',
+        'lendario':   'rgba(201,168,76,0.22)',
+        'artefato':   'rgba(220,60,60,0.18)'
+      };
+      return cores[raridade] || 'rgba(201,168,76,0.1)';
+    }
+
+    function renderItemHTML(item) {
+      const bonusStr = item.bonus ? ` <span style="font-size:13px;opacity:0.8">${item.bonus}</span>` : '';
+
+      const statsExtra = [];
+      if (item.bonus) {
+        if (['arma','cajado'].includes(item.tipo)) {
+          statsExtra.push({ label:'Bônus de Ataque', valor: item.bonus });
+          statsExtra.push({ label:'Bônus de Dano', valor: item.bonus });
+        } else if (['armadura','escudo'].includes(item.tipo)) {
+          statsExtra.push({ label:'Bônus de CA', valor: item.bonus });
+        } else {
+          statsExtra.push({ label:'Bônus Mágico', valor: item.bonus });
+        }
+      }
+
+      const statsHTML = [
+        { label:'Tipo', valor: TIPOS[item.tipo].nome },
+        { label:'Escola', valor: `${ESCOLAS[item.escola].icone} ${ESCOLAS[item.escola].nome}` },
+        { label:'Valor', valor: item.valor },
+        ...statsExtra
+      ].map(s => `
+        <div class="item-stat">
+          <span class="label">${s.label}</span>
+          <span class="valor">${s.valor}</span>
+        </div>`).join('');
+
+      const propsHTML = item.propriedades.map(p => `
+        <li>
+          <span class="prop-icone">${ESCOLAS[item.escola].icone}</span>
+          <span>${p}</span>
+        </li>`).join('');
+
+      const maldicaoHTML = item.maldicaoTexto ? `
+        <div class="maldicao-box">
+          <span class="label">☠ MALDIÇÃO</span>
+          <p>${item.maldicaoTexto}</p>
+        </div>` : '';
+
+      return `
+        <div class="item-header">
+          <div class="item-icone" style="background:${iconeBgCor(item.raridade)};border:1px solid ${RARIDADE_COR[item.raridade]}40;">
+            ${item.icone}
+          </div>
+          <div class="item-titulo-bloco">
+            <div class="item-nome">${item.nome}${bonusStr}</div>
+            <div class="item-badges">
+              <span class="${badgeRaridadeClass(item.raridade)}">${RARIDADE_LABEL[item.raridade]}</span>
+              <span class="badge badge-tipo">${TIPOS[item.tipo].nome}</span>
+              ${item.maldicaoTexto ? '<span class="badge" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.5);color:#f57878;">☠ Maldito</span>' : ''}
+            </div>
+          </div>
+        </div>
+
+        <div class="item-corpo">
+          ${statsHTML}
+        </div>
+
+        <h3>✦ Propriedades Mágicas</h3>
+        <ul class="propriedades-lista">
+          ${propsHTML}
+        </ul>
+
+        ${maldicaoHTML}
+
+        <h3 style="margin-top:18px;">📜 Lore</h3>
+        <p class="item-historia">${item.historia}</p>
+      `;
+    }
+
+    function renderMiniItemHTML(item, idx) {
+      const dot = `<span class="rarity-dot" style="background:${RARIDADE_COR[item.raridade]};color:${RARIDADE_COR[item.raridade]};display:inline-block;"></span>`;
+      return `
+        <div class="mini-item" onclick="expandirItem(${idx})" id="mini-item-${idx}">
+          <div class="mini-item-header">
+            <div>
+              <div class="mini-item-nome">${item.icone} ${item.nome}</div>
+              <div class="mini-item-sub">
+                ${RARIDADE_LABEL[item.raridade]} · ${TIPOS[item.tipo].nome} · ${ESCOLAS[item.escola].icone} ${ESCOLAS[item.escola].nome}
+                ${item.maldicaoTexto ? ' · ☠ Maldito' : ''}
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              ${dot}
+              <span style="font-size:12px;color:var(--gold-dark);">${item.valor}</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    /* ========================================================
+       GERAÇÃO E DISPLAY
+    ======================================================== */
+
+    let itensGerados = [];
+
+    function gerarItens() {
+      const qty = Math.min(Math.max(parseInt(document.getElementById('qty-itens').value) || 1, 1), 10);
+      itensGerados = [];
+
+      const resultado = document.getElementById('item-resultado');
+      const lista = document.getElementById('lista-itens');
+
+      if (qty === 1) {
+        const item = gerarItem();
+        itensGerados = [item];
+        resultado.innerHTML = renderItemHTML(item);
+        resultado.style.display = 'block';
+        resultado.classList.remove('revealed');
+        void resultado.offsetWidth; // reflow
+        resultado.classList.add('revealed');
+        lista.innerHTML = '';
+      } else {
+        resultado.style.display = 'none';
+        lista.innerHTML = '';
+        for (let i = 0; i < qty; i++) {
+          const item = gerarItem();
+          itensGerados.push(item);
+          lista.innerHTML += renderMiniItemHTML(item, i);
+        }
+      }
+    }
+
+    function expandirItem(idx) {
+      const item = itensGerados[idx];
+      if (!item) return;
+
+      // Remover destaques anteriores
+      document.querySelectorAll('.mini-item').forEach(el => el.style.borderColor = '');
+
+      const mini = document.getElementById(`mini-item-${idx}`);
+      if (mini) mini.style.borderColor = RARIDADE_COR[item.raridade];
+
+      const resultado = document.getElementById('item-resultado');
+      resultado.innerHTML = renderItemHTML(item);
+      resultado.style.display = 'block';
+      resultado.classList.remove('revealed');
+      void resultado.offsetWidth;
+      resultado.classList.add('revealed');
+      resultado.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+  </script>
+</body>
+</html>

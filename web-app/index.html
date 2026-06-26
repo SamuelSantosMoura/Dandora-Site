@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dandora RPG - Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+
+    <!-- Site Icon -->
+    <link rel="icon" href="img/dandora-icon.jpg" type="image/jpeg">
+</head>
+<body>
+    
+    <!-- GLOBAL BACK BUTTON -->
+    <button id="global-back-btn" class="btn-outline" style="display:none; position:fixed; top:20px; left:20px; z-index:9999; border-radius:30px; padding: 0.5rem 1.2rem; background: var(--bg-dark);" onclick="goBack()">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+    </button>
+
+    <!-- Navbar / Header -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="logo" onclick="navigateTo('home-view')">
+                <!-- Símbolo oficial de Dandora -->
+                <!-- Símbolo oficial de Dandora (Imagem) -->
+                <img src="img/dandora-icon.jpg" alt="Logo Dandora" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                Dandora RPG
+            </div>
+            <div class="nav-links">
+                <button class="nav-btn" onclick="navigateTo('home-view')"><i class="fa-solid fa-house"></i> Início</button>
+                <button class="nav-btn" onclick="navigateTo('library-view')"><i class="fa-solid fa-book-journal-whills"></i> Livro do Sistema</button>
+                <button id="auth-btn" class="nav-btn primary-btn" onclick="navigateTo('login-view')">
+                    <i class="fa-solid fa-user"></i> Entrar
+                </button>
+                <button id="dashboard-btn" class="nav-btn primary-btn hidden" onclick="openDashboard()">
+                    <i class="fa-solid fa-chess-rook"></i> Dashboard
+                </button>
+                <button id="profile-btn" class="nav-btn hidden" onclick="navigateTo('profile-view')" style="position:relative;">
+                    <i class="fa-solid fa-user-circle"></i> Perfil
+                    <span id="nav-mode-badge" style="position:absolute; top:-5px; right:-10px; background:var(--gold-primary); color:#000; font-size:0.65rem; padding:2px 5px; border-radius:10px; font-weight:bold; display:none;"></span>
+                </button>
+                <button id="logout-btn" class="nav-btn hidden" onclick="logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app-container">
+        
+        <!-- ============================================== -->
+        <!-- HOME VIEW                                      -->
+        <!-- ============================================== -->
+        <section id="home-view" class="view active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1 class="glitch" data-text="A Forja de Heróis">A Forja de Heróis</h1>
+                    <p>O seu portal definitivo para o universo de Dandora. Crie fichas, gerencie mesas e explore regras com um design medieval de ponta.</p>
+                    <div class="hero-actions">
+                        <button class="btn-epic" onclick="navigateTo('login-view')">Começar Aventura <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features-grid">
+                <!-- Área do Mestre -->
+                <div class="feature-card glass-panel">
+                    <div class="card-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h2>Área do Mestre</h2>
+                    <p>Acesse o "Escudo do Mestre". Crie mesas, envie convites, gerencie as fichas dos jogadores e acompanhe o status da sua campanha em tempo real.</p>
+                </div>
+
+                <!-- Área do Jogador -->
+                <div class="feature-card glass-panel">
+                    <div class="card-icon">
+                        <i class="fa-solid fa-dice-d20"></i>
+                    </div>
+                    <h2>Área do Jogador</h2>
+                    <p>Entre em mesas com códigos de acesso, crie suas fichas de personagem personalizadas usando o modelo oficial e evolua seus atributos.</p>
+                </div>
+
+                <!-- Livro do Sistema -->
+                <div class="feature-card glass-panel">
+                    <div class="card-icon">
+                        <i class="fa-solid fa-scroll"></i>
+                    </div>
+                    <h2>Livro do Sistema</h2>
+                    <p>Tenha acesso direto aos PDFs oficiais de regras e bestiário. Leia online ou faça o download para não perder nenhum detalhe.</p>
+                    <button class="btn-outline mt-4" onclick="navigateTo('library-view')">Acessar Biblioteca</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- LOGIN / REGISTER VIEW                          -->
+        <!-- ============================================== -->
+        <section id="login-view" class="view">
+            <div class="auth-container glass-panel">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="switchAuthTab('login')">Entrar</button>
+                    <button class="tab-btn" onclick="switchAuthTab('register')">Cadastrar</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+                    <h2>Acessar o Portal</h2>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="login-email" required placeholder="heroi@dandora.com">
+                    </div>
+                    <div class="form-group">
+                    <div class="form-group" style="display:flex; justify-content:space-between; align-items:center;">
+                        <label>Senha</label>
+                        <a href="#" onclick="forgotPassword(event)" style="font-size:0.8rem; color:var(--gold-primary); text-decoration:none;">Esqueci minha senha</a>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label>Modo Inicial (Mestre ou Jogador)</label>
+                        <select id="login-role" required>
+                            <option value="player">Modo Jogador</option>
+                            <option value="master">Modo Mestre</option>
+                        </select>
+                        <small style="color:var(--text-muted); font-size:0.75rem;">Sua conta é única. Você poderá alternar o modo no seu perfil depois.</small>
+                    </div>
+                    <button type="submit" class="btn-epic w-100">Entrar</button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)">
+                    <h2>Novo Aventureiro</h2>
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" id="reg-name" required placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="reg-email" required placeholder="heroi@dandora.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="reg-password" required placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label>Seu Papel Inicial</label>
+                        <select id="reg-role" required>
+                            <option value="player">Jogador (Criar fichas, entrar em mesas)</option>
+                            <option value="master">Mestre (Criar mesas, gerenciar jogadores)</option>
+                        </select>
+                        <small style="color:var(--text-muted); font-size:0.75rem;">Sua conta servirá para os dois modos. Isso apenas define como você começará agora.</small>
+                    </div>
+                    <button type="submit" class="btn-epic w-100">Registrar</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- PROFILE VIEW                                   -->
+        <!-- ============================================== -->
+        <section id="profile-view" class="view">
+            <div class="dashboard-header" style="max-width: 900px; margin: 0 auto 2rem auto;">
+                <h2>Perfil do Aventureiro</h2>
+            </div>
+            
+            <div class="profile-container" style="max-width: 900px; margin: 0 auto; display:grid; grid-template-columns: 1fr 300px; gap: 2rem;">
+                <!-- Main Info Card -->
+                <div class="table-card glass-panel" style="display:flex; flex-direction:column; gap:20px;">
+                    <div style="display:flex; align-items:center; gap:20px; border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 20px;">
+                        <div style="width: 100px; height: 100px; border-radius:50%; background:var(--bg-dark); border:2px solid var(--gold-primary); display:flex; align-items:center; justify-content:center; font-size:3rem; color:var(--gold-dim);">
+                            <i class="fa-solid fa-user-astronaut"></i>
+                        </div>
+                        <div>
+                            <h2 id="prof-name" style="margin:0; color:var(--gold-primary); font-family:var(--font-epic); font-size:1.8rem;">Nome</h2>
+                            <p id="prof-email" style="margin:5px 0 0; color:var(--text-muted);">email@example.com</p>
+                            <span id="prof-created" style="display:inline-block; margin-top:10px; font-size:0.8rem; background:rgba(255,255,255,0.1); padding:3px 8px; border-radius:4px; color:var(--text-light);">Conta criada em: ...</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h3 style="margin:0 0 5px; font-size:1.1rem; color:var(--text-light);">Estatísticas da Conta</h3>
+                            <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Sua jornada em Dandora</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px;">
+                        <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(212,175,55,0.2); padding:15px; border-radius:8px; text-align:center;">
+                            <i class="fa-solid fa-scroll" style="font-size:1.5rem; color:var(--gold-dim); margin-bottom:10px;"></i>
+                            <div id="prof-stat-chars" style="font-size:1.5rem; font-weight:bold; color:var(--gold-primary);">0</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Personagens (Jogador)</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(212,175,55,0.2); padding:15px; border-radius:8px; text-align:center;">
+                            <i class="fa-solid fa-dungeon" style="font-size:1.5rem; color:var(--gold-dim); margin-bottom:10px;"></i>
+                            <div id="prof-stat-tables" style="font-size:1.5rem; font-weight:bold; color:var(--gold-primary);">0</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Mesas Criadas (Mestre)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mode Switcher Card -->
+                <div class="table-card glass-panel" style="display:flex; flex-direction:column;">
+                    <h3 style="margin:0 0 15px; font-size:1.2rem; color:var(--gold-primary); text-align:center;">Tipo de Conta</h3>
+                    <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; margin-bottom:20px;">Alterne entre os modos para acessar os recursos específicos. Seus dados são independentes e continuam salvos.</p>
+                    
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div id="mode-card-player" onclick="switchMode('player')" class="mode-card">
+                            <div class="mode-icon"><i class="fa-solid fa-dice-d20"></i></div>
+                            <div class="mode-info">
+                                <h4>Modo Jogador</h4>
+                                <span>Fichas e rolagens</span>
+                            </div>
+                            <div class="mode-check"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                        
+                        <div id="mode-card-master" onclick="switchMode('master')" class="mode-card">
+                            <div class="mode-icon"><i class="fa-solid fa-dragon"></i></div>
+                            <div class="mode-info">
+                                <h4>Modo Mestre</h4>
+                                <span>Gerenciar mesas e NPCs</span>
+                            </div>
+                            <div class="mode-check"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- DASHBOARD MESTRE VIEW                          -->
+        <!-- ============================================== -->
+        <section id="dashboard-master-view" class="view dashboard-layout">
+            <aside class="sidebar glass-panel">
+                <div class="sidebar-user">
+                    <div class="avatar"><i class="fa-solid fa-crown"></i></div>
+                    <div class="user-info">
+                        <span id="master-name" class="name">Mestre</span>
+                        <span class="role">Mestre de Jogo</span>
+                    </div>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="active"><i class="fa-solid fa-table"></i> Minhas Mesas</li>
+                </ul>
+            </aside>
+            <div class="dashboard-content">
+                <div class="dashboard-header">
+                    <h2>Gerenciamento de Mesas</h2>
+                    <button class="btn-epic" onclick="createNewTable()"><i class="fa-solid fa-plus"></i> Criar Nova Mesa</button>
+                </div>
+                <div class="tables-grid" id="master-tables-list">
+                    <!-- Mesas serão injetadas via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- DASHBOARD JOGADOR VIEW                         -->
+        <!-- ============================================== -->
+        <section id="dashboard-player-view" class="view dashboard-layout">
+            <aside class="sidebar glass-panel">
+                <div class="sidebar-user">
+                    <div class="avatar"><i class="fa-solid fa-user-ninja"></i></div>
+                    <div class="user-info">
+                        <span id="player-name" class="name">Jogador</span>
+                        <span class="role">Aventureiro</span>
+                    </div>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="active"><i class="fa-solid fa-table"></i> Minhas Aventuras</li>
+                    <li onclick="navigateTo('library-view')"><i class="fa-solid fa-book-open"></i> Biblioteca (Livros)</li>
+                </ul>
+            </aside>
+            <div class="dashboard-content">
+                <div class="dashboard-header">
+                    <h2>Bem-vindo, Aventureiro</h2>
+                    <button class="btn-epic" onclick="joinTable()"><i class="fa-solid fa-right-to-bracket"></i> Entrar em uma Mesa</button>
+                </div>
+                <div class="tables-grid" id="player-tables-list">
+                    <!-- Mesas do jogador serão injetadas aqui -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VISÃO DA MESA DO JOGADOR                       -->
+        <!-- ============================================== -->
+        <section id="player-table-view" class="view dashboard-layout">
+            <aside class="sidebar glass-panel">
+                <div class="sidebar-user" style="padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--gold-dim);">
+                    <div class="avatar" style="background: var(--gold-primary); color: var(--bg-dark);"><i class="fa-solid fa-dungeon"></i></div>
+                    <div class="user-info">
+                        <span id="pt-table-name" class="name">Nome da Mesa</span>
+                        <span class="role">Sua Aventura Atual</span>
+                    </div>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="pt-tab active" onclick="switchPlayerTab('pt-sheet')"><i class="fa-solid fa-file-signature"></i> Minha Ficha</li>
+                    <li class="pt-tab" onclick="switchPlayerTab('pt-notes')"><i class="fa-solid fa-feather"></i> Anotações da Campanha</li>
+                </ul>
+            </aside>
+            <div class="dashboard-content glass-panel" style="padding: 2rem; border-radius: 8px;">
+                
+                <!-- TAB: MINHA FICHA -->
+                <div id="pt-sheet" class="pt-content active">
+                    <div class="dashboard-header">
+                        <h2>Ficha Ativa na Mesa</h2>
+                    </div>
+                    
+                    <!-- Ficha Ativa Panel -->
+                    <div class="table-card glass-panel" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                        <div id="pt-active-sheet-info" style="display: flex; align-items: center; gap: 15px;">
+                            <!-- Injetado por JS -->
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-epic" onclick="openSheetModal()"><i class="fa-solid fa-pen-to-square"></i> Editar Ficha</button>
+                            <button class="btn-outline" onclick="saveActiveSheetToVault()"><i class="fa-solid fa-download"></i> Salvar no Cofre</button>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-header" style="margin-top: 2rem; border-top: 1px solid var(--gold-dim); padding-top: 2rem;">
+                        <h2>Cofre de Fichas</h2>
+                        <button class="btn-outline" onclick="createNewBlankSheet()"><i class="fa-solid fa-plus"></i> Criar Ficha em Branco</button>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas fichas salvas. Carregue uma delas para substituir a ficha ativa e jogar com outro personagem.</p>
+                    
+                    <div class="tables-grid" id="pt-vault-list">
+                        <!-- JS vai injetar as fichas salvas aqui -->
+                    </div>
+                </div>
+
+                <!-- TAB: NOTES -->
+                <div id="pt-notes" class="pt-content hidden">
+                    <h2>Anotações da Campanha</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas anotações pessoais. Apenas você tem acesso.</p>
+                    <textarea id="pt-notes-area" style="width: 100%; height: 500px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1.5rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6; font-size: 1.1rem;" oninput="savePlayerNotes()" placeholder="Escreva aqui detalhes sobre NPCs, missões ativas, pistas e eventos importantes..."></textarea>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- LIBRARY VIEW                                   -->
+        <!-- ============================================== -->
+        <section id="library-view" class="view">
+            <div class="library-header">
+                <h2>Livro do Sistema</h2>
+                <p>Acesse as regras e compêndios oficiais de Dandora.</p>
+            </div>
+            <div class="books-grid">
+                <div class="book-card glass-panel">
+                    <div class="book-cover">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3>Dandora - Livro Básico</h3>
+                        <p>150 MB - PDF</p>
+                        <div class="book-actions">
+                            <button onclick="openPdf('../Dandora - Livro Básico.pdf')" class="btn-outline"><i class="fa-solid fa-eye"></i> Ler</button>
+                            <a href="../Dandora - Livro Básico.pdf" download class="btn-epic"><i class="fa-solid fa-download"></i> Baixar</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="book-card glass-panel">
+                    <div class="book-cover bestiary">
+                        <i class="fa-solid fa-dragon"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3>Bestiário de Dandora</h3>
+                        <p>95 MB - PDF</p>
+                        <div class="book-actions">
+                            <button onclick="openPdf('../Bestiario de Dandora (1).pdf')" class="btn-outline"><i class="fa-solid fa-eye"></i> Ler</button>
+                            <a href="../Bestiario de Dandora (1).pdf" download class="btn-epic"><i class="fa-solid fa-download"></i> Baixar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- PDF READER VIEW                                -->
+        <!-- ============================================== -->
+        <section id="pdf-reader-view" class="view">
+            <div class="pdf-toolbar">
+                <div class="pdf-controls-group">
+                    <button class="btn-outline small" onclick="closePdf()"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                </div>
+                
+                <div class="pdf-controls-group">
+                    <button class="btn-outline small" id="prev-page" disabled style="opacity:0.4;"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span class="pdf-page-info">Pág. <span id="page-num">—</span> / <span id="page-count">—</span></span>
+                    <button class="btn-outline small" id="next-page" disabled style="opacity:0.4;"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+                <div class="pdf-controls-group">
+                    <button class="btn-outline small" id="zoom-out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <button class="btn-outline small" id="zoom-in"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    <button class="btn-outline small" id="fullscreen-btn"><i class="fa-solid fa-expand"></i></button>
+                </div>
+            </div>
+            
+            <div class="pdf-viewer-container" id="pdf-viewer-container">
+                <!-- iframe para exibição nativa do PDF (funciona com file://) -->
+                <iframe id="pdf-iframe" src="" style="width:100%; height:100%; border:none; display:block;"></iframe>
+                <!-- canvas mantido como fallback para pdf.js em ambiente HTTP -->
+                <canvas id="pdf-canvas" style="display:none;"></canvas>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- TABLE MANAGER VIEW                             -->
+        <!-- ============================================== -->
+        <section id="table-manager-view" class="view dashboard-layout">
+            <aside class="sidebar glass-panel">
+                <div class="sidebar-user">
+                    <div class="avatar"><i class="fa-solid fa-chess-knight"></i></div>
+                    <div class="user-info">
+                        <span id="tm-table-name" class="name">Nome da Mesa</span>
+                        <span class="role">Painel do Mestre</span>
+                    </div>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="tm-tab active" onclick="switchTableTab('tm-players')"><i class="fa-solid fa-users"></i> Jogadores</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-notes')"><i class="fa-solid fa-scroll"></i> Anotações</li>
+                    
+                    <div style="margin: 1.5rem 0 0.5rem 1.5rem; font-family: var(--font-epic); font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.1em; text-transform: uppercase;">Ferramentas do Mestre</div>
+                    <li class="tm-tab" onclick="switchTableTab('tm-npc')"><i class="fa-solid fa-id-card"></i> Gerador de NPC</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-iniciativa')"><i class="fa-solid fa-bolt"></i> Iniciativa</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-eventos')"><i class="fa-solid fa-dice"></i> Eventos</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-itens')"><i class="fa-solid fa-gem"></i> Loot e Itens</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-monstros')"><i class="fa-solid fa-dragon"></i> Monstros</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-dados')"><i class="fa-solid fa-dice-d20"></i> Dados</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-regras')"><i class="fa-solid fa-book"></i> Regras Rápidas</li>
+                </ul>
+            </aside>
+            <div class="dashboard-content glass-panel" style="padding: 2rem; border-radius: 8px;">
+                
+                <!-- TAB: PLAYERS -->
+                <div id="tm-players" class="tm-content active">
+                    <div class="dashboard-header">
+                        <h2>Fichas dos Jogadores</h2>
+                        <button class="btn-outline" onclick="alert('Funcionalidade de convite em breve!')"><i class="fa-solid fa-link"></i> Convidar</button>
+                    </div>
+                    <div class="tables-grid" id="tm-players-list">
+                        <!-- Jogadores serão injetados aqui -->
+                    </div>
+                </div>
+
+                <!-- TAB: NOTES -->
+                <div id="tm-notes" class="tm-content hidden">
+                    <h2>Anotações da Campanha</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Tudo o que você escrever aqui será salvo automaticamente.</p>
+                    <textarea id="tm-notes-area" style="width: 100%; height: 400px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6;" oninput="saveTableNotes()"></textarea>
+                </div>
+
+                <!-- TAB: NPC GENERATOR -->
+                <div id="tm-npc" class="tm-content hidden">
+                    <div class="dashboard-header" style="margin-bottom:1.8rem;">
+                        <div>
+                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">GERADOR DE NPC</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Gere e salve NPCs para sua campanha</p>
+                        </div>
+                        <button class="npc-vault-btn" onclick="toggleNPCVault()">
+                            <i class="fa-solid fa-users"></i>
+                            NPCs Salvos
+                            <span class="npc-vault-badge" id="npc-vault-count">0</span>
+                        </button>
+                    </div>
+                    <div style="text-align:center; margin-bottom:28px;">
+                        <button onclick="gerarNPC()" class="btn-epic" style="font-size:16px; padding:13px 36px; letter-spacing:0.12em;">✦ Invocar NPC ✦</button>
+                    </div>
+                    <div class="box" id="npc" style="display:none; background: rgba(20,20,25,0.8); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 2rem; box-shadow: var(--glass-shadow);">
+                        <!-- Conteúdo gerado aqui -->
+                    </div>
+                </div>
+                <!-- TAB: INICIATIVA -->
+                <div id="tm-iniciativa" class="tm-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Ordem de Combate</h2>
+                        <button id="resetBtn" class="btn-epic" style="padding: 0.5rem 1rem; font-size: 0.9rem;">🗑️ Limpar Lista</button>
+                    </div>
+                    <section class="table-card">
+                      <div class="controls" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+                        <input id="nameInput" class="input-modern" type="text" placeholder="Nome" style="flex:1; min-width:150px;" />
+                        <input id="initInput" class="input-modern" type="number" placeholder="Iniciativa" style="width:100px;" />
+                        <button id="addBtn" class="btn-outline">➕ Adicionar</button>
+                        <button id="rollBtn" class="btn-outline">🎲 d20 + mod</button>
+                      </div>
+                      <table style="width:100%; text-align:left; border-collapse:collapse; color: var(--text-light);">
+                        <thead>
+                          <tr style="border-bottom:1px solid var(--gold-dim); color:var(--gold-primary);">
+                            <th style="padding:10px;">Nome</th>
+                            <th style="padding:10px;">Iniciativa</th>
+                            <th style="padding:10px;">Ações</th>
+                          </tr>
+                        </thead>
+                        <tbody id="listBody"></tbody>
+                      </table>
+                    </section>
+                </div>
+
+                <!-- TAB: EVENTOS -->
+                <div id="tm-eventos" class="tm-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Gerador de Eventos</h2>
+                    </div>
+                    <div class="buttons" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+                      <button class="btn-outline" onclick="rolarEvento('urbano')">🏙 Urbano</button>
+                      <button class="btn-outline" onclick="rolarEvento('floresta')">🌲 Floresta</button>
+                      <button class="btn-outline" onclick="rolarEvento('deserto')">🏜 Deserto</button>
+                      <button class="btn-outline" onclick="rolarEvento('alto-mar')">⚓ Alto-Mar</button>
+                      <button class="btn-outline" onclick="rolarEvento('masmorra')">💀 Masmorra</button>
+                      <button class="btn-outline" onclick="rolarEvento('viagens')">🗺 Viagens</button>
+                    </div>
+                    <div id="evento" class="table-card" style="margin-bottom:20px; min-height: 100px;"></div>
+                </div>
+
+                <!-- TAB: LOOT E ITENS -->
+                <div id="tm-itens" class="tm-content hidden">
+                    <div class="dashboard-header" style="margin-bottom:1.8rem;">
+                        <div>
+                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">LOOT E ITENS</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Gere tesouros, moedas e artefatos mágicos</p>
+                        </div>
+                    </div>
+
+                    <!-- GERADOR DE TESOURO -->
+                    <div class="table-card" style="margin-bottom: 30px;">
+                        <h3 style="color:var(--gold-primary); margin-bottom: 15px; font-family:var(--font-epic);"><i class="fa-solid fa-coins"></i> Gerar Tesouro</h3>
+                        <div style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
+                            <div>
+                                <label style="color:var(--gold-dim); display:block; margin-bottom:5px; font-size:0.85rem;">Tipo de Região / Inimigo</label>
+                                <select id="sel-tesouro-tipo" class="input-modern" style="min-width: 200px;">
+                                    <option value="pobre">Vilarejos / Bandidos (Bronze e Prata)</option>
+                                    <option value="medio">Cidades / Mercenários (Prata e Ouro)</option>
+                                    <option value="rico">Capitais / Nobres (Ouro pesado)</option>
+                                    <option value="epico">Feiras de Luxo / Dragões (Diamante e Ouro)</option>
+                                </select>
+                            </div>
+                            <button class="btn-epic" onclick="gerarTesouro()" style="padding: 10px 20px;">💰 Gerar Moedas</button>
+                        </div>
+                        <div id="tesouro-resultado" style="margin-top: 20px; display:none; background: rgba(0,0,0,0.3); border:1px solid var(--gold-dim); border-radius:8px; padding: 15px;">
+                            <div id="tesouro-valores" style="font-size: 1.2rem; margin-bottom: 15px;"></div>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <label style="color:var(--gold-dim); font-size:0.85rem;">Enviar para:</label>
+                                <select id="tesouro-player-select" class="input-modern" style="min-width:150px;"></select>
+                                <button class="btn-outline" onclick="enviarTesouroParaJogador()"><i class="fa-solid fa-paper-plane"></i> Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GERADOR DE ITENS MAGICOS -->
+                    <div class="table-card">
+                        <h3 style="color:var(--gold-primary); margin-bottom: 15px; font-family:var(--font-epic);"><i class="fa-solid fa-wand-sparkles"></i> Gerador de Itens Mágicos</h3>
+                      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Tipo</label><select id="sel-tipo" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatório</option><option value="arma">⚔ Arma</option><option value="armadura">🛡 Armadura</option><option value="acessorio">💍 Acessório</option><option value="consumivel">🧪 Consumível</option><option value="reliquia">✦ Relíquia</option><option value="cajado">🪄 Cajado / Varinha</option><option value="escudo">🛡 Escudo</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Raridade</label><select id="sel-raridade" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatória</option><option value="comum">Comum</option><option value="incomum">Incomum</option><option value="raro">Raro</option><option value="muito-raro">Muito Raro</option><option value="lendario">Lendário</option><option value="artefato">Artefato</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Escola</label><select id="sel-escola" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatória</option><option value="abjuracao">Abjuração</option><option value="conjuracao">Conjuração</option><option value="divinacao">Divinação</option><option value="encantamento">Encantamento</option><option value="evocacao">Evocação</option><option value="ilusao">Ilusão</option><option value="necromancia">Necromancia</option><option value="transmutacao">Transmutação</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Maldição</label><select id="sel-maldicao" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatória</option><option value="nenhuma">Sem maldição</option><option value="forcada">Com maldição</option></select></div>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                        <label style="color:var(--gold-dim);">Quantidade:</label>
+                        <input type="number" id="qty-itens" class="input-modern" value="1" min="1" max="10" style="width: 80px; text-align:center;">
+                        <button class="btn-epic" onclick="gerarItens()" id="btn-gerar-item" style="margin-left:auto;">✦ Invocar Item</button>
+                      </div>
+                    </div>
+                    <div id="item-resultado" class="table-card" style="margin-top:20px; display:none;"></div>
+                    <div id="lista-itens" style="margin-top:20px;"></div>
+                </div>
+
+                <!-- TAB: MONSTROS -->
+                <div id="tm-monstros" class="tm-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Monstros</h2>
+                    </div>
+                    <div id="blocos" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                      <!-- Blocos gerados via JS -->
+                    </div>
+                </div>
+
+                <!-- TAB: DADOS -->
+                <div id="tm-dados" class="tm-content hidden">
+
+                    <div class="md-page-header">
+                        <div>
+                            <h2 class="md-title">Mesa de Dados</h2>
+                            <p class="md-subtitle">Ferramentas de rolagem do Mestre</p>
+                        </div>
+                        <button class="md-hist-btn" onclick="mdToggleHistory()">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Historico
+                        </button>
+                    </div>
+
+                    <div class="md-layout">
+                        <!-- COLUNA ESQUERDA: Dados Rapidos + Favoritos -->
+                        <div class="md-col-left">
+                            <div class="md-card">
+                                <div class="md-card-title"><i class="fa-solid fa-bolt"></i> Rolagem Rapida</div>
+                                <div class="md-quick-grid">
+                                    <button class="md-quick-btn" onclick="mdQuickRoll(4)">
+                                        <svg viewBox="0 0 100 87" class="md-die-svg md-svg-d4"><polygon points="50,5 95,82 5,82" fill="none" stroke="currentColor" stroke-width="6"/><text x="50" y="72" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="28" fill="currentColor">4</text></svg>
+                                        <span class="md-die-label-txt">d4</span>
+                                    </button>
+                                    <button class="md-quick-btn" onclick="mdQuickRoll(6)">
+                                        <svg viewBox="0 0 100 100" class="md-die-svg md-svg-d6"><rect x="8" y="8" width="84" height="84" rx="14" fill="none" stroke="currentColor" stroke-width="6"/><text x="50" y="66" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="34" fill="currentColor">6</text></svg>
+                                        <span class="md-die-label-txt">d6</span>
+                                    </button>
+                                    <button class="md-quick-btn" onclick="mdQuickRoll(8)">
+                                        <svg viewBox="0 0 100 100" class="md-die-svg md-svg-d8"><polygon points="50,5 95,50 50,95 5,50" fill="none" stroke="currentColor" stroke-width="6"/><text x="50" y="63" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="30" fill="currentColor">8</text></svg>
+                                        <span class="md-die-label-txt">d8</span>
+                                    </button>
+                                    <button class="md-quick-btn" onclick="mdQuickRoll(10)">
+                                        <svg viewBox="0 0 100 100" class="md-die-svg md-svg-d10"><polygon points="50,5 95,35 80,90 20,90 5,35" fill="none" stroke="currentColor" stroke-width="6"/><text x="50" y="68" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="26" fill="currentColor">10</text></svg>
+                                        <span class="md-die-label-txt">d10</span>
+                                    </button>
+                                    <button class="md-quick-btn" onclick="mdQuickRoll(12)">
+                                        <svg viewBox="0 0 100 100" class="md-die-svg md-svg-d12"><polygon points="50,4 79,14 96,40 90,72 68,92 32,92 10,72 4,40 21,14" fill="none" stroke="currentColor" stroke-width="6"/><text x="50" y="65" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="26" fill="currentColor">12</text></svg>
+                                        <span class="md-die-label-txt">d12</span>
+                                    </button>
+                                    <button class="md-quick-btn md-quick-highlight" onclick="mdQuickRoll(20)">
+                                        <svg viewBox="0 0 100 100" class="md-die-svg md-svg-d20"><polygon points="50,3 97,28 97,72 50,97 3,72 3,28" fill="none" stroke="currentColor" stroke-width="6"/><text x="50" y="64" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="26" fill="currentColor">20</text></svg>
+                                        <span class="md-die-label-txt">d20</span>
+                                    </button>
+                                    <button class="md-quick-btn" onclick="mdQuickRoll(100)">
+                                        <svg viewBox="0 0 100 100" class="md-die-svg md-svg-d100"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="6"/><text x="50" y="62" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="24" fill="currentColor">d%</text></svg>
+                                        <span class="md-die-label-txt">d%</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="md-card">
+                                <div class="md-card-title"><i class="fa-solid fa-star"></i> Favoritos</div>
+                                <div id="md-favorites-list" class="md-favorites-list"></div>
+                            </div>
+                        </div>
+
+                        <!-- COLUNA DIREITA: Mesa Customizada -->
+                        <div class="md-col-right">
+                            <div class="md-card md-custom-card">
+                                <div class="md-card-title"><i class="fa-solid fa-sliders"></i> Mesa Customizada</div>
+                                <div class="md-counters-grid">
+                                    <div class="md-counter-item"><span class="md-counter-label">d4</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(4,-1)">−</button><span class="md-cnt-val" id="md-cnt-d4">0</span><button class="md-cnt-btn" onclick="mdAdjDie(4,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d6</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(6,-1)">−</button><span class="md-cnt-val" id="md-cnt-d6">0</span><button class="md-cnt-btn" onclick="mdAdjDie(6,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d8</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(8,-1)">−</button><span class="md-cnt-val" id="md-cnt-d8">0</span><button class="md-cnt-btn" onclick="mdAdjDie(8,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d10</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(10,-1)">−</button><span class="md-cnt-val" id="md-cnt-d10">0</span><button class="md-cnt-btn" onclick="mdAdjDie(10,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d12</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(12,-1)">−</button><span class="md-cnt-val" id="md-cnt-d12">0</span><button class="md-cnt-btn" onclick="mdAdjDie(12,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d20</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(20,-1)">−</button><span class="md-cnt-val" id="md-cnt-d20">0</span><button class="md-cnt-btn" onclick="mdAdjDie(20,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d100</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(100,-1)">−</button><span class="md-cnt-val" id="md-cnt-d100">0</span><button class="md-cnt-btn" onclick="mdAdjDie(100,1)">+</button></div></div>
+                                    <div class="md-counter-item md-bonus-item"><span class="md-counter-label">Bonus</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjBonus(-1)">−</button><input type="number" id="md-bonus" value="0" class="md-bonus-input" oninput="mdBonusInput()"><button class="md-cnt-btn" onclick="mdAdjBonus(1)">+</button></div></div>
+                                </div>
+                                <div class="md-formula-display">
+                                    <span class="md-formula-label">Formula</span>
+                                    <div class="md-preview" id="md-preview">—</div>
+                                </div>
+                                <div class="md-action-row">
+                                    <button class="md-btn-clear" onclick="mdClearRoller()"><i class="fa-solid fa-rotate-left"></i> Limpar</button>
+                                    <button class="md-btn-fav" onclick="mdSaveFavorite()"><i class="fa-solid fa-star"></i> Salvar</button>
+                                    <button class="md-btn-roll" onclick="mdExecuteCustomRoll()"><i class="fa-solid fa-dice-d20"></i> ROLAR</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- TAB: REGRAS -->
+                <div id="tm-regras" class="tm-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Regras Rápidas</h2>
+                    </div>
+                    
+                    <div class="table-card" style="margin-bottom:1.5rem;">
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🎯 Dificuldade</h3>
+                        <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
+Tarefa              DT    Exemplo
+Fácil               5     Escutar uma conversa atrás da porta (Percepção)
+Média              10     Subir um barranco (Atletismo)
+Muito difícil      20     Estancar um Sangramento fatal (Medicina)
+Quase Impossível   30     Convencer alguém que não gosta de você a lutar para protegê-lo (Diplomacia)
+                        </pre>
+                    </div>
+
+                    <div class="table-card" style="margin-bottom:1.5rem;">
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">⚔️ Reações</h3>
+                        <p style="margin-bottom:0.5rem;"><strong>Contra-Ataque:</strong><br>
+                        Condição: Um inimigo precisa errar um ataque corpo a corpo em você.<br>
+                        Efeito: O personagem faz um ataque corpo a corpo contra o atacante. Se o contra-ataque for bem-sucedido, ele causa 50% do dano normal.</p>
+                        <p style="margin-bottom:0.5rem;"><strong>Bloqueio:</strong><br>
+                        Condição: Usar escudo ou arma em mãos.<br>
+                        Efeito: Reduz o dano do ataque em um valor igual bônus do escudo + metade da sua CA + Força ou Constituição. Se não estiver usando um escudo não some o bônus do escudo.</p>
+                        <p style="margin-bottom:0.5rem;"><strong>Esquiva:</strong><br>
+                        Condição: Estar consciente e livre.<br>
+                        Efeito: Teste de Destreza contra o ataque. Se vencer, evita o dano. Se empatar, reduz pela metade.</p>
+                        <p style="margin-bottom:0.5rem;"><strong>Ataque de Oportunidade:</strong><br>
+                        Condição: Inimigo se afasta ou se expõe.<br>
+                        Efeito: Ataque com -2 no teste. Causa 100% do dano normal, sem qualquer modificação adicional de bônus ou penalidade.</p>
+                        <p style="margin-bottom:0.5rem;"><strong>Passo Acelerado:</strong><br>
+                        Teste de Atletismo (DT 15) para dobrar o deslocamento. Se falhar, anda metade.</p>
+                    </div>
+
+                    <div class="table-card" style="margin-bottom:1.5rem;">
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🎲 Vantagem &amp; Desvantagem</h3>
+                        <p><strong>Vantagem:</strong> +1 dado (máx. 5d20), usa o maior.<br>
+                        <strong>Desvantagem:</strong> Usa o menor valor entre os dados rolados.</p>
+                    </div>
+
+                    <div class="table-card" style="margin-bottom:1.5rem;">
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🧠 Pontos de Loucura (PL)</h3>
+                        <p style="margin-bottom:0.5rem;">Ganhos por falhas em testes de Vontade em eventos traumáticos.</p>
+                        <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
+PL Total   Efeito
+1–3        Loucura curta
+4–6        Loucura temporária
+7–10       Permanente (moderada)
+11+        Permanente (grave)
+                        </pre>
+                    </div>
+
+                    <div class="table-card" style="margin-bottom:1.5rem;">
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">💤 Descanso e Recuperação</h3>
+                        <p style="margin-bottom:0.5rem;"><strong>Descanso Curto:</strong><br>
+                        • PV: 1d4 + Con<br>
+                        • PA: Recupera 2d8 + o modificador de Vontade (Von) do personagem</p>
+                        <p style="margin-bottom:0.5rem;"><strong>Descanso Longo:</strong><br>
+                        • Recupera tudo de PV<br>
+                        • PA: Recupera metade dos pontos de ação gastados (arredondado para baixo).</p>
+                    </div>
+
+                    <div class="table-card" style="margin-bottom:1.5rem;">
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">☠️ Dano por Queda</h3>
+                        <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
+Altura     Dano
+2m         1d4
+4m         1d6
+6m         1d8
+8m         1d10
+10m        1d12
+12m        3d6
+14m        2d20
+16m+       7d20
+                        </pre>
+                    </div>
+
+                    <div class="table-card" style="margin-bottom:1.5rem;">
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🌟 Inspiração (1d10 após morte de aliado)</h3>
+                        <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
+1:  Determinação Inquebrantável – Resistência 10 contra controle.
+2:  Força do Ódio – +2 For e 1 ação padrão extra.
+3:  Vingança Sombria – +3 Destreza e ataques ignoram resistência.
+4:  Chamas da Vingança – +5 ataque contra o inimigo que matou o aliado.
+5:  Ecos da Morte – Inimigos -3 em ataque e resistência (10m).
+6:  Mente em Luto – Resistência mental 10.
+7:  Resoluto – Recupera 4d8+4 PV e 4d6 PM/PA.
+8:  Renascimento Espiritual – +3 Destreza e +3m deslocamento.
+9:  Loucura Selvagem – Ganha 2 PL, +4 em dano, ignora armadura.
+10: Espírito de Sacrifício – Um aliado pode agir imediatamente com +3 em todos os testes até o final do turno.
+                        </pre>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== OVERLAY DE DADOS (MESTRE) ===== -->
+    <div class="md-overlay" id="md-overlay" onclick="mdCloseOverlay()">
+        <div class="md-overlay-content" onclick="event.stopPropagation()">
+            <h3 class="md-roll-title" id="md-roll-title">Rolando...</h3>
+            <p class="md-roll-subtitle" id="md-roll-subtitle"></p>
+            <div class="md-arena" id="md-arena"></div>
+            <div class="md-result-panel" id="md-result-panel">
+                <div class="md-result-label">Resultado Final</div>
+                <div class="md-final-value" id="md-final-value">0</div>
+                <div class="md-calculation" id="md-calculation"></div>
+            </div>
+            <button class="btn-outline" onclick="mdCloseOverlay()" style="margin-top:1.5rem;">✦ Fechar</button>
+        </div>
+    </div>
+
+    <!-- ===== HISTÓRICO SIDEBAR (MESTRE) ===== -->
+    <div class="md-history-sidebar" id="md-history-sidebar">
+        <div class="md-history-head">
+            <h3>📜 Histórico de Rolagens</h3>
+            <button class="btn-outline small" onclick="mdToggleHistory()">✕</button>
+        </div>
+        <div id="md-history-list" class="md-history-list"></div>
+        <div style="padding:1rem; border-top:1px solid var(--gold-dim);">
+            <button class="btn-outline small w-100" onclick="mdClearHistory()" style="border-color:#e07060; color:#e07060;"><i class="fa-solid fa-trash"></i> Limpar Histórico</button>
+        </div>
+    </div>
+
+    <!-- ===== TOAST (MESTRE DADOS) ===== -->
+    <div class="md-toast" id="md-toast"></div>
+
+    <!-- ===== PAINEL: NPCs SALVOS ===== -->
+    <div class="npc-vault-panel" id="npc-vault-panel">
+        <div class="npc-vault-header">
+            <div>
+                <h3 style="margin:0; font-family:var(--font-epic); font-size:1rem; color:var(--gold-primary);">&#x1F4C1; NPCs Salvos</h3>
+                <p style="margin:0.2rem 0 0; font-size:0.78rem; color:var(--text-muted);">Clique para visualizar</p>
+            </div>
+            <button class="npc-vault-close" onclick="toggleNPCVault()">&#x2715;</button>
+        </div>
+        <div id="npc-vault-list" class="npc-vault-list"></div>
+    </div>
+
+    <!-- Modals -->
+    <div id="sheet-modal" class="hidden" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index: 1000; display:flex; justify-content:center; align-items:center;">
+        <div class="glass-panel" style="width: 95%; height: 95%; position: relative; background: var(--bg-dark); border: 2px solid var(--gold-dim); display:flex; flex-direction:column; overflow:hidden;">
+            <div style="padding: 1rem; border-bottom: 1px solid var(--gold-dim); display:flex; justify-content:space-between; align-items:center; background: rgba(10,10,12,0.9);">
+                <h3 style="margin:0;"><i class="fa-solid fa-scroll"></i> Edição de Ficha (Visão do Mestre)</h3>
+                <button onclick="closeSheetModal()" style="background:none; border:none; color: var(--text-muted); font-size: 1.5rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <iframe src="../Ficha site/index.html" style="width:100%; height:100%; border:none; flex:1;"></iframe>
+        </div>
+    </div>
+
+    <!-- INICIATIVA TEMPLATES -->
+    <template id="rowTemplate">
+        <tr style="border-bottom: 1px solid rgba(212,175,55,0.2);">
+        <td class="name" style="padding:10px;"></td>
+        <td class="num initiative" style="padding:10px;"></td>
+        <td class="num actions" style="padding:10px;">
+            <button class="btn-outline edit" style="padding: 4px 8px; font-size: 12px; margin-right:5px;" title="Editar">✏️</button>
+            <button class="btn-outline danger remove" style="padding: 4px 8px; font-size: 12px; color: var(--red-blood); border-color: var(--red-blood);" title="Remover">🗑️</button>
+        </td>
+        </tr>
+    </template>
+
+    <dialog id="editDialog" style="background:transparent; border:none;">
+        <form method="dialog" id="editForm" class="glass-panel" style="min-width:320px; background:var(--bg-dark); color:var(--text-light); border:1px solid var(--gold-dim); border-radius:6px; padding:24px;">
+        <h3 style="margin:0 0 16px;">✦ Editar Entrada</h3>
+        <label style="display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.06em;color:var(--gold-dark);text-transform:uppercase;">Nome</label>
+        <input id="editName" type="text" style="width:100%;margin:6px 0 14px; background:rgba(0,0,0,0.5); color:white; border:1px solid var(--gold-dim); padding: 8px;">
+        <label style="display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.06em;color:var(--gold-dark);text-transform:uppercase;">Iniciativa (número)</label>
+        <input id="editInit" type="number" step="1" style="width:100%;margin:6px 0 20px; background:rgba(0,0,0,0.5); color:white; border:1px solid var(--gold-dim); padding: 8px;">
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button class="btn-outline" value="cancel">Cancelar</button>
+            <button class="btn-outline" value="ok" style="color:var(--gold-primary); border-color:var(--gold-primary);">✦ Salvar</button>
+        </div>
+        </form>
+    </dialog>
+
+    <script src="js/app.js?v=2"></script>
+    <script src="js/pdf-viewer.js?v=2"></script>
+    <script src="js/npc.js?v=2"></script>
+    <script src="js/eventos.js?v=2"></script>
+    <script src="js/iniciativa.js?v=2"></script>
+    <script src="js/itens.js?v=2"></script>
+    <script src="js/monstros.js?v=2"></script>
+    <script src="js/dados.js?v=1"></script>
+</body>
+</html>

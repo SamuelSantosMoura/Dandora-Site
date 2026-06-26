@@ -1,0 +1,686 @@
+/* ============================================================
+   DANDORA — Heraldic Fantasy Theme
+   Paleta: Azul-marinho profundo + Ouro envelhecido
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap');
+
+/* === VARIÁVEIS GLOBAIS === */
+:root {
+  --navy:        #0d1b2e;
+  --navy-mid:    #122040;
+  --navy-light:  #1a2d50;
+  --linen:       #0f1e36;   /* fundo tipo linho escuro */
+
+  --gold:        #c9a84c;
+  --gold-light:  #e8c96e;
+  --gold-bright: #f5d87a;
+  --gold-dark:   #8a6520;
+  --gold-dim:    #6b4f20;
+
+  --text-main:   #f0e6c8;
+  --text-muted:  #a89060;
+  --text-bright: #fdf3d8;
+
+  --border-gold: #c9a84c;
+  --border-thin: 1px solid #c9a84c55;
+
+  --shadow-gold: 0 0 18px rgba(201,168,76,0.18), 0 4px 32px rgba(0,0,0,0.7);
+  --shadow-deep: 0 8px 40px rgba(0,0,0,0.8);
+  --radius:      6px;
+
+  --font-title:  'Cinzel Decorative', serif;
+  --font-heading:'Cinzel', serif;
+  --font-body:   'IM Fell English', serif;
+}
+
+/* === RESET BÁSICO === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* === BODY — FUNDO LINHO MARINHO === */
+body {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--text-main);
+  background-color: var(--navy);
+  background-image:
+    /* Textura sutil de linho */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(255,255,255,0.012) 3px,
+      rgba(255,255,255,0.012) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(255,255,255,0.012) 3px,
+      rgba(255,255,255,0.012) 4px
+    ),
+    radial-gradient(ellipse at 30% 20%, rgba(201,168,76,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(12,30,60,0.8) 0%, transparent 50%),
+    linear-gradient(160deg, #0a1525 0%, #0d1b2e 50%, #091322 100%);
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+}
+
+/* === CONTAINER PRINCIPAL — BORDAS DUPLAS DOURADAS === */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  background:
+    linear-gradient(180deg, rgba(201,168,76,0.04) 0%, transparent 30%),
+    var(--navy-mid);
+  border-radius: var(--radius);
+  padding: 40px 44px;
+  box-shadow: var(--shadow-gold);
+
+  /* Borda dupla dourada envelhecida */
+  border: 2px solid var(--gold);
+  outline: 1px solid rgba(201,168,76,0.25);
+  outline-offset: -8px;
+  position: relative;
+}
+
+/* Cantos decorativos com moedas douradas */
+.container::before,
+.container::after {
+  content: '✦';
+  position: absolute;
+  bottom: 10px;
+  font-size: 22px;
+  color: var(--gold);
+  text-shadow: 0 0 10px rgba(201,168,76,0.6);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+}
+.container::before { left: 16px; }
+.container::after  { right: 16px; }
+
+/* === TÍTULOS H1 — DANDORA STYLE === */
+h1 {
+  font-family: var(--font-title);
+  font-size: clamp(26px, 3.5vw, 46px);
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 0.12em;
+  margin-bottom: 28px;
+  line-height: 1.2;
+
+  color: transparent;
+  background: linear-gradient(180deg,
+    var(--gold-bright) 0%,
+    var(--gold)        40%,
+    var(--gold-dark)   70%,
+    var(--gold-bright) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  text-shadow: none;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.9)) drop-shadow(0 1px 0 rgba(201,168,76,0.4));
+
+  position: relative;
+}
+
+/* Linha ornamental abaixo do H1 */
+h1::after {
+  content: '⸻ ✦ ⸻';
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  letter-spacing: 0.3em;
+  color: var(--gold-dark);
+  margin-top: 8px;
+  text-shadow: 0 0 8px rgba(201,168,76,0.3);
+}
+
+/* === H2 e H3 === */
+h2 {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.06em;
+  text-align: center;
+  margin-bottom: 16px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+}
+
+h3 {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  border-bottom: 1px solid rgba(201,168,76,0.3);
+  padding-bottom: 6px;
+}
+
+/* === SEÇÕES === */
+.section {
+  margin-bottom: 40px;
+}
+
+/* === BOXES / CARDS === */
+.box {
+  background:
+    linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 40%),
+    rgba(13, 27, 46, 0.7);
+  border: 1px solid rgba(201,168,76,0.4);
+  border-left: 4px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin-bottom: 24px;
+  box-shadow: inset 0 1px 0 rgba(201,168,76,0.12), 0 4px 20px rgba(0,0,0,0.5);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.box:hover {
+  border-color: rgba(201,168,76,0.7);
+  box-shadow: inset 0 1px 0 rgba(201,168,76,0.2),
+              0 4px 20px rgba(0,0,0,0.5),
+              0 0 20px rgba(201,168,76,0.08);
+}
+
+.box h3 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.box p, .box ul, .box pre {
+  line-height: 1.85;
+  color: var(--text-main);
+  white-space: pre-wrap;
+  font-size: 16px;
+}
+
+.box b, .box strong {
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.box ul {
+  padding-left: 22px;
+}
+
+.box ul li {
+  margin-bottom: 4px;
+}
+
+.box pre {
+  font-family: var(--font-body);
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 4px;
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+
+/* === NAVEGAÇÃO — BOTÕES E LINKS === */
+.buttons {
+  text-align: center;
+  margin-bottom: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttons button,
+.buttons .button-link,
+button#goria,
+a.button-link {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--gold-bright);
+
+  background: linear-gradient(180deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.05) 100%);
+  border: 1px solid rgba(201,168,76,0.55);
+  border-radius: 4px;
+  padding: 10px 18px;
+  cursor: pointer;
+  display: inline-block;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,168,76,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.buttons button::before,
+.buttons .button-link::before,
+a.button-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(201,168,76,0.18) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.buttons button:hover,
+.buttons .button-link:hover,
+a.button-link:hover {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+  box-shadow: 0 0 16px rgba(201,168,76,0.3), 0 2px 8px rgba(0,0,0,0.5);
+  transform: translateY(-1px);
+}
+
+.buttons button:hover::before,
+.buttons .button-link:hover::before,
+a.button-link:hover::before {
+  opacity: 1;
+}
+
+.buttons button:active,
+a.button-link:active {
+  transform: translateY(0px);
+}
+
+/* === BOTÃO GENÉRICO (para páginas que usam <button> avulso) === */
+button {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  background: linear-gradient(180deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.05) 100%);
+  border: 1px solid rgba(201,168,76,0.55);
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+button:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 16px rgba(201,168,76,0.3);
+  transform: translateY(-1px);
+}
+
+button:active { transform: translateY(0); }
+
+/* === SELECT === */
+select {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--text-main);
+  background: var(--navy-mid);
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-top: 10px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+select:focus, select:hover {
+  border-color: var(--gold);
+}
+
+/* === INPUTS E TEXTAREA === */
+input[type="text"],
+input[type="number"],
+textarea {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--text-main);
+  background: rgba(10, 20, 40, 0.8);
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 4px;
+  padding: 10px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 10px rgba(201,168,76,0.2);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* === ÁREA DE NPC === */
+.npc {
+  margin-bottom: 24px;
+}
+
+.npc-field {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+  color: var(--text-main);
+  font-size: 16px;
+}
+
+.npc-field .label,
+.label {
+  font-family: var(--font-heading);
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-right: 6px;
+}
+
+.npc-field input[type="number"] {
+  width: 80px;
+  margin-left: 8px;
+}
+
+/* === DIV DE EVENTO === */
+#evento {
+  margin-top: 24px;
+  padding: 22px 26px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 40%), rgba(13,27,46,0.7);
+  border: 1px solid rgba(201,168,76,0.4);
+  border-left: 4px solid var(--gold);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--text-main);
+  min-height: 60px;
+}
+
+/* === INPUT NOVO EVENTO === */
+#novo-evento {
+  width: 80%;
+  padding: 12px 16px;
+  font-size: 15px;
+  margin-top: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(201,168,76,0.4);
+  background: rgba(10, 20, 40, 0.8);
+  color: var(--text-main);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 16px;
+}
+
+/* === BOTÃO GORIA (ADICIONAR EVENTO) === */
+#goria {
+  background: linear-gradient(180deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.05) 100%);
+  border: 1px solid rgba(201,168,76,0.55);
+  color: var(--gold-bright);
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 12px auto;
+  text-align: center;
+  display: block;
+  padding: 10px 24px;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.25s;
+}
+
+#goria:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 16px rgba(201,168,76,0.3);
+}
+
+/* === WRAP para iniciativa === */
+.wrap {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* === CARDS da iniciativa === */
+.card {
+  background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 40%), rgba(13,27,46,0.8);
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.controls {
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.6fr auto auto;
+  gap: 12px;
+}
+
+.controls input[type="text"],
+.controls input[type="number"] {
+  width: 100%;
+}
+
+.btn {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 11px 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(201,168,76,0.4);
+  background: rgba(13,27,46,0.9);
+  color: var(--gold-bright);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.btn:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 14px rgba(201,168,76,0.25);
+  transform: translateY(-1px);
+}
+
+.btn:active { transform: translateY(0); }
+
+.btn.primary {
+  background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.08));
+  border-color: rgba(201,168,76,0.6);
+}
+
+.btn.danger {
+  border-color: rgba(180,60,40,0.5);
+  color: #e07060;
+}
+
+.btn.danger:hover {
+  border-color: #e07060;
+  box-shadow: 0 0 14px rgba(180,60,40,0.25);
+}
+
+/* === TABELA (iniciativa) === */
+.table-wrap { margin-top: 14px; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--gold-dark);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(201,168,76,0.3);
+}
+
+tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+  color: var(--text-main);
+  font-size: 16px;
+}
+
+tbody tr:hover {
+  background: rgba(201,168,76,0.05);
+}
+
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+.chip {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.4);
+  color: var(--gold-bright);
+  font-family: var(--font-heading);
+  font-size: 14px;
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 10px;
+  padding: 4px 16px 8px;
+  font-style: italic;
+}
+
+/* === DIALOG (editar iniciativa) === */
+dialog {
+  background: var(--navy-mid);
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: var(--radius);
+  color: var(--text-main);
+  box-shadow: var(--shadow-deep);
+  padding: 0;
+}
+
+dialog::backdrop {
+  background: rgba(0,0,0,0.75);
+}
+
+/* === GRID DE MONSTROS === */
+.monster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.monster-card {
+  background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 40%), rgba(13,27,46,0.8);
+  border: 1px solid rgba(201,168,76,0.35);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.monster-card:hover {
+  border-color: rgba(201,168,76,0.6);
+  box-shadow: 0 0 20px rgba(201,168,76,0.1);
+}
+
+.monster-card label {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold-dark);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.monster-card input,
+.monster-card textarea {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* === SEPARADOR ORNAMENTAL === */
+.divider {
+  text-align: center;
+  color: var(--gold-dark);
+  letter-spacing: 0.3em;
+  margin: 20px 0;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* === HEADER DE PÁGINA === */
+header.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: clamp(20px, 2.4vw, 28px);
+  letter-spacing: 0.08em;
+  color: transparent;
+  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.8));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-title .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
+  flex-shrink: 0;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  body { padding: 12px 8px 36px; }
+  .container { padding: 24px 18px; }
+  .controls { grid-template-columns: 1fr 1fr; }
+  .controls .btn.reset { grid-column: span 2; }
+  .num { text-align: left; }
+  h1 { font-size: 22px; }
+}
+
+@media (max-width: 480px) {
+  .buttons { flex-direction: column; align-items: stretch; }
+  .buttons a, .buttons button { text-align: center; }
+}
+
+/* === ANIMAÇÕES SUTIS === */
+@keyframes goldShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.box, .card, .monster-card {
+  animation: fadeInUp 0.4s ease both;
+}

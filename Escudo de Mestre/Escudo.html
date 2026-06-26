@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Escudo do Mestre Dandora — referência rápida de regras, reações, status e muito mais.">
+  <title>Escudo do Mestre — Dandora</title>
+  <link rel="stylesheet" href="Aparencia.css">
+  <link rel="shortcut icon" href="Image/Logo/favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+
+    <h1>Dandora</h1>
+    <p style="text-align:center; font-family:'Cinzel',serif; color:var(--gold-dark); letter-spacing:0.2em; font-size:13px; margin-top:-18px; margin-bottom:28px;">ESCUDO DO MESTRE</p>
+
+    <nav class="buttons">
+      <a class="button-link" href="index.html">⚔ Gerar NPC</a>
+      <a class="button-link" href="Escudo.html">📜 Escudo do Mestre</a>
+      <a class="button-link" href="Monstros.html">🐉 Monstros</a>
+      <a class="button-link" href="eventos.html">🎲 Eventos</a>
+      <a class="button-link" href="iniciativa.html">⚡ Iniciativa</a>
+      <a class="button-link" href="itens.html">✨ Itens Mágicos</a>
+    </nav>
+
+    <div class="section">
+
+      <div class="box">
+        <h3>🎯 Dificuldade</h3>
+        <pre>
+Tarefa              DT    Exemplo
+Fácil               5     Escutar uma conversa atrás da porta (Percepção)
+Média              10     Subir um barranco (Atletismo)
+Muito difícil      20     Estancar um Sangramento fatal (Medicina)
+Quase Impossível   30     Convencer alguém que não gosta de você a lutar para protegê-lo (Diplomacia)
+        </pre>
+      </div>
+
+      <div class="box">
+        <h3>⚔️ Reações</h3>
+        <p><strong>Contra-Ataque:</strong><br>
+        Condição: Um inimigo precisa errar um ataque corpo a corpo em você.<br>
+        Efeito: O personagem faz um ataque corpo a corpo contra o atacante. Se o contra-ataque for bem-sucedido, ele causa 50% do dano normal.</p>
+
+        <p><strong>Bloqueio:</strong><br>
+        Condição: Usar escudo ou arma em mãos.<br>
+        Efeito: Reduz o dano do ataque em um valor igual bônus do escudo + metade da sua CA + Força ou Constituição. Se não estiver usando um escudo não some o bônus do escudo.</p>
+
+        <p><strong>Esquiva:</strong><br>
+        Condição: Estar consciente e livre.<br>
+        Efeito: Teste de Destreza contra o ataque. Se vencer, evita o dano. Se empatar, reduz pela metade.</p>
+
+        <p><strong>Ataque de Oportunidade:</strong><br>
+        Condição: Inimigo se afasta ou se expõe.<br>
+        Efeito: Ataque com -2 no teste. Causa 100% do dano normal, sem qualquer modificação adicional de bônus ou penalidade.</p>
+
+        <p><strong>Passo Acelerado:</strong><br>
+        Teste de Atletismo (DT 15) para dobrar o deslocamento. Se falhar, anda metade.</p>
+      </div>
+
+      <div class="box">
+        <h3>🎲 Vantagem &amp; Desvantagem</h3>
+        <p><strong>Vantagem:</strong> +1 dado (máx. 5d20), usa o maior.<br>
+        <strong>Desvantagem:</strong> Usa o menor valor entre os dados rolados.</p>
+      </div>
+
+      <div class="box">
+        <h3>🧠 Pontos de Loucura (PL)</h3>
+        <p>Ganhos por falhas em testes de Vontade em eventos traumáticos.</p>
+        <pre>
+PL Total   Efeito
+1–3        Loucura curta
+4–6        Loucura temporária
+7–10       Permanente (moderada)
+11+        Permanente (grave)
+        </pre>
+      </div>
+
+      <div class="box">
+        <h3>💤 Descanso e Recuperação</h3>
+        <p><strong>Descanso Curto:</strong><br>
+        • PV: 1d4 + Con<br>
+        • PA: Recupera 2d8 + o modificador de Vontade (Von) do personagem</p>
+        <p><strong>Descanso Longo:</strong><br>
+        • Recupera tudo de PV<br>
+        • PA: Recupera metade dos pontos de ação gastados (arredondado para baixo).</p>
+      </div>
+
+      <div class="box">
+        <h3>☠️ Dano por Queda</h3>
+        <pre>
+Altura     Dano
+2m         1d4
+4m         1d6
+6m         1d8
+8m         1d10
+10m        1d12
+12m        3d6
+14m        2d20
+16m+       7d20
+        </pre>
+      </div>
+
+      <div class="box">
+        <h3>🧛‍♂️ Transformação Vampírica</h3>
+        <p>Se não beber sangue em 5 turnos/20 minutos, o personagem se transforma em um <strong>Vampa</strong>, perdendo a inteligência e tornando-se um monstro.</p>
+      </div>
+
+      <div class="box">
+        <h3>🌟 Inspiração (1d10 após a morte de um aliado)</h3>
+        <pre>
+1:  Determinação Inquebrantável – Resistência 10 contra controle.
+2:  Força do Ódio – +2 For e 1 ação padrão extra.
+3:  Vingança Sombria – +3 Destreza e ataques ignoram resistência.
+4:  Chamas da Vingança – +5 ataque contra o inimigo que matou o aliado.
+5:  Ecos da Morte – Inimigos -3 em ataque e resistência (10m).
+6:  Mente em Luto – Resistência mental 10.
+7:  Resoluto – Recupera 4d8+4 PV e 4d6 PM/PA.
+8:  Renascimento Espiritual – +3 Destreza e +3m deslocamento.
+9:  Loucura Selvagem – Ganha 2 PL, +4 em dano, ignora armadura.
+10: Espírito de Sacrifício – Um aliado pode agir imediatamente com +3 em todos os testes até o final do turno.
+        </pre>
+      </div>
+
+      <div class="box">
+        <h3>⚠️ Status</h3>
+        <pre style="line-height:1.9;">
+<b>Em Chamas</b>
+<span style="color:var(--text-main);">O personagem está pegando fogo. Sofre 1d6 de dano de fogo no início de cada rodada. O personagem (ou um aliado adjacente) deve gastar uma Ação Padrão para apagar as chamas (rolar no chão, usar um manto, água, etc.).</span>
+
+<b>Envenenado</b>
+<span style="color:var(--text-main);">Toxinas correm pelas veias do personagem. Sofre 1d4 de dano de veneno a cada rodada. Além disso, o personagem sofre Desvantagem em ataques e testes de perícia enquanto o veneno persistir (devido à náusea e dor). Uso de um item Antídoto, magia de cura de venenos ou passar em um Teste de Constituição (DT variável) após 1 minuto.</span>
+
+<b>Sangrando</b>
+<span style="color:var(--text-main);">Um ferimento aberto que não para de jorrar. Sofre 1d4 de dano no início de cada turno. O dano é cumulativo se sofrer múltiplos sangramentos (ex: 2d4, 3d4). Qualquer cura mágica estanca o sangramento, ou um teste de Medicina/Primeiros Socorros (DT 15) como ação padrão.</span>
+
+<b>Dormindo/Inconsciente</b>
+<span style="color:var(--text-main);">O personagem larga tudo o que está segurando e cai no chão (Caído). Falha automaticamente em testes de Força e Destreza. Ataques contra ele a curta distância são Críticos Automáticos. Acorda se sofrer dano ou se alguém gastar uma ação para sacudi-lo.</span>
+
+<b>Morrendo</b>
+<span style="color:var(--text-main);">O limiar entre a vida e a morte. Ao chegar a 0 Pontos de Vida, o personagem cai inconsciente. No início de cada turno dele, deve fazer um Teste de Constituição (DT 10 ou 15).
+<b>Sucesso:</b> Permanece vivo por mais uma rodada.
+<b>Falha:</b> O personagem morre definitivamente.</span>
+
+<b>Exaustão</b>
+<span style="color:var(--text-main);">Nível 1: Desvantagem em testes de habilidade/perícia.
+Nível 2: Deslocamento reduzido pela metade.
+Nível 3: Desvantagem em rolagens de ataque e testes de resistência.
+Nível 4: Pontos de Vida Máximos reduzidos pela metade.
+Nível 5: Deslocamento reduzido a 0.
+Nível 6: Morte por colapso total.
+Recuperação: Descanso Longo reduz 1 nível de exaustão.</span>
+
+<b>Confuso</b>
+<span style="color:var(--text-main);">No início do turno, role 1d6:
+1: Move-se em direção aleatória.
+2-3: Fica parado balbuciando (perde o turno, mas pode reagir).
+4-5: Ataca a criatura mais próxima (amigo ou inimigo).
+6: A condição termina e o personagem age normalmente.</span>
+
+<b>Amedrontado</b>
+<span style="color:var(--text-main);">Desvantagem em ataques e testes. O personagem não pode se mover voluntariamente para perto da fonte do medo. Teste de Vontade ao início de cada turno para encerrar o efeito.</span>
+
+<b>Cego</b>
+<span style="color:var(--text-main);">Falha automática em testes que dependam da visão. -6 em testes de Destreza e Força. Ataques contra o personagem cego têm Vantagem. Os ataques do personagem cego têm Desvantagem.</span>
+
+<b>Surdo</b>
+<span style="color:var(--text-main);">Falha automática em testes de escuta. -10 em Percepção. Magias têm Desvantagem ao lançar magias com componentes verbais.</span>
+
+<b>Fraco</b>
+<span style="color:var(--text-main);">O personagem perde quaisquer bônus de perícia em rolagens e a Classe de Dificuldade (DT) dos seus testes aumenta em +2 ou +5.</span>
+
+<b>Vulnerável</b>
+<span style="color:var(--text-main);">O personagem sofre o dobro do dano de uma fonte específica (ou de todas, se especificado).</span>
+
+<b>Petrificado</b>
+<span style="color:var(--text-main);">Transformado em pedra ou material sólido. O personagem fica Imóvel e Inconsciente. Ganha Resistência a todos os danos, mas falha automaticamente em testes de Destreza e Força. O peso do personagem aumenta 10x.</span>
+
+<b>Atordoado</b>
+<span style="color:var(--text-main);">O personagem não pode realizar ações ou reações. Falha automaticamente em testes de Força e Destreza. Ataques contra ele têm Vantagem.</span>
+
+<b>Paralisado</b>
+<span style="color:var(--text-main);">O personagem não pode se mover ou falar. Ataques contra ele têm Vantagem. Qualquer ataque físico que atinja um alvo paralisado a menos de 1,5m é um Crítico Automático.</span>
+
+<b>Agarrado/Imobilizado</b>
+<span style="color:var(--text-main);">O deslocamento do personagem se torna 0. Ele não recebe bônus de Destreza na CA. Para escapar, deve gastar uma ação para fazer um teste de Atletismo ou Acrobacia.</span>
+
+<b>Invisível</b>
+<span style="color:var(--text-main);">O personagem tem Vantagem em ataques que realizar. Ataques contra o personagem invisível têm Desvantagem.</span>
+
+<b>Enfeitiçado</b>
+<span style="color:var(--text-main);">O personagem vê o conjurador como um amigo próximo. O personagem não pode atacar o conjurador ou alvejá-lo com habilidades nocivas. O efeito acaba se o conjurador atacar o personagem.</span>
+
+<b>Silenciado</b>
+<span style="color:var(--text-main);">O personagem não pode falar. É incapaz de conjurar magias. Imune a dano sônico.</span>
+
+<b>Caído</b>
+<span style="color:var(--text-main);">O personagem está deitado no chão. Só pode se mover rastejando (metade do deslocamento). Ataques corpo a corpo contra ele têm Vantagem, mas ataques à distância têm Desvantagem. Levantar-se gasta metade do movimento.</span>
+        </pre>
+      </div>
+
+    </div><!-- /section -->
+
+    <div class="box">
+      <h3>⭐ Pontos de Destino</h3>
+
+      <p><b>Como Gastar (1 Ponto):</b></p>
+
+      <p><b>Alterar a Cena:</b> Adiciona um elemento narrativo ou vantagem ao cenário (com aprovação do Mestre).</p>
+
+      <p><b>Re-rolar (Você):</b> Refaz um teste falho seu (o segundo resultado é definitivo).</p>
+
+      <p><b>Re-rolar (Mestre):</b> Obriga o Mestre a refazer um teste contra você ou o grupo.</p>
+
+      <p><b>Intervenção Dramática (Apenas 1x por sessão):</b> Muda drasticamente o rumo da história para evitar desastres ou revelar segredos (exige negociação).</p>
+
+      <h3 style="margin-top:20px;">Regras Gerais</h3>
+
+      <p><b>Limite:</b> Máximo de 3 pontos acumulados por personagem (excedente é perdido).</p>
+
+      <p><b>Validade:</b> Pontos não expiram, mas podem ser zerados pelo Mestre ao fim de um arco.</p>
+
+      <p><b>Foco:</b> Ferramenta para criar narrativa e cenas memoráveis, não apenas mecânica.</p>
+    </div>
+
+  </div><!-- /container -->
+</body>
+</html>

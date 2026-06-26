@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rastreador de iniciativa para o RPG Dandora — ordene os combatentes por ordem de iniciativa.">
+  <title>Iniciativa de RPG — Dandora</title>
+  <link rel="shortcut icon" href="Image/Logo/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="Aparencia.css">
+</head>
+<body>
+  <div class="container">
+
+    <h1>Dandora</h1>
+    <p style="text-align:center; font-family:'Cinzel',serif; color:var(--gold-dark); letter-spacing:0.2em; font-size:13px; margin-top:-18px; margin-bottom:28px;">INICIATIVA DE RPG</p>
+
+    <nav class="buttons">
+      <a class="button-link" href="index.html">⚔ Gerar NPC</a>
+      <a class="button-link" href="Escudo.html">📜 Escudo do Mestre</a>
+      <a class="button-link" href="Monstros.html">🐉 Monstros</a>
+      <a class="button-link" href="eventos.html">🎲 Eventos</a>
+      <a class="button-link" href="iniciativa.html">⚡ Iniciativa</a>
+      <a class="button-link" href="itens.html">✨ Itens Mágicos</a>
+    </nav>
+
+    <header class="page-header" style="margin-bottom:20px;">
+      <div class="page-title">
+        <span class="dot"></span>
+        Ordem de Combate
+      </div>
+      <button id="resetBtn" class="btn danger reset" title="Apagar tudo">🗑️ Limpar Lista</button>
+    </header>
+
+    <section class="card">
+      <div class="controls">
+        <input id="nameInput"  type="text"   placeholder="Nome do personagem / criatura" autocomplete="off" />
+        <input id="initInput"  type="number" inputmode="numeric" step="1" placeholder="Iniciativa" />
+        <button id="addBtn"  class="btn primary" title="Adicionar entrada">➕ Adicionar</button>
+        <button id="rollBtn" class="btn"         title="Rolar d20 e somar ao modificador digitado">🎲 d20 + mod</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th class="num">Iniciativa</th>
+              <th class="num">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="listBody"></tbody>
+        </table>
+        <div class="hint">Dica: a lista é ordenada automaticamente em <b>ordem decrescente</b> (maior para menor) pelo número de iniciativa.</div>
+      </div>
+    </section>
+
+  </div><!-- /container -->
+
+  <template id="rowTemplate">
+    <tr>
+      <td class="name"></td>
+      <td class="num initiative"></td>
+      <td class="num actions">
+        <button class="btn edit"   title="Editar">✏️</button>
+        <button class="btn danger remove" title="Remover">🗑️</button>
+      </td>
+    </tr>
+  </template>
+
+  <dialog id="editDialog">
+    <form method="dialog" id="editForm" style="min-width:320px;background:var(--navy-mid);color:var(--text-main);border:1px solid rgba(201,168,76,0.4);border-radius:6px;padding:24px;box-shadow:var(--shadow-deep);">
+      <h3 style="margin:0 0 16px;">✦ Editar Entrada</h3>
+      <label style="display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.06em;color:var(--gold-dark);text-transform:uppercase;">Nome</label>
+      <input id="editName" type="text" style="width:100%;margin:6px 0 14px;">
+      <label style="display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.06em;color:var(--gold-dark);text-transform:uppercase;">Iniciativa (número)</label>
+      <input id="editInit" type="number" step="1" style="width:100%;margin:6px 0 20px;">
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn" value="cancel">Cancelar</button>
+        <button class="btn primary" value="ok">✦ Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const nameInput  = document.getElementById('nameInput');
+    const initInput  = document.getElementById('initInput');
+    const addBtn     = document.getElementById('addBtn');
+    const rollBtn    = document.getElementById('rollBtn');
+    const resetBtn   = document.getElementById('resetBtn');
+    const listBody   = document.getElementById('listBody');
+    const rowTemplate = document.getElementById('rowTemplate');
+    const editDialog = document.getElementById('editDialog');
+    const editName   = document.getElementById('editName');
+    const editInit   = document.getElementById('editInit');
+
+    let items = load() || [];
+
+    function save() {
+      try { localStorage.setItem('initiative-items', JSON.stringify(items)); } catch {}
+    }
+    function load() {
+      try { return JSON.parse(localStorage.getItem('initiative-items')) || []; } catch { return []; }
+    }
+
+    function toNumber(value) {
+      if (value === '' || value === null || value === undefined) return NaN;
+      const n = Number(value);
+      return Number.isFinite(n) ? n : NaN;
+    }
+
+    function sortItems() {
+      items.sort((a, b) => b.init - a.init);
+    }
+
+    function clearInputs() {
+      nameInput.value = '';
+      initInput.value = '';
+      nameInput.focus();
+    }
+
+    function render() {
+      listBody.innerHTML = '';
+      sortItems();
+      for (const item of items) {
+        const row = rowTemplate.content.firstElementChild.cloneNode(true);
+        row.querySelector('.name').textContent = item.name;
+        row.querySelector('.initiative').innerHTML = `<span class="chip">${item.init}</span>`;
+        row.querySelector('.edit').addEventListener('click', () => openEdit(item));
+        row.querySelector('.remove').addEventListener('click', () => removeItem(item.id));
+        listBody.appendChild(row);
+      }
+      save();
+    }
+
+    function addItem() {
+      const name = (nameInput.value || '').trim();
+      const init = toNumber(initInput.value);
+      if (!name) { alert('Digite um nome.'); nameInput.focus(); return; }
+      if (!Number.isFinite(init)) { alert('Iniciativa inválida: use apenas números (ex.: 12).'); initInput.focus(); return; }
+      items.push({ id: crypto.randomUUID(), name, init });
+      render();
+      clearInputs();
+    }
+
+    function removeItem(id) {
+      items = items.filter(i => i.id !== id);
+      render();
+    }
+
+    function openEdit(item) {
+      editName.value = item.name;
+      editInit.value = item.init;
+      editDialog.returnValue = 'cancel';
+      editDialog.showModal();
+      editDialog.onclose = () => {
+        if (editDialog.returnValue !== 'ok') return;
+        const name = editName.value.trim();
+        const init = toNumber(editInit.value);
+        if (!name) return alert('Nome não pode ficar vazio.');
+        if (!Number.isFinite(init)) return alert('Iniciativa inválida.');
+        const idx = items.findIndex(x => x.id === item.id);
+        if (idx !== -1) { items[idx] = { ...items[idx], name, init }; render(); }
+      };
+    }
+
+    function rollD20PlusMod() {
+      const mod = toNumber(initInput.value);
+      if (!Number.isFinite(mod)) { alert('Digite seu modificador numérico no campo de iniciativa para usar d20 + mod.'); initInput.focus(); return; }
+      const d20 = Math.floor(Math.random() * 20) + 1;
+      initInput.value = d20 + mod;
+      addBtn.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:200});
+    }
+
+    addBtn.addEventListener('click', addItem);
+    rollBtn.addEventListener('click', rollD20PlusMod);
+    resetBtn.addEventListener('click', () => {
+      if (confirm('Tem certeza que deseja limpar toda a lista?')) { items = []; render(); clearInputs(); }
+    });
+
+    [nameInput, initInput].forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); }));
+
+    render();
+  </script>
+</body>
+</html>

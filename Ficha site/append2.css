@@ -1,0 +1,140 @@
+/* ==========================================================================
+   ATRIBUTOS CARDS (NOVO REDESIGN)
+   ========================================================================== */
+.attributes-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 30px;
+}
+.attr-card {
+  background: linear-gradient(135deg, rgba(20,30,50,0.8), rgba(10,15,25,0.9));
+  border: 2px solid var(--gold-dark);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 6px rgba(0,0,0,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.attr-card:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 15px rgba(201,168,76,0.2), 0 6px 12px rgba(0,0,0,0.6);
+  border-color: var(--gold);
+}
+.attr-card .attr-title {
+  font-family: var(--font-heading);
+  color: var(--gold-light);
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+}
+.attr-card input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: #fff;
+  padding: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+.attr-card input:focus {
+  outline: none;
+}
+.attr-card .btn-roll {
+  position: absolute;
+  bottom: -12px;
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dark);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.attr-card .btn-roll:hover {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 8px var(--gold);
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   COMBAT STATUS & EPIC SHIELD
+   ========================================================================== */
+.combat-status-area {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 30px;
+  background: rgba(0,0,0,0.2);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(201,168,76,0.2);
+}
+
+.epic-shield-wrapper {
+  flex: 0 0 auto;
+}
+.epic-shield {
+  width: 110px;
+  height: 130px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120"><path d="M50 0 L100 20 L100 70 L50 120 L0 70 L0 20 Z" fill="%230a1428" stroke="%23c9a84c" stroke-width="4"/></svg>') no-repeat center center;
+  background-size: contain;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  filter: drop-shadow(0 0 10px rgba(201,168,76,0.3));
+}
+.shield-label {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  color: var(--gold-light);
+  text-transform: uppercase;
+  margin-top: -10px;
+  margin-bottom: -5px;
+  letter-spacing: 1px;
+}
+.epic-shield input {
+  width: 80px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 38px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+.quick-stats-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.quick-stats-col .q-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  padding: 6px 12px;
+}
+.quick-stats-col .q-stat label {
+  margin: 0;
+  font-size: 11px;
+}
+.quick-stats-col .q-stat input {
+  width: 60px;
+  text-align: right;
+  font-size: 18px;
+}

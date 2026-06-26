@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ficha de Personagem Digital para o RPG Dandora.">
+  <title>Ficha de Personagem — Dandora RPG</title>
+  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="shortcut icon" href="../Escudo de Mestre/Image/Logo/favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+  <!-- ==================== TABS NAV ==================== -->
+  <nav class="tabs-nav">
+    <button type="button" class="tab-btn active" onclick="switchTab('principal')">⚔ Principal</button>
+    <button type="button" class="tab-btn" onclick="switchTab('habilidades')">🏅 Habilidades</button>
+    <button type="button" class="tab-btn" onclick="switchTab('inventario')">🎒 Inventário</button>
+    <button type="button" class="tab-btn" onclick="switchTab('magias')">✨ Magias & Anotações</button>
+  </nav>
+
+  <div class="container sheet-container">
+    
+    <!-- ==================== TAB: PRINCIPAL ==================== -->
+    <div id="tab-principal" class="tab-content active">
+      
+      <!-- HEADER -->
+      <header class="sheet-header">
+        <div class="character-portrait">
+          <div class="portrait-frame" id="portrait-frame" onclick="document.getElementById('portrait-input').click()">
+            <img id="portrait-img" src="" alt="Retrato do Personagem" style="display:none;">
+            <div class="portrait-placeholder" id="portrait-placeholder">
+              <span class="portrait-icon">👤</span>
+              <span class="portrait-text">Adicionar<br>Imagem</span>
+            </div>
+          </div>
+          <input type="file" id="portrait-input" accept="image/*" onchange="handlePortrait(event)" style="display:none;">
+          <button type="button" class="btn small" onclick="removePortrait()" id="btn-remove-portrait" style="display:none; margin-top: 8px; width: 100%;">✕ Remover</button>
+        </div>
+        
+        <div class="identity-info">
+          <div class="id-row">
+            <div class="id-field" style="flex: 2;"><label for="nome">Personagem</label><input type="text" id="nome"></div>
+            <div class="id-field"><label for="jogador">Jogador</label><input type="text" id="jogador"></div>
+          </div>
+          <div class="id-row">
+            <div class="id-field"><label for="classe">Classe</label><input type="text" id="classe"></div>
+            <div class="id-field"><label for="origem">Origem</label><input type="text" id="origem"></div>
+          </div>
+          <div class="id-row">
+            <div class="id-field"><label for="heranca">Herança</label><input type="text" id="heranca"></div>
+            <div class="id-field"><label for="nivel">Nível</label><input type="text" id="nivel"></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="divider">⸻ ✦ ⸻</div>
+
+      <!-- 2-COLUMN GRID -->
+      <div class="main-sheet-grid">
+        
+        <!-- LEFT COLUMN (Attributes & Combat) -->
+        <div class="sheet-col-left">
+          
+          <!-- Atributos: Grid de Cartões -->
+          <div class="attributes-cards-grid">
+            <div class="attr-card">
+              <span class="attr-title">FOR</span>
+              <input type="number" id="attr-forca" min="-4" max="10" placeholder="0" oninput="updateDice(this)">
+              <button type="button" class="btn-roll" onclick="rollAttribute('forca', 'Força')">🎲</button>
+            </div>
+            <div class="attr-card">
+              <span class="attr-title">DES</span>
+              <input type="number" id="attr-destreza" min="-4" max="10" placeholder="0" oninput="updateDice(this)">
+              <button type="button" class="btn-roll" onclick="rollAttribute('destreza', 'Destreza')">🎲</button>
+            </div>
+            <div class="attr-card">
+              <span class="attr-title">CON</span>
+              <input type="number" id="attr-constituicao" min="-4" max="10" placeholder="0" oninput="updateDice(this)">
+              <button type="button" class="btn-roll" onclick="rollAttribute('constituicao', 'Constituição')">🎲</button>
+            </div>
+            <div class="attr-card">
+              <span class="attr-title">INT</span>
+              <input type="number" id="attr-inteligencia" min="-4" max="10" placeholder="0" oninput="updateDice(this)">
+              <button type="button" class="btn-roll" onclick="rollAttribute('inteligencia', 'Inteligência')">🎲</button>
+            </div>
+            <div class="attr-card">
+              <span class="attr-title">VON</span>
+              <input type="number" id="attr-vontade" min="-4" max="10" placeholder="0" oninput="updateDice(this)">
+              <button type="button" class="btn-roll" onclick="rollAttribute('vontade', 'Vontade')">🎲</button>
+            </div>
+            <div class="attr-card">
+              <span class="attr-title">CAR</span>
+              <input type="number" id="attr-carisma" min="-4" max="10" placeholder="0" oninput="updateDice(this)">
+              <button type="button" class="btn-roll" onclick="rollAttribute('carisma', 'Carisma')">🎲</button>
+            </div>
+          </div>
+
+          <!-- Status Rápidos & Escudo Épico -->
+          <div class="combat-status-area">
+            <div class="epic-shield-wrapper">
+              <div class="epic-shield">
+                <span class="shield-label">DEFESA</span>
+                <input type="text" id="classe-armadura" placeholder="10">
+              </div>
+            </div>
+            
+            <div class="quick-stats-col">
+              <div class="q-stat"><label>Iniciativa</label><input type="text" id="iniciativa" placeholder="0"></div>
+              <div class="q-stat"><label>Deslocamento</label><input type="text" id="deslocamento" placeholder="9m"></div>
+              <div class="q-stat"><label>Pts. Destino</label><input type="text" id="pontos-destino" placeholder="0"></div>
+            </div>
+          </div>
+
+          <!-- Barras de Recursos -->
+          <div class="resources-stack">
+            <!-- Vida -->
+            <div class="resource-bar-box">
+              <div class="r-title">VIDA</div>
+              <div class="r-inputs">
+                <input type="number" id="pv-atual" placeholder="0"> / <input type="number" id="pv-max" placeholder="0">
+              </div>
+              <div class="r-track"><div class="r-fill hp" id="pv-bar"></div></div>
+            </div>
+            <!-- Ação -->
+            <div class="resource-bar-box">
+              <div class="r-title">PONTOS DE AÇÃO</div>
+              <div class="r-inputs">
+                <input type="number" id="pa-atual" placeholder="0"> / <input type="number" id="pa-max" placeholder="0">
+              </div>
+              <div class="r-track"><div class="r-fill ap" id="pa-bar"></div></div>
+            </div>
+            <!-- Experiência & Loucura -->
+            <div class="xp-loucura-row">
+              <div class="resource-bar-box mini">
+                <div class="r-title">EXPERIÊNCIA</div>
+                <input type="number" id="xp" placeholder="0">
+              </div>
+              <div class="resource-bar-box mini">
+                <div class="r-title">LOUCURA/CORRUPÇÃO</div>
+                <input type="number" id="loucura" placeholder="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Defesa e Armadura -->
+          <div class="def-armor-text" style="margin-bottom: 20px;">
+            <label for="armadura-escudos">Armadura & Escudos</label>
+            <textarea id="armadura-escudos" placeholder="Descreva sua proteção..."></textarea>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN (Skills & Attacks) -->
+        <div class="sheet-col-right">
+          
+          <div class="skills-header">PERÍCIAS</div>
+          <div class="skills-table-wrapper">
+            <!-- Perícias originais injetadas aqui -->
+            <div class="skill-row" data-skill="acrobacia">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Acrobacia <span class="skill-attr">[Des]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Acrobacia')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="arcanismo">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Arcanismo <span class="skill-attr">[Car]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Arcanismo')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="armas-arco">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Armas (Arco) <span class="skill-attr">[Des]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Armas (Arco)')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="armas-branca">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Armas Branca <span class="skill-attr">[For]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Armas Branca')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="arma-fogo">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Arma de Fogo <span class="skill-attr">[Des]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Arma de Fogo')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="arremessar">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Arremessar <span class="skill-attr">[For]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Arremessar')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="atletismo">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Atletismo <span class="skill-attr">[For]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Atletismo')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="charme">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Charme <span class="skill-attr">[Car]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Charme')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="crime">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Crime <span class="skill-attr">[Des]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Crime')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="diplomacia">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Diplomacia <span class="skill-attr">[Car]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Diplomacia')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="disfarce">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Disfarce <span class="skill-attr">[Von]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Disfarce')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="engenharia">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Engenharia <span class="skill-attr">[Int]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Engenharia')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="furtividade">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Furtividade <span class="skill-attr">[Des]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Furtividade')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="historia">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">História <span class="skill-attr">[Int]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'História')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="intimidacao">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Intimidação <span class="skill-attr">[Von]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Intimidação')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="intuicao">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Intuição <span class="skill-attr">[Von]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Intuição')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="investigacao">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Investigação <span class="skill-attr">[Int]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Investigação')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="labia">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Lábia <span class="skill-attr">[Car]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Lábia')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="lidar-animais">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Lidar c/ Animais <span class="skill-attr">[Car]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Lidar c/ Animais')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="linguas">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Línguas</span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Línguas')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="luta">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Luta <span class="skill-attr">[For]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Luta')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="medicina">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Medicina <span class="skill-attr">[Int]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Medicina')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="ocultismo">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Ocultismo <span class="skill-attr">[Von]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Ocultismo')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="oficio">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Ofício <span class="skill-attr">[For/Des]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Ofício')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="percepcao">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Percepção <span class="skill-attr">[Von]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Percepção')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="performance">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Performance <span class="skill-attr">[Car]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Performance')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="pilotagem">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Pilotagem</span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Pilotagem')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="psicologia">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Psicologia <span class="skill-attr">[Car]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Psicologia')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="religiao">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Religião <span class="skill-attr">[Int]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Religião')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="sobrevivencia">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Sobrevivência <span class="skill-attr">[Int]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Sobrevivência')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="sorte">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Sorte <span class="skill-attr">[Von]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Sorte')" title="Rolar">🎲</button>
+            </div>
+            <div class="skill-row" data-skill="usar-bibliotecas">
+              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
+              <span class="skill-name">Usar Bibliotecas <span class="skill-attr">[Int]</span></span>
+              <input type="text" placeholder="—" class="skill-bonus">
+              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Usar Bibliotecas')" title="Rolar">🎲</button>
+            </div>
+          </div>
+          
+          <div class="attacks-section">
+            <div class="attacks-header">ATAQUES</div>
+            <div class="attacks-wrapper">
+              <table class="attacks-table">
+                <thead>
+                  <tr>
+                    <th class="col-name">Ataque</th>
+                    <th class="col-bonus">Bônus</th>
+                    <th class="col-damage">Dano</th>
+                    <th class="col-crit">Crítico</th>
+                    <th class="col-type">Tipo</th>
+                    <th class="col-range">Alcance</th>
+                    <th class="col-actions"></th>
+                  </tr>
+                </thead>
+                <tbody id="attacks-body">
+                  <!-- Linhas adicionadas via JS -->
+                </tbody>
+              </table>
+            </div>
+            <div class="btn-row" style="justify-content: flex-start; margin-top: 10px;">
+              <button type="button" class="btn" onclick="addAttackRow()">✦ Adicionar Ataque</button>
+            </div>
+          </div>
+
+          <!-- MESA DE ROLAGEM CUSTOMIZADA -->
+          <div class="custom-roller-section">
+            <div class="attacks-header">MESA DE ROLAGEM</div>
+            <div class="custom-roller-grid">
+              <!-- Botões de Dados -->
+              <div class="dice-selector-col">
+                <div class="dice-counter" data-die="4">
+                  <span class="die-label">d4</span>
+                  <button class="cnt-btn" onclick="adjDie(4, -1)">-</button>
+                  <span class="cnt-val" id="cnt-d4">0</span>
+                  <button class="cnt-btn" onclick="adjDie(4, 1)">+</button>
+                </div>
+                <div class="dice-counter" data-die="6">
+                  <span class="die-label">d6</span>
+                  <button class="cnt-btn" onclick="adjDie(6, -1)">-</button>
+                  <span class="cnt-val" id="cnt-d6">0</span>
+                  <button class="cnt-btn" onclick="adjDie(6, 1)">+</button>
+                </div>
+                <div class="dice-counter" data-die="8">
+                  <span class="die-label">d8</span>
+                  <button class="cnt-btn" onclick="adjDie(8, -1)">-</button>
+                  <span class="cnt-val" id="cnt-d8">0</span>
+                  <button class="cnt-btn" onclick="adjDie(8, 1)">+</button>
+                </div>
+                <div class="dice-counter" data-die="10">
+                  <span class="die-label">d10</span>
+                  <button class="cnt-btn" onclick="adjDie(10, -1)">-</button>
+                  <span class="cnt-val" id="cnt-d10">0</span>
+                  <button class="cnt-btn" onclick="adjDie(10, 1)">+</button>
+                </div>
+                <div class="dice-counter" data-die="12">
+                  <span class="die-label">d12</span>
+                  <button class="cnt-btn" onclick="adjDie(12, -1)">-</button>
+                  <span class="cnt-val" id="cnt-d12">0</span>
+                  <button class="cnt-btn" onclick="adjDie(12, 1)">+</button>
+                </div>
+                <div class="dice-counter" data-die="20">
+                  <span class="die-label">d20</span>
+                  <button class="cnt-btn" onclick="adjDie(20, -1)">-</button>
+                  <span class="cnt-val" id="cnt-d20">0</span>
+                  <button class="cnt-btn" onclick="adjDie(20, 1)">+</button>
+                </div>
+                <div class="dice-counter" data-die="100">
+                  <span class="die-label">d100</span>
+                  <button class="cnt-btn" onclick="adjDie(100, -1)">-</button>
+                  <span class="cnt-val" id="cnt-d100">0</span>
+                  <button class="cnt-btn" onclick="adjDie(100, 1)">+</button>
+                </div>
+                <div class="dice-counter">
+                  <span class="die-label">Bônus</span>
+                  <button class="cnt-btn" onclick="adjBonus(-1)">-</button>
+                  <input type="number" id="roller-bonus" value="0" class="cnt-input" onchange="updateRollerPreview()">
+                  <button class="cnt-btn" onclick="adjBonus(1)">+</button>
+                </div>
+              </div>
+
+              <!-- Tela de Controle e Favoritos -->
+              <div class="roller-control-col">
+                <div class="roller-preview" id="roller-preview">0d20 + 0</div>
+                <div class="btn-row" style="margin-top: 10px; flex-wrap: wrap;">
+                  <button class="btn danger small" onclick="clearCustomRoller()">🗑</button>
+                  <button class="btn small" onclick="saveFavoriteRoll()">⭐ Salvar</button>
+                  <button class="btn" onclick="executeCustomRoll()">🎲 ROLAR</button>
+                </div>
+                
+                <div class="favorites-list-header">⭐ Favoritos</div>
+                <div class="favorites-list" id="favorites-list">
+                  <!-- Favoritos adicionados via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div> <!-- /main-sheet-grid -->
+    </div> <!-- /tab-principal -->
+
+    <!-- ==================== TAB: HABILIDADES ==================== -->
+    <div id="tab-habilidades" class="tab-content" style="display: none;">
+      <h2 class="section-title"><span class="icon">🏅</span> Habilidades e Talentos</h2>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px; text-align: center;">Adicione aqui as habilidades de Classe, Origem, Herança ou talentos especiais.</p>
+      
+      <div class="spells-container" id="habilidades-container">
+        <!-- Habilidades adicionadas via JS -->
+      </div>
+
+      <div class="btn-row" style="margin-top: 20px;">
+        <button type="button" class="btn" onclick="addHabilidadeCard()">✦ Adicionar Habilidade</button>
+      </div>
+    </div> <!-- /tab-habilidades -->
+
+    <!-- ==================== TAB: INVENTÁRIO ==================== -->
+    <div id="tab-inventario" class="tab-content" style="display: none;">
+      <h2 class="section-title"><span class="icon">🎒</span> Inventário</h2>
+      <div class="inventory-header">
+        <div class="container-select-wrapper">
+          <label class="field-label" for="container-type">Recipiente de Carga</label>
+          <select id="container-type" onchange="updateContainerSlots()">
+            <option value="0">Sem Recipiente (4 Espaços)</option>
+            <option value="7">Bolsa de Cinto / Capanga (+7 = 11 Espaços)</option>
+            <option value="10">Mochila Menor — Explorador (+10 = 14 Espaços)</option>
+            <option value="20">Mochila Maior — Mercenário (+20 = 24 Espaços)</option>
+          </select>
+        </div>
+        <div class="slots-display">
+          <div class="slots-label">Espaços Usados</div>
+          <div class="slots-counter">
+            <span id="slots-used" class="slots-num">0</span>
+            <span class="slots-sep">/</span>
+            <span id="slots-total" class="slots-num">4</span>
+          </div>
+          <div class="slots-bar-track">
+            <div class="slots-bar-fill" id="slots-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="size-reference">
+        <span class="size-chip" title="Moedas, anéis, chaves, pergaminhos">0 — Desprezível</span>
+        <span class="size-chip" title="Poção, adaga, tocha, corda, ração">1 — Padrão</span>
+        <span class="size-chip" title="Espada, machado, armadura leve, kit médico">2 — Pesado</span>
+        <span class="size-chip" title="Armadura pesada, arma 2 mãos, caldeirão">4+ — Muito Pesado</span>
+        <span class="size-chip" title="Aliado inconsciente, barril cheio, móveis">10+ — Extremo</span>
+      </div>
+
+      <div class="items-list-header">
+        <span>Item</span>
+        <span>Espaços</span>
+        <span>Qtd</span>
+        <span>Total</span>
+        <span></span>
+      </div>
+
+      <div class="items-list" id="items-list">
+        <!-- Items adicionados via JS -->
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn" onclick="addItem()">✦ Adicionar Item</button>
+      </div>
+    </div> <!-- /tab-inventario -->
+
+    <!-- ==================== TAB: MAGIAS & ANOTAÇÕES ==================== -->
+    <div id="tab-magias" class="tab-content" style="display: none;">
+      
+      <h2 class="section-title"><span class="icon">📝</span> Anotações e Background</h2>
+      <div class="notes-area" style="margin-bottom: 40px;">
+        <textarea id="anotacoes" placeholder="Escreva suas anotações, background ou diário de campanha..."></textarea>
+      </div>
+
+      <div class="divider">⸻ ✦ ⸻</div>
+
+      <h2 class="section-title"><span class="icon">✨</span> Magias e Rituais</h2>
+      <!-- Cabeçalho de Magia -->
+      <div class="magic-header-grid">
+        <div class="magic-header-card">
+          <label class="field-label" for="atrib-conjuracao">Atributo de Conjuração</label>
+          <input type="text" id="atrib-conjuracao" placeholder="Inteligência...">
+        </div>
+        <div class="magic-header-card">
+          <label class="field-label" for="bonus-ataque-magia">Bônus de Ataque</label>
+          <input type="text" id="bonus-ataque-magia" placeholder="+0">
+        </div>
+        <div class="magic-header-card">
+          <label class="field-label" for="teste-resistencia-magia">Teste de Resistência</label>
+          <input type="text" id="teste-resistencia-magia" placeholder="DT 15">
+        </div>
+      </div>
+
+      <!-- Cards de Magia -->
+      <div class="spells-container" id="spells-container">
+        <!-- Magias adicionadas via JS -->
+      </div>
+
+      <div class="btn-row" style="margin-top: 20px;">
+        <button type="button" class="btn" onclick="addSpellCard()">✦ Adicionar Magia</button>
+      </div>
+    </div> <!-- /tab-magias -->
+
+  </div><!-- /.container -->
+
+  <!-- ==================== TOOLBAR FIXA ==================== -->
+  <div class="toolbar">
+    <span class="save-indicator" id="save-indicator">
+      <span class="dot"></span> Salvo
+    </span>
+    <button type="button" class="btn" onclick="toggleHistory()" id="btn-history">📜 Histórico</button>
+    <button type="button" class="btn" onclick="exportJSON()" id="btn-export">📥 Exportar JSON</button>
+    <button type="button" class="btn" onclick="triggerImport()" id="btn-import">📤 Importar JSON</button>
+    <button type="button" class="btn danger" onclick="confirmClear()" id="btn-clear">🗑 Limpar Ficha</button>
+    <input type="file" id="import-input" accept=".json" onchange="handleImport(event)" style="display:none;">
+  </div>
+
+  <!-- ==================== ROLLER OVERLAY (BG3 STYLE) ==================== -->
+  <div class="roller-overlay" id="roller-overlay">
+    <div class="roller-content">
+      <h3 class="roller-title" id="roller-title">Rolando Atributo</h3>
+      <p class="roller-subtitle" id="roller-subtitle">Vantagem / Desvantagem</p>
+      
+      <div class="dice-arena" id="dice-arena">
+        <!-- Dados 3D gerados dinamicamente -->
+      </div>
+      
+      <div class="roller-result-panel" id="roller-result-panel">
+        <div class="roller-final-label">Resultado Final</div>
+        <div class="roller-final-value" id="roller-final-value">0</div>
+        <div class="roller-calculation" id="roller-calculation"></div>
+      </div>
+      
+      <button type="button" class="btn roller-close-btn" id="roller-close-btn" onclick="closeRoller()">✦ Fechar</button>
+    </div>
+  </div>
+
+  <!-- ==================== ATTRIBUTE SELECTOR MODAL ==================== -->
+  <div class="confirm-overlay" id="attr-selector-overlay">
+    <div class="confirm-dialog">
+      <h3 id="attr-selector-title">Escolha o Atributo</h3>
+      <p>Qual atributo você deseja usar para esta rolagem?</p>
+      <div class="btn-row" id="attr-selector-buttons" style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <!-- Botões gerados via JS -->
+      </div>
+      <div class="btn-row" style="margin-top: 16px;">
+        <button type="button" class="btn danger" onclick="closeAttrSelector()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HISTORY SIDEBAR ==================== -->
+  <div class="history-sidebar" id="history-sidebar">
+    <div class="history-header">
+      <h3>📜 Histórico de Rolagens</h3>
+      <button type="button" class="btn small" onclick="toggleHistory()">✕</button>
+    </div>
+    <div class="history-list" id="history-list">
+      <!-- Itens do histórico -->
+    </div>
+    <div class="history-footer">
+      <button type="button" class="btn small danger" onclick="clearHistory()">Limpar Histórico</button>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST ==================== -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ==================== CONFIRM DIALOG ==================== -->
+  <div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-dialog">
+      <h3>⚠ Limpar Ficha</h3>
+      <p>Tem certeza de que deseja apagar todos os dados da ficha? Esta ação não pode ser desfeita.</p>
+      <div class="btn-row">
+        <button type="button" class="btn" onclick="cancelClear()">Cancelar</button>
+        <button type="button" class="btn danger" onclick="executeClear()">🗑 Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SCRIPT DE INICIALIZAÇÃO ==================== -->
+  <script src="app.js?v=2"></script>
+  <script>
+    // Sistema de Abas (Tabs)
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => {
+        el.style.display = 'none';
+        el.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      const content = document.getElementById('tab-' + tabId);
+      if(content) {
+        content.style.display = 'block';
+        content.classList.add('active');
+      }
+      const btn = document.querySelector(`.tab-btn[onclick="switchTab('${tabId}')"]`);
+      if(btn) btn.classList.add('active');
+    }
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+      // Exibe apenas a primeira aba
+      switchTab('principal');
+
+      setTimeout(() => {
+        const tbody = document.getElementById('attacks-body');
+        if (tbody && tbody.children.length === 0) {
+          for (let i = 0; i < 5; i++) {
+            if(typeof addAttackRow === 'function') addAttackRow();
+          }
+        }
+        const spellsContainer = document.getElementById('spells-container');
+        if (spellsContainer && spellsContainer.children.length === 0) {
+          for (let i = 0; i < 2; i++) {
+            if(typeof addSpellCard === 'function') addSpellCard();
+          }
+        }
+        const habsContainer = document.getElementById('habilidades-container');
+        if (habsContainer && habsContainer.children.length === 0) {
+          if(typeof addHabilidadeCard === 'function') addHabilidadeCard();
+        }
+      }, 50);
+    });
+  </script>
+
+</body>
+</html>
