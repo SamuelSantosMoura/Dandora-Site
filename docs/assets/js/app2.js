@@ -1,4 +1,4 @@
-﻿// State Management
+// State Management
 let currentUser = null; // null | { name: string, role: 'master' | 'player', email: string }
 
 // ==========================================
@@ -462,7 +462,9 @@ function renderTablePlayers() {
             const p = m.activeSheet;
             const level = p.nivel ? `Nv. ${p.nivel}` : '';
             const pClass = p.classe || 'Aventureiro';
-            const portrait = p.portrait ? `<img src="${p.portrait}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-dim); margin-right: 10px;">` : `<i class="fa-solid fa-user-shield" style="font-size: 1.5rem; color: var(--gold-primary); margin-right            return `
+            const portrait = p.portrait ? `<img src="${p.portrait}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-dim); margin-right: 10px;">` : `<i class="fa-solid fa-user-shield" style="font-size: 1.5rem; color: var(--gold-primary); margin-right: 10px;"></i>`;
+            
+            return `
             <div class="table-card glass-panel" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div style="display:flex; align-items:center; flex:1; min-width: 100%;">
                     ${portrait}
@@ -478,7 +480,6 @@ function renderTablePlayers() {
                     </button>
                 </div>
             </div>
-            `;          </div>
             `;
         } else {
             return `
