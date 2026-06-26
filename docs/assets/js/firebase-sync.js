@@ -4,13 +4,13 @@
 
 // Configuração do Firebase (SUBSTITUA ESTES VALORES PELOS DO SEU PROJETO)
 const firebaseConfig = {
-    apiKey: "COLE_SUA_CHAVE_AQUI",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
-    projectId: "SEU_PROJETO",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "NUMERO_AQUI",
-    appId: "APP_ID_AQUI"
+    apiKey: "AIzaSyDGdMNpMroJrDNhHI6xy5msgISX5D6WFzw",
+    authDomain: "dandora-rpg.firebaseapp.com",
+    databaseURL: "https://dandora-rpg-default-rtdb.firebaseio.com",
+    projectId: "dandora-rpg",
+    storageBucket: "dandora-rpg.firebasestorage.app",
+    messagingSenderId: "195226029108",
+    appId: "1:195226029108:web:3909e2ecc4c7fdebbece61"
 };
 
 // Se a chave não foi configurada, abortar silenciosamente
