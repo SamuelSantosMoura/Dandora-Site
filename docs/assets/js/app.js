@@ -1109,3 +1109,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 });
+
+// ==========================================
+// FIREBASE SYNC LISTENER
+// ==========================================
+window.addEventListener('dandoraDataSync', () => {
+    // Restaurar currentUser se houver mudança externa
+    const storedUser = sessionStorage.getItem('currentUser');
+    if (storedUser) {
+        currentUser = JSON.parse(storedUser);
+    }
+    
+    // Atualiza a interface baseada na tela atual sem recarregar a página
+    if (currentView === 'dashboard-master-view') {
+        renderMasterTables();
+    } else if (currentView === 'dashboard-player-view') {
+        renderPlayerTables();
+    } else if (currentView === 'table-manager-view') {
+        renderTablePlayers();
+        
+        const notesKey = \dandora_notes_\\;
+        const notesEl = document.getElementById('tm-notes-area');
+        // Só atualiza o texto se o mestre não estiver digitando nele no momento
+        if (notesEl && document.activeElement !== notesEl) {
+            notesEl.value = localStorage.getItem(notesKey) || '';
+        }
+        
+        if (typeof renderMissions === 'function') renderMissions();
+        if (typeof renderSessions === 'function') renderSessions();
+    } else if (currentView === 'table-player-view') {
+        if (typeof renderPlayerCompanions === 'function') renderPlayerCompanions();
+    }
+});
