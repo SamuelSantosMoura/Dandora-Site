@@ -162,6 +162,19 @@ function loginUser(userData, initialMode) {
     
     // Redirect to respective dashboard
     openDashboard();
+
+    // Check for pending invite
+    setTimeout(() => {
+        const pending = sessionStorage.getItem('pendingInvite');
+        if (pending) {
+            sessionStorage.removeItem('pendingInvite');
+            const joined = joinTable(pending);
+            if (joined) {
+                sessionStorage.setItem('currentMode', 'player');
+                openDashboard();
+            }
+        }
+    }, 100);
 }
 
 // Mode / Profile Management
@@ -525,10 +538,13 @@ function closeSheetModal() {
 // ==========================================
 let currentPlayerTableId = null;
 
-function joinTable() {
-    if (!currentUser) return;
-    const tableCode = prompt("Digite o CÓDIGO de convite (5 dígitos) da mesa:");
-    if (!tableCode) return;
+function joinTable(inviteCodeParam = null) {
+    if (!currentUser) return false;
+    let tableCode = inviteCodeParam;
+    if (!tableCode) {
+        tableCode = prompt("Digite o CÓDIGO de convite (5 dígitos) da mesa:");
+    }
+    if (!tableCode) return false;
     
     const codeUpper = tableCode.toUpperCase().trim();
     
@@ -538,7 +554,7 @@ function joinTable() {
     
     if (!foundTable) {
         alert("Código de mesa inválido ou mesa não encontrada!");
-        return;
+        return false;
     }
 
     const tablesKey = `dandora_player_tables_${currentUser.email}`;
@@ -547,7 +563,7 @@ function joinTable() {
     // Prevent duplicate joins
     if(userTables.find(t => t.code === codeUpper)) {
         alert("Você já está participando desta mesa!");
-        return;
+        return true;
     }
 
     userTables.push({
@@ -582,6 +598,7 @@ function joinTable() {
     
     alert(`Você entrou na mesa: ${foundTable.tableName} (Mestre: ${foundTable.masterName})`);
     renderPlayerTables();
+    return true;
 }
 
 function renderPlayerTables() {
@@ -823,6 +840,24 @@ function createNewBlankSheet() {
 // TABLE MANAGEMENT ACTIONS
 // ==========================================
 
+function generateInviteLink() {
+    if (!currentTableId || !currentUser) return;
+    const tablesKey = `dandora_tables_${currentUser.email}`;
+    const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+    const table = userTables.find(t => t.id === currentTableId);
+    
+    if (table && table.code) {
+        const inviteUrl = window.location.origin + window.location.pathname + "?invite=" + table.code;
+        navigator.clipboard.writeText(inviteUrl).then(() => {
+            alert("Link de convite copiado para a área de transferência!\n" + inviteUrl);
+        }).catch(err => {
+            prompt("Copie o link abaixo e envie para seus jogadores:", inviteUrl);
+        });
+    } else {
+        alert("Erro ao gerar link de convite. Esta mesa não possui um código válido.");
+    }
+}
+
 /**
  * MESTRE: Exclui a mesa completamente.
  * Remove a mesa do registro do mestre, do registro global,
@@ -958,6 +993,14 @@ function leaveTable(playerTableId, tableCode, masterEmail, masterTableId) {
 
 // Initialize checks on load
 document.addEventListener('DOMContentLoaded', () => {
+    // Check invite URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteParam = urlParams.get('invite');
+    if (inviteParam) {
+        sessionStorage.setItem('pendingInvite', inviteParam);
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+
     // Restore user
     const storedUser = sessionStorage.getItem('currentUser');
     if (storedUser) {
@@ -1049,5 +1092,20 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('globalHistory', JSON.stringify(globalHistory));
     } else {
         navigateTo('home-view');
+    }
+
+    // Process pending invite if already logged in
+    if (currentUser) {
+        setTimeout(() => {
+            const pending = sessionStorage.getItem('pendingInvite');
+            if (pending) {
+                sessionStorage.removeItem('pendingInvite');
+                const joined = joinTable(pending);
+                if (joined) {
+                    sessionStorage.setItem('currentMode', 'player');
+                    openDashboard();
+                }
+            }
+        }, 300);
     }
 });
