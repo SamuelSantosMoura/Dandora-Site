@@ -50,19 +50,31 @@ function goBack() {
 // Authentication Tabs
 function switchAuthTab(tab) {
     const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
-    const tabs = document.querySelectorAll('.tab-btn');
-    
-    tabs.forEach(t => t.classList.remove('active'));
-    
     if (tab === 'login') {
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
-        tabs[0].classList.add('active');
+        document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('register-form').classList.add('hidden');
+        document.querySelectorAll('.auth-tabs .tab-btn')[0].classList.add('active');
+        document.querySelectorAll('.auth-tabs .tab-btn')[1].classList.remove('active');
     } else {
-        loginForm.classList.add('hidden');
-        registerForm.classList.remove('hidden');
-        tabs[1].classList.add('active');
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('register-form').classList.remove('hidden');
+        document.querySelectorAll('.auth-tabs .tab-btn')[0].classList.remove('active');
+        document.querySelectorAll('.auth-tabs .tab-btn')[1].classList.add('active');
+    }
+}
+
+function togglePasswordVisibility(inputId, iconEl) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        if (input.type === 'password') {
+            input.type = 'text';
+            iconEl.classList.remove('fa-eye');
+            iconEl.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            iconEl.classList.remove('fa-eye-slash');
+            iconEl.classList.add('fa-eye');
+        }
     }
 }
 

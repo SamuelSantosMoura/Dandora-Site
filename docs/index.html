@@ -137,8 +137,9 @@ window.onerror = function(msg, url, line, col, error) {
                         <label>Senha</label>
                         <a href="#" onclick="forgotPassword(event)" style="font-size:0.8rem; color:var(--gold-primary); text-decoration:none;">Esqueci minha senha</a>
                     </div>
-                    <div class="form-group">
-                        <input type="password" id="login-password" required placeholder="••••••••">
+                    <div class="form-group" style="position: relative;">
+                        <input type="password" id="login-password" required placeholder="••••••••" style="padding-right: 40px;">
+                        <i class="fa-solid fa-eye" onclick="togglePasswordVisibility('login-password', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);" title="Mostrar/Ocultar Senha"></i>
                     </div>
                     <div class="form-group">
                         <label>Modo Inicial (Mestre ou Jogador)</label>
@@ -162,9 +163,10 @@ window.onerror = function(msg, url, line, col, error) {
                         <label>Email</label>
                         <input type="email" id="reg-email" required placeholder="heroi@dandora.com">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="position: relative;">
                         <label>Senha</label>
-                        <input type="password" id="reg-password" required placeholder="••••••••">
+                        <input type="password" id="reg-password" required placeholder="••••••••" style="padding-right: 40px;">
+                        <i class="fa-solid fa-eye" onclick="togglePasswordVisibility('reg-password', this)" style="position: absolute; right: 15px; top: 38px; cursor: pointer; color: var(--text-muted);" title="Mostrar/Ocultar Senha"></i>
                     </div>
                     <div class="form-group">
                         <label>Seu Papel Inicial</label>
@@ -1035,8 +1037,8 @@ Altura     Dano
     </dialog>
 
 
-    <script src="assets/js/firebase-sync2.js?v=14"></script>
-    <script src="assets/js/app2.js?v=14"></script>
+    <script src="assets/js/firebase-sync2.js?v=15"></script>
+    <script src="assets/js/app2.js?v=15"></script>
     <script src="assets/js/pdf-viewer.js?v=8"></script>
     <script src="assets/js/npc.js?v=8"></script>
     <script src="assets/js/eventos.js?v=8"></script>
