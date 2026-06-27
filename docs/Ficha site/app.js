@@ -1,6 +1,6 @@
 ﻿/* ============================================================
-   DANDORA RPG â€” Ficha de Personagem â€” LÃ³gica
-   PersistÃªncia LocalStorage + Exportar/Importar JSON
+   DANDORA RPG â€” Ficha de Personagem â€” Lógica
+   Persistência LocalStorage + Exportar/Importar JSON
    ============================================================ */
 
 (function () {
@@ -10,7 +10,7 @@
   let saveTimeout = null;
 
   /* ==========================================================
-     INICIALIZAÃ‡ÃƒO
+     INICIALIZAÇÃO
   ========================================================== */
   document.addEventListener('DOMContentLoaded', () => {
     loadData();
@@ -87,17 +87,17 @@
       // Armadura
       armadura: val('armadura-escudos'),
 
-      // PerÃ­cias
+      // Perícias
       pericias: collectSkills(),
 
       // Ataques
       ataques: collectAttacks(),
 
-      // InventÃ¡rio
+      // Inventário
       container_type: val('container-type'),
       itens: collectItems(),
 
-      // AnotaÃ§Ãµes
+      // Anotações
       anotacoes: val('anotacoes'),
 
       // Magias header
@@ -111,7 +111,7 @@
       // Habilidades
       habilidades: collectHabilidades(),
 
-      // HistÃ³rico e Favoritos
+      // Histórico e Favoritos
       history: window.rollHistory || [],
       customFavorites: window.customFavorites || []
     };
@@ -207,7 +207,7 @@
   function getPortraitData() {
     const img = document.getElementById('portrait-img');
     if (img && img.src && img.style.display !== 'none' && !img.src.endsWith('/')) {
-      // Verifica se Ã© um data URL real (nÃ£o vazio)
+      // Verifica se é um data URL real (não vazio)
       if (img.src.startsWith('data:')) return img.src;
     }
     return '';
@@ -286,7 +286,7 @@
     // Armadura
     setVal('armadura-escudos', data.armadura);
 
-    // PerÃ­cias
+    // Perícias
     if (data.pericias) {
       Object.keys(data.pericias).forEach(key => {
         const row = document.querySelector(`.skill-row[data-skill="${key}"]`);
@@ -307,7 +307,7 @@
       }
     }
 
-    // InventÃ¡rio
+    // Inventário
     setVal('container-type', data.container_type);
     if (data.itens && data.itens.length > 0) {
       const list = document.getElementById('items-list');
@@ -317,7 +317,7 @@
       }
     }
 
-    // AnotaÃ§Ãµes
+    // Anotações
     setVal('anotacoes', data.anotacoes);
 
     // Magias header
@@ -343,7 +343,7 @@
       }
     }
 
-    // HistÃ³rico e Favoritos
+    // Histórico e Favoritos
     window.rollHistory = data.history || [];
     window.customFavorites = data.customFavorites || [];
     if(typeof renderFavorites === 'function') renderFavorites();
@@ -399,7 +399,7 @@
   }
 
   /* ==========================================================
-     DADOS D20 â€” CÃ¡lculo e Display
+     DADOS D20 â€” Cálculo e Display
   ========================================================== */
   function calcDiceConfig(value) {
     const v = parseInt(value) || 0;
@@ -461,7 +461,7 @@
     reader.onload = function (e) {
       const img = new Image();
       img.onload = function () {
-        // Redimensionar para max 400Ã—400 para economizar espaÃ§o
+        // Redimensionar para max 400Ã—400 para economizar espaço
         const canvas = document.createElement('canvas');
         let w = img.width, h = img.height;
         const maxSize = 400;
@@ -589,8 +589,8 @@
       </div>
       <div class="spell-meta">
         <div>
-          <label class="field-label">ExecuÃ§Ã£o</label>
-          <input type="text" value="${esc(d.execucao)}" placeholder="PadrÃ£o">
+          <label class="field-label">Execução</label>
+          <input type="text" value="${esc(d.execucao)}" placeholder="Padrão">
         </div>
         <div>
           <label class="field-label">Alcance</label>
@@ -601,8 +601,8 @@
           <input type="text" value="${esc(d.alvo)}" placeholder="1 criatura">
         </div>
         <div>
-          <label class="field-label">DuraÃ§Ã£o</label>
-          <input type="text" value="${esc(d.duracao)}" placeholder="InstantÃ¢nea">
+          <label class="field-label">Duração</label>
+          <input type="text" value="${esc(d.duracao)}" placeholder="Instantânea">
         </div>
         <div>
           <label class="field-label">PA</label>
@@ -610,7 +610,7 @@
         </div>
       </div>
       <div class="spell-resistance">
-        <label class="field-label">ResistÃªncia</label>
+        <label class="field-label">Resistência</label>
         <input type="text" value="${esc(d.resistencia)}" placeholder="Vontade anula">
       </div>
       <div class="spell-effect">
@@ -658,7 +658,7 @@
         </div>
       </div>
       <div class="spell-desc">
-        <label class="field-label">DescriÃ§Ã£o</label>
+        <label class="field-label">Descrição</label>
         <textarea placeholder="Como funciona essa habilidade?">${esc(d.desc)}</textarea>
       </div>
     `;
@@ -681,7 +681,7 @@
   };
 
   /* ==========================================================
-     INVENTÃRIO â€” EspaÃ§os de Itens (Slots)
+     INVENTÃRIO â€” Espaços de Itens (Slots)
   ========================================================== */
   window.addItem = function (data) {
     const list = document.getElementById('items-list');
@@ -817,7 +817,7 @@
         showToast('âœ¦ Ficha importada com sucesso!');
       } catch (err) {
         showToast('âš  Erro ao ler o arquivo JSON');
-        console.error('Erro na importaÃ§Ã£o:', err);
+        console.error('Erro na importação:', err);
       }
     };
     reader.readAsText(file);
@@ -864,7 +864,7 @@
       for (let i = 0; i < 5; i++) addAttackRow();
     }
 
-    // Resetar inventÃ¡rio
+    // Resetar inventário
     const itemsList = document.getElementById('items-list');
     if (itemsList) itemsList.innerHTML = '';
 
@@ -900,16 +900,16 @@
      SISTEMA DE ROLAGEM (BG3 STYLE)
   ========================================================== */
   
-  // VariÃ¡veis globais de rolagem
+  // Variáveis globais de rolagem
   window.rollHistory = [];
-  let pendingSkillData = null; // Guarda os dados da perÃ­cia enquanto o modal estÃ¡ aberto
+  let pendingSkillData = null; // Guarda os dados da perícia enquanto o modal está aberto
 
   // Mapeamento de siglas para IDs
   const attrMap = {
-    'For': { id: 'forca', name: 'ForÃ§a' },
+    'For': { id: 'forca', name: 'Força' },
     'Des': { id: 'destreza', name: 'Destreza' },
-    'Con': { id: 'constituicao', name: 'ConstituiÃ§Ã£o' },
-    'Int': { id: 'inteligencia', name: 'InteligÃªncia' },
+    'Con': { id: 'constituicao', name: 'Constituição' },
+    'Int': { id: 'inteligencia', name: 'Inteligência' },
     'Von': { id: 'vontade', name: 'Vontade' },
     'Car': { id: 'carisma', name: 'Carisma' }
   };
@@ -929,23 +929,23 @@
     let attrText = attrSpan ? attrSpan.textContent.replace('[', '').replace(']', '') : '';
     
     if (attrText === 'For/Des' || attrText === '') {
-      // PerÃ­cia dÃºbia ou sem atributo -> abrir modal
+      // Perícia dúbia ou sem atributo -> abrir modal
       pendingSkillData = { name: skillName, bonus: bonus };
       openAttrSelector(skillName, attrText === 'For/Des' ? ['For', 'Des'] : Object.keys(attrMap));
     } else {
-      // PerÃ­cia com atributo claro
+      // Perícia com atributo claro
       const mapped = attrMap[attrText];
       if (mapped) {
         const attrValue = parseInt(val('attr-' + mapped.id)) || 0;
-        executeRoll(`${skillName} [${mapped.name}]`, attrValue, bonus, `Rolagem de PerÃ­cia`);
+        executeRoll(`${skillName} [${mapped.name}]`, attrValue, bonus, `Rolagem de Perícia`);
       } else {
         // Fallback
-        executeRoll(skillName, 0, bonus, `Rolagem de PerÃ­cia`);
+        executeRoll(skillName, 0, bonus, `Rolagem de Perícia`);
       }
     }
   };
 
-  // --- Modal de SeleÃ§Ã£o de Atributo ---
+  // --- Modal de Seleção de Atributo ---
   function openAttrSelector(skillName, optionsKeys) {
     const overlay = document.getElementById('attr-selector-overlay');
     const title = document.getElementById('attr-selector-title');
@@ -978,10 +978,10 @@
     const { name, bonus } = pendingSkillData;
     
     closeAttrSelector();
-    executeRoll(`${name} [${mapped.name}]`, attrValue, bonus, `Rolagem de PerÃ­cia`);
+    executeRoll(`${name} [${mapped.name}]`, attrValue, bonus, `Rolagem de Perícia`);
   }
 
-  // --- ExecuÃ§Ã£o da Rolagem e AnimaÃ§Ã£o ---
+  // --- Execução da Rolagem e Animação ---
   function executeRoll(title, attrValue, bonus, subtitle) {
     const config = calcDiceConfig(attrValue);
     
@@ -1026,7 +1026,7 @@
     rolls.forEach((r, idx) => {
       const die = document.createElement('div');
       die.className = 'die-3d rolling';
-      die.textContent = r; // NÃºmero final que vai aparecer quando parar
+      die.textContent = r; // Número final que vai aparecer quando parar
       arena.appendChild(die);
       diceElements.push(die);
     });
@@ -1034,7 +1034,7 @@
     // Mostrar overlay
     overlay.classList.add('active');
     
-    // Parar animaÃ§Ã£o apÃ³s 1.5s
+    // Parar animação após 1.5s
     setTimeout(() => {
       diceElements.forEach((die, idx) => {
         die.classList.remove('rolling');
@@ -1053,12 +1053,12 @@
       document.getElementById('roller-final-value').textContent = finalResult;
       
       let calcStr = `Dado: ${d20Result}`;
-      if (bonus !== 0) calcStr += ` ${bonus > 0 ? '+' : ''}${bonus} (BÃ´nus)`;
+      if (bonus !== 0) calcStr += ` ${bonus > 0 ? '+' : ''}${bonus} (Bônus)`;
       document.getElementById('roller-calculation').textContent = calcStr;
       
       resultPanel.classList.add('show');
       
-      // Salvar histÃ³rico
+      // Salvar histórico
       addRollToHistory({
         date: new Date().toISOString(),
         title: title,
@@ -1075,7 +1075,7 @@
     document.getElementById('roller-overlay').classList.remove('active');
   };
 
-  // --- HistÃ³rico de Rolagem ---
+  // --- Histórico de Rolagem ---
   function addRollToHistory(rollData) {
     window.rollHistory.unshift(rollData);
     if (window.rollHistory.length > 50) {
@@ -1109,7 +1109,7 @@
         </div>
         <div class="history-item-title">${esc(r.title)}</div>
         <div class="history-item-calc">
-          ðŸŽ² ${diceStr} ${r.bonus !== 0 ? `| BÃ´nus: ${r.bonus > 0 ? '+' : ''}${r.bonus}` : ''}
+          ðŸŽ² ${diceStr} ${r.bonus !== 0 ? `| Bônus: ${r.bonus > 0 ? '+' : ''}${r.bonus}` : ''}
         </div>
         <div class="history-item-result">${r.finalResult}</div>
       `;
@@ -1123,7 +1123,7 @@
   };
 
   window.clearHistory = function() {
-    if(confirm('Tem certeza que deseja apagar o histÃ³rico de rolagens?')) {
+    if(confirm('Tem certeza que deseja apagar o histórico de rolagens?')) {
       window.rollHistory = [];
       renderHistory();
       saveData();
@@ -1341,7 +1341,7 @@
         }
       }
       if(bonus !== 0) {
-        calcStr += `BÃ´nus: ${bonus > 0 ? '+'+bonus : bonus}`;
+        calcStr += `Bônus: ${bonus > 0 ? '+'+bonus : bonus}`;
       } else {
         calcStr = calcStr.replace(/ \| $/, '');
       }
