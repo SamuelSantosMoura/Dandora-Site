@@ -1226,6 +1226,22 @@ window.addEventListener('dandoraDataSync', () => {
         }
     } else if (currentView === 'table-player-view') {
         if (typeof renderPlayerCompanions === 'function') renderPlayerCompanions();
+        
+        // Sincronizar Ficha do Jogador
+        const iframe = document.getElementById('sheet-iframe');
+        if (iframe && iframe.contentWindow) {
+            // Verifica se a ficha do jogador foi atualizada
+            if (currentPlayerTableId && currentUser) {
+                const sheetKey = `dandora_sheet_${currentPlayerTableId}_${currentUser.email}`;
+                const activeSheet = localStorage.getItem(sheetKey);
+                if (activeSheet) {
+                    window.dandoraDisableSync = true;
+                    localStorage.setItem('dandora-ficha-v1', activeSheet);
+                    window.dandoraDisableSync = false;
+                }
+            }
+            iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_UPDATE' }, '*');
+        }
     }
 });
 window.addEventListener('message', (event) => {
