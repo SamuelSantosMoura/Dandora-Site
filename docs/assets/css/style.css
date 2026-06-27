@@ -575,10 +575,10 @@ ul {
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
     .nav-links {
-        display: none; /* In a real app, implement a hamburger menu */
+        display: none;
     }
     .hero h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
     .dashboard-layout {
         flex-direction: column;
@@ -592,6 +592,28 @@ ul {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
+    }
+    .features-grid, .tables-grid {
+        grid-template-columns: 1fr;
+    }
+    .btn-create, .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+    .hero p {
+        font-size: 1rem;
+    }
+    .md-counters-grid {
+        grid-template-columns: 1fr;
+    }
+    .sidebar-menu li {
+        padding: 0.8rem 1rem;
     }
 }
 

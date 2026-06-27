@@ -19,6 +19,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
+    window.dandoraDatabase = database;
     
     // Salvar as funções originais do localStorage
     const originalSetItem = localStorage.setItem;
@@ -32,12 +33,13 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     localStorage.setItem = function(key, value) {
         originalSetItem.apply(this, arguments); // Salva localmente primeiro
         
-        // Só sincroniza chaves do próprio site e se não estiver recebendo da nuvem agora
-        if (!isSyncingFromCloud && key.startsWith('dandora_')) {
+        // Só sincroniza se não estiver recebendo da nuvem e se não estiver explicitamente desabilitado
+        if (!isSyncingFromCloud && key.startsWith('dandora_') && !window.dandoraDisableSync) {
             try {
-                // Usa Base64 para a chave para evitar problemas com '.', '#', '@' no Firebase
                 const safeKey = btoa(key);
-                database.ref('dandora_data/' + safeKey).set(value);
+                let toSave = value;
+                try { toSave = JSON.parse(value); } catch(e) {}
+                database.ref('dandora_data/' + safeKey).set(toSave);
             } catch(e) {
                 console.error("Erro ao sincronizar com Firebase:", e);
             }
@@ -58,18 +60,18 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
         originalClear.apply(this, arguments);
     };
     
-    // Enviar dados locais para a nuvem no primeiro acesso (se a nuvem estiver vazia)
-    // ou puxar da nuvem (se o dispositivo for novo/celular)
+    // Enviar dados locais para a nuvem no primeiro acesso
     database.ref('dandora_data').once('value').then(snapshot => {
         if (!snapshot.exists()) {
-            // Nuvem vazia, fazer upload dos dados locais (PC principal)
             isSyncingFromCloud = true;
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key.startsWith('dandora_')) {
                     const value = localStorage.getItem(key);
                     const safeKey = btoa(key);
-                    database.ref('dandora_data/' + safeKey).set(value);
+                    let toSave = value;
+                    try { toSave = JSON.parse(value); } catch(e) {}
+                    database.ref('dandora_data/' + safeKey).set(toSave);
                 }
             }
             isSyncingFromCloud = false;
@@ -86,40 +88,12 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
         for (const safeKey in cloudData) {
             try {
                 const cloudValue = cloudData[safeKey];
+                const cloudString = typeof cloudValue === 'object' ? JSON.stringify(cloudValue) : cloudValue;
                 const originalKey = atob(safeKey); // Desfaz o Base64 para ler a chave original
                 const localValue = localStorage.getItem(originalKey);
                 
-                if (localValue !== cloudValue) {
-                    let finalValue = cloudValue;
-                    
-                    // Prevenir que o celular apague os usuários do PC (Race Condition de Arrays)
-                    try {
-                        const localParsed = JSON.parse(localValue);
-                        const cloudParsed = JSON.parse(cloudValue);
-                        
-                        if (Array.isArray(localParsed) && Array.isArray(cloudParsed)) {
-                            // Se a nuvem tem menos itens que o local, e o local não está vazio
-                            // Isso geralmente ocorre quando um dispositivo vazio sobrescreve a nuvem
-                            if (cloudParsed.length < localParsed.length) {
-                                // Fundir os dois arrays mantendo os itens locais que sumiram
-                                // (Isso é uma fusão simples para evitar perda de dados)
-                                const combined = [...cloudParsed];
-                                localParsed.forEach(localItem => {
-                                    // Compara por string para evitar duplicatas simples
-                                    if (!combined.some(cItem => JSON.stringify(cItem) === JSON.stringify(localItem))) {
-                                        combined.push(localItem);
-                                    }
-                                });
-                                finalValue = JSON.stringify(combined);
-                                
-                                // Como fundimos e o local tem mais dados, precisamos devolver para a nuvem
-                                database.ref('dandora_data/' + safeKey).set(finalValue);
-                            }
-                        }
-                    } catch (e) {
-                        // Não é JSON ou não é array, ignora a fusão
-                    }
-
+                if (localValue !== cloudString) {
+                    let finalValue = cloudString;
                     originalSetItem.call(localStorage, originalKey, finalValue);
                     dataChanged = true;
                 }

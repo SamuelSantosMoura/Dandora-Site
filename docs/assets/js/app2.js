@@ -458,8 +458,13 @@ function renderTablePlayers() {
     }
     
     list.innerHTML = members.map((m, idx) => {
-        if (m.activeSheet && m.activeSheet.nome) {
-            const p = m.activeSheet;
+        // Obter ficha a partir da chave separada e mesclar com fallback
+        const sheetKey = `dandora_sheet_${currentTableId}_${m.playerEmail}`;
+        const storedSheet = JSON.parse(localStorage.getItem(sheetKey));
+        const activeSheet = storedSheet || m.activeSheet || m.activeSheetSummary;
+        
+        if (activeSheet && activeSheet.nome) {
+            const p = activeSheet;
             const level = p.nivel ? `Nv. ${p.nivel}` : '';
             const pClass = p.classe || 'Aventureiro';
             const portrait = p.portrait ? `<img src="${p.portrait}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-dim); margin-right: 10px;">` : `<i class="fa-solid fa-user-shield" style="font-size: 1.5rem; color: var(--gold-primary); margin-right: 10px;"></i>`;
@@ -506,15 +511,20 @@ function masterViewPlayerSheet(memberIdx) {
     const members = JSON.parse(localStorage.getItem(membersKey)) || [];
     const member = members[memberIdx];
     
-    if(member && member.activeSheet) {
-        const backup = localStorage.getItem('dandora-ficha-v1');
-        if (backup && !sessionStorage.getItem('master_sheet_backup')) {
-            sessionStorage.setItem('master_sheet_backup', backup);
-        }
+    if(member) {
+        const sheetKey = `dandora_sheet_${currentTableId}_${member.playerEmail}`;
+        const activeSheet = JSON.parse(localStorage.getItem(sheetKey)) || member.activeSheet;
         
-        sessionStorage.setItem('master_editing_player_idx', memberIdx);
-        localStorage.setItem('dandora-ficha-v1', JSON.stringify(member.activeSheet));
-        openSheetModal();
+        if(activeSheet) {
+            const backup = localStorage.getItem('dandora-ficha-v1');
+            if (backup && !sessionStorage.getItem('master_sheet_backup')) {
+                sessionStorage.setItem('master_sheet_backup', backup);
+            }
+            
+            sessionStorage.setItem('master_editing_player_idx', memberIdx);
+            localStorage.setItem('dandora-ficha-v1', JSON.stringify(activeSheet));
+            openSheetModal();
+        }
     }
 }
 
@@ -701,19 +711,55 @@ function savePlayerNotes() {
 // ==========================================
 // CHARACTER VAULT LOGIC
 function syncPlayerSheetToTable(data) {
-    // Envia a ficha em tempo real quando o jogador digita algo
-    if (currentPlayerTableId && currentUser) {
-        const playerTablesKey = `dandora_player_tables_${currentUser.email}`;
-        const playerTables = JSON.parse(localStorage.getItem(playerTablesKey)) || [];
-        const pTable = playerTables.find(t => t.id === currentPlayerTableId);
+    let targetTableId = null;
+    let targetEmail = null;
+    
+    // Identificar a mesa e o email alvo dependendo do modo atual
+    if (sessionStorage.getItem('currentMode') === 'master') {
+        if (currentTableId) {
+            targetTableId = currentTableId;
+            const editingIdx = sessionStorage.getItem('master_editing_player_idx');
+            if (editingIdx !== null) {
+                const members = JSON.parse(localStorage.getItem(`dandora_table_members_${currentTableId}`)) || [];
+                const member = members[editingIdx];
+                if (member) targetEmail = member.playerEmail;
+            }
+        }
+    } else {
+        if (currentPlayerTableId && currentUser) {
+            const playerTables = JSON.parse(localStorage.getItem(`dandora_player_tables_${currentUser.email}`)) || [];
+            const pTable = playerTables.find(t => t.id === currentPlayerTableId);
+            if (pTable && pTable.masterTableId) {
+                targetTableId = pTable.masterTableId;
+                targetEmail = currentUser.email;
+            }
+        }
+    }
+    
+    if (targetTableId && targetEmail) {
+        const sheetKey = `dandora_sheet_${targetTableId}_${targetEmail}`;
         
-        if (pTable && pTable.masterTableId) {
-            const membersKey = `dandora_table_members_${pTable.masterTableId}`;
+        // Salvar localmente sem ativar o trigger global do firebase-sync (que faria set total)
+        window.dandoraDisableSync = true;
+        localStorage.setItem(sheetKey, JSON.stringify(data));
+        window.dandoraDisableSync = false;
+        
+        // Realizar o UPDATE campo a campo no Firebase para mesclar sem conflitos!
+        if (window.dandoraDatabase) {
+            try {
+                const cleanData = JSON.parse(JSON.stringify(data));
+                window.dandoraDatabase.ref('dandora_data/' + btoa(sheetKey)).update(cleanData);
+            } catch(e) {}
+        }
+        
+        // Mantemos um fallback do nome e dados básicos na lista de membros para caso offline
+        if (sessionStorage.getItem('currentMode') !== 'master') {
+            const membersKey = `dandora_table_members_${targetTableId}`;
             let members = JSON.parse(localStorage.getItem(membersKey)) || [];
-            let member = members.find(m => m.playerEmail === currentUser.email);
+            let member = members.find(m => m.playerEmail === targetEmail);
             if (member) {
-                member.activeSheet = data;
-                localStorage.setItem(membersKey, JSON.stringify(members));
+                member.activeSheetSummary = { nome: data.nome, classe: data.classe, nivel: data.nivel, portrait: data.portrait };
+                localStorage.setItem(membersKey, JSON.stringify(members)); // Isso sim será enviado por set
             }
         }
     }
@@ -1162,6 +1208,20 @@ window.addEventListener('dandoraDataSync', () => {
         
         const iframe = document.getElementById('sheet-iframe');
         if (iframe && iframe.contentWindow && document.getElementById('sheet-modal').classList.contains('active')) {
+            const editingIdx = sessionStorage.getItem('master_editing_player_idx');
+            if (editingIdx !== null) {
+                const members = JSON.parse(localStorage.getItem(`dandora_table_members_${currentTableId}`)) || [];
+                const member = members[editingIdx];
+                if (member) {
+                    const sheetKey = `dandora_sheet_${currentTableId}_${member.playerEmail}`;
+                    const activeSheet = localStorage.getItem(sheetKey);
+                    if (activeSheet) {
+                        window.dandoraDisableSync = true;
+                        localStorage.setItem('dandora-ficha-v1', activeSheet);
+                        window.dandoraDisableSync = false;
+                    }
+                }
+            }
             iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_UPDATE' }, '*');
         }
     } else if (currentView === 'table-player-view') {

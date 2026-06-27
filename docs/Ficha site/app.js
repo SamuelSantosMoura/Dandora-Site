@@ -247,6 +247,7 @@
 
   function applyData(data) {
     if (!data) return;
+    const activeEl = document.activeElement;
 
     // Identidade
     setVal('nome', data.nome);
@@ -287,19 +288,21 @@
     setVal('armadura-escudos', data.armadura);
 
     // Perícias
-    if (data.pericias) {
+    const isTypingInSkills = activeEl && activeEl.closest('.skills-grid');
+    if (data.pericias && !isTypingInSkills) {
       Object.keys(data.pericias).forEach(key => {
         const row = document.querySelector(`.skill-row[data-skill="${key}"]`);
         if (!row) return;
         const cb = row.querySelector('input[type="checkbox"]');
         const input = row.querySelector('input[type="text"]');
         if (cb) cb.checked = data.pericias[key].proficient;
-        if (input) input.value = data.pericias[key].bonus || '';
+        if (input && document.activeElement !== input) input.value = data.pericias[key].bonus || '';
       });
     }
 
     // Ataques
-    if (data.ataques && data.ataques.length > 0) {
+    const isTypingInAttacks = activeEl && activeEl.closest('#attacks-body');
+    if (data.ataques && data.ataques.length > 0 && !isTypingInAttacks) {
       const tbody = document.getElementById('attacks-body');
       if (tbody) {
         tbody.innerHTML = '';
@@ -309,7 +312,8 @@
 
     // Inventário
     setVal('container-type', data.container_type);
-    if (data.itens && data.itens.length > 0) {
+    const isTypingInItems = activeEl && activeEl.closest('#items-list');
+    if (data.itens && data.itens.length > 0 && !isTypingInItems) {
       const list = document.getElementById('items-list');
       if (list) {
         list.innerHTML = '';
@@ -326,21 +330,19 @@
     setVal('teste-resistencia-magia', data.teste_resistencia_magia);
 
     // Magias
+    const isTypingInSpells = activeEl && activeEl.closest('#spells-container');
     const spellsContainer = document.getElementById('spells-container');
-    if (spellsContainer) {
+    if (spellsContainer && data.magias && data.magias.length > 0 && !isTypingInSpells) {
       spellsContainer.innerHTML = '';
-      if (data.magias && Array.isArray(data.magias)) {
-        data.magias.forEach(spell => addSpellCard(spell));
-      }
+      data.magias.forEach(sp => addSpellCard(sp));
     }
 
     // Habilidades
+    const isTypingInHabs = activeEl && activeEl.closest('#habilidades-container');
     const habsContainer = document.getElementById('habilidades-container');
-    if (habsContainer) {
+    if (habsContainer && data.habilidades && data.habilidades.length > 0 && !isTypingInHabs) {
       habsContainer.innerHTML = '';
-      if (data.habilidades && Array.isArray(data.habilidades)) {
-        data.habilidades.forEach(hab => addHabilidadeCard(hab));
-      }
+      data.habilidades.forEach(hb => addHabilidadeCard(hb));
     }
 
     // Histórico e Favoritos
@@ -370,7 +372,10 @@
     if (el.type === 'checkbox') {
       el.checked = !!value;
     } else {
-      el.value = value;
+      // Evitar sobrescrever se o usuǭrio estiver digitando neste exato campo
+      if (el.value != value && document.activeElement !== el) {
+        el.value = value;
+      }
     }
   }
 
@@ -550,6 +555,7 @@
       </td>
     `;
     tbody.appendChild(tr);
+    saveData();
   };
 
   window.removeAttackRow = function (btn) {
@@ -619,6 +625,7 @@
       </div>
     `;
     container.appendChild(card);
+    saveData();
   };
 
   window.removeSpellCard = function (btn) {
