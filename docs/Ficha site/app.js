@@ -34,7 +34,6 @@
         saveData();
         updateAllBars();
         updateSlots();
-        updateSaveIndicator();
       }, 500);
     });
 
@@ -43,7 +42,6 @@
       saveTimeout = setTimeout(() => {
         saveData();
         updateSlots();
-        updateSaveIndicator();
       }, 300);
     });
   }
@@ -220,16 +218,29 @@
     try {
       const data = collectData();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'DANDORA_SHEET_UPDATED', data: data }, '*');
-      }
+      // Não enviamos mais automaticamente para o mestre! (Salvamento Manual)
     } catch (e) {
       console.error('Erro ao salvar:', e);
       if (e.name === 'QuotaExceededError') {
-        showToast('âš  Armazenamento cheio! Tente reduzir a imagem.');
+        showToast('⚠️ Armazenamento cheio! Tente reduzir a imagem.');
       }
     }
   }
+
+  window.syncToMaster = function() {
+    try {
+      const data = collectData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'DANDORA_SHEET_UPDATED', data: data }, '*');
+      }
+      showToast('💾 Ficha salva e sincronizada com a mesa!');
+      updateSaveIndicator();
+    } catch (e) {
+      console.error('Erro ao sincronizar:', e);
+      showToast('❌ Erro ao salvar ficha.');
+    }
+  };
 
   /* ==========================================================
      CARREGAR DO LOCALSTORAGE

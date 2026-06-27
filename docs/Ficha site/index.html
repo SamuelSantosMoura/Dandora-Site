@@ -558,15 +558,13 @@
   </div><!-- /.container -->
 
   <!-- ==================== TOOLBAR FIXA ==================== -->
-  <div class="toolbar">
-    <span class="save-indicator" id="save-indicator">
-      <span class="dot"></span> Salvo
+  <div class="toolbar" style="justify-content: center;">
+    <button type="button" class="btn primary" onclick="syncToMaster()" id="btn-save" style="font-size: 1.2rem; padding: 12px 24px; background: var(--gold); color: var(--bg-dark); font-weight: bold;">
+      💾 SALVAR FICHA
+    </button>
+    <span class="save-indicator" id="save-indicator" style="display:none; margin-left: 15px;">
+      <span class="dot" style="background: #28a745;"></span> Salvo
     </span>
-    <button type="button" class="btn" onclick="toggleHistory()" id="btn-history">📜 Histórico</button>
-    <button type="button" class="btn" onclick="exportJSON()" id="btn-export">📥 Exportar JSON</button>
-    <button type="button" class="btn" onclick="triggerImport()" id="btn-import">📤 Importar JSON</button>
-    <button type="button" class="btn danger" onclick="confirmClear()" id="btn-clear">🗑 Limpar Ficha</button>
-    <input type="file" id="import-input" accept=".json" onchange="handleImport(event)" style="display:none;">
   </div>
 
   <!-- ==================== ROLLER OVERLAY (BG3 STYLE) ==================== -->
