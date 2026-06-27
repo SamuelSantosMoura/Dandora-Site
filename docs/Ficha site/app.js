@@ -6,7 +6,17 @@
 (function () {
   'use strict';
 
-  const STORAGE_KEY = 'dandora-ficha-v1';
+  const urlParams = new URLSearchParams(window.location.search);
+  const tableId = urlParams.get('tableId');
+  const playerEmail = urlParams.get('playerEmail');
+  
+  let STORAGE_KEY = 'dandora-ficha-v1';
+  if (tableId && playerEmail) {
+    STORAGE_KEY = `dandora_sheet_${tableId}_${playerEmail}`;
+  }
+  
+  const readOnly = urlParams.get('readOnly') === 'true';
+
   let saveTimeout = null;
 
   /* ==========================================================

@@ -512,52 +512,54 @@ function masterViewPlayerSheet(memberIdx) {
     const member = members[memberIdx];
     
     if(member) {
-        const sheetKey = `dandora_sheet_${currentTableId}_${member.playerEmail}`;
-        const activeSheet = JSON.parse(localStorage.getItem(sheetKey)) || member.activeSheet;
-        
-        if(activeSheet) {
-            const backup = localStorage.getItem('dandora-ficha-v1');
-            if (backup && !sessionStorage.getItem('master_sheet_backup')) {
-                sessionStorage.setItem('master_sheet_backup', backup);
-            }
-            
-            sessionStorage.setItem('master_editing_player_idx', memberIdx);
-            localStorage.setItem('dandora-ficha-v1', JSON.stringify(activeSheet));
-            openSheetModal();
-        }
+        sessionStorage.setItem('master_editing_player_idx', memberIdx);
+        openSheetModal(currentTableId, member.playerEmail, true);
     }
 }
 
-function openSheetModal() {
+function openSheetModal(tId = null, pEmail = null, isReadOnly = false) {
+    const iframe = document.getElementById('sheet-iframe');
+    if (iframe) {
+        let tableId = tId;
+        let playerEmail = pEmail;
+        
+        if (!tableId && !playerEmail) {
+            if (sessionStorage.getItem('currentMode') === 'master') {
+                tableId = currentTableId;
+                playerEmail = currentUser.email;
+            } else {
+                if (currentPlayerTableId && currentUser) {
+                    const playerTables = JSON.parse(localStorage.getItem(`dandora_player_tables_${currentUser.email}`)) || [];
+                    const pTable = playerTables.find(t => t.id === currentPlayerTableId);
+                    if (pTable) {
+                        tableId = pTable.masterTableId;
+                        playerEmail = currentUser.email;
+                    }
+                }
+            }
+        }
+        
+        if (tableId && playerEmail) {
+            iframe.src = `Ficha site/index.html?v=7&tableId=${tableId}&playerEmail=${playerEmail}&readOnly=${isReadOnly}`;
+        } else {
+            iframe.src = `Ficha site/index.html?v=7`;
+        }
+    }
     document.getElementById('sheet-modal').classList.remove('hidden');
 }
 
 function closeSheetModal() {
     document.getElementById('sheet-modal').classList.add('hidden');
     
-    // Salvar as edições do mestre de volta na mesa em tempo real
-    if (currentTableId) {
-        const editedSheet = JSON.parse(localStorage.getItem('dandora-ficha-v1'));
-        if (editedSheet) {
-            const membersKey = `dandora_table_members_${currentTableId}`;
-            let members = JSON.parse(localStorage.getItem(membersKey)) || [];
-            const editingIdx = sessionStorage.getItem('master_editing_player_idx');
-            
-            if (editingIdx !== null && members[editingIdx]) {
-                members[editingIdx].activeSheet = editedSheet;
-                localStorage.setItem(membersKey, JSON.stringify(members)); // Dispara a sincronização
-            }
-            sessionStorage.removeItem('master_editing_player_idx');
-        }
+    const iframe = document.getElementById('sheet-iframe');
+    if (iframe) {
+        iframe.src = 'about:blank';
     }
     
-    const backup = sessionStorage.getItem('master_sheet_backup');
-    if (backup) {
-        localStorage.setItem('dandora-ficha-v1', backup);
-        sessionStorage.removeItem('master_sheet_backup');
-    }
+    sessionStorage.removeItem('master_editing_player_idx');
     
     if (typeof renderActiveSheet === 'function') renderActiveSheet();
+    if (typeof renderTablePlayers === 'function') renderTablePlayers();
 }
 
 // ==========================================
@@ -770,8 +772,34 @@ function renderActiveSheet() {
     if (!infoContainer) return;
 
     try {
-        const rawData = localStorage.getItem('dandora-ficha-v1');
-        const data = rawData ? JSON.parse(rawData) : null;
+        let targetTableId = null;
+        let targetEmail = null;
+
+        if (sessionStorage.getItem('currentMode') === 'master') {
+            if (currentTableId) {
+                targetTableId = currentTableId;
+                targetEmail = currentUser.email; // Fallback, mestre não costuma ter ficha
+            }
+        } else {
+            if (currentPlayerTableId && currentUser) {
+                const playerTables = JSON.parse(localStorage.getItem(`dandora_player_tables_${currentUser.email}`)) || [];
+                const pTable = playerTables.find(t => t.id === currentPlayerTableId);
+                if (pTable && pTable.masterTableId) {
+                    targetTableId = pTable.masterTableId;
+                    targetEmail = currentUser.email;
+                }
+            }
+        }
+
+        let data = null;
+        if (targetTableId && targetEmail) {
+            const sheetKey = `dandora_sheet_${targetTableId}_${targetEmail}`;
+            const rawData = localStorage.getItem(sheetKey);
+            data = rawData ? JSON.parse(rawData) : null;
+        } else {
+            const rawData = localStorage.getItem('dandora-ficha-v1');
+            data = rawData ? JSON.parse(rawData) : null;
+        }
         
         // Enviar cópia atualizada da ficha para o Mestre da Mesa (backup ao renderizar)
         syncPlayerSheetToTable(data);
@@ -802,9 +830,34 @@ function renderActiveSheet() {
     }
 }
 
+function getActiveSheetKey() {
+    let targetTableId = null;
+    let targetEmail = null;
+    if (sessionStorage.getItem('currentMode') === 'master') {
+        if (currentTableId) {
+            targetTableId = currentTableId;
+            targetEmail = currentUser.email;
+        }
+    } else {
+        if (currentPlayerTableId && currentUser) {
+            const playerTables = JSON.parse(localStorage.getItem(`dandora_player_tables_${currentUser.email}`)) || [];
+            const pTable = playerTables.find(t => t.id === currentPlayerTableId);
+            if (pTable && pTable.masterTableId) {
+                targetTableId = pTable.masterTableId;
+                targetEmail = currentUser.email;
+            }
+        }
+    }
+    if (targetTableId && targetEmail) {
+        return `dandora_sheet_${targetTableId}_${targetEmail}`;
+    }
+    return 'dandora-ficha-v1';
+}
+
 function saveActiveSheetToVault() {
     try {
-        const rawData = localStorage.getItem('dandora-ficha-v1');
+        const sheetKey = getActiveSheetKey();
+        const rawData = localStorage.getItem(sheetKey);
         if (!rawData) {
             alert("Não há ficha ativa para salvar.");
             return;
@@ -877,7 +930,8 @@ function loadSheetFromVault(id) {
     const sheet = vault.find(s => s._vaultId === id);
     
     if (sheet) {
-        localStorage.setItem('dandora-ficha-v1', JSON.stringify(sheet));
+        const sheetKey = getActiveSheetKey();
+        localStorage.setItem(sheetKey, JSON.stringify(sheet));
         renderActiveSheet();
         alert(`A ficha de ${sheet.nome} foi carregada e está ativa.`);
     }
@@ -896,7 +950,8 @@ function deleteSheetFromVault(id) {
 
 function createNewBlankSheet() {
     if(!confirm("Isso limpará sua Ficha Ativa atual. Se não a salvou no cofre, ela será perdida! Continuar?")) return;
-    localStorage.removeItem('dandora-ficha-v1');
+    const sheetKey = getActiveSheetKey();
+    localStorage.removeItem(sheetKey);
     renderActiveSheet();
     openSheetModal();
 }
@@ -1208,20 +1263,6 @@ window.addEventListener('dandoraDataSync', () => {
         
         const iframe = document.getElementById('sheet-iframe');
         if (iframe && iframe.contentWindow && document.getElementById('sheet-modal').classList.contains('active')) {
-            const editingIdx = sessionStorage.getItem('master_editing_player_idx');
-            if (editingIdx !== null) {
-                const members = JSON.parse(localStorage.getItem(`dandora_table_members_${currentTableId}`)) || [];
-                const member = members[editingIdx];
-                if (member) {
-                    const sheetKey = `dandora_sheet_${currentTableId}_${member.playerEmail}`;
-                    const activeSheet = localStorage.getItem(sheetKey);
-                    if (activeSheet) {
-                        window.dandoraDisableSync = true;
-                        localStorage.setItem('dandora-ficha-v1', activeSheet);
-                        window.dandoraDisableSync = false;
-                    }
-                }
-            }
             iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_UPDATE' }, '*');
         }
     } else if (currentView === 'table-player-view') {
@@ -1230,16 +1271,6 @@ window.addEventListener('dandoraDataSync', () => {
         // Sincronizar Ficha do Jogador
         const iframe = document.getElementById('sheet-iframe');
         if (iframe && iframe.contentWindow) {
-            // Verifica se a ficha do jogador foi atualizada
-            if (currentPlayerTableId && currentUser) {
-                const sheetKey = `dandora_sheet_${currentPlayerTableId}_${currentUser.email}`;
-                const activeSheet = localStorage.getItem(sheetKey);
-                if (activeSheet) {
-                    window.dandoraDisableSync = true;
-                    localStorage.setItem('dandora-ficha-v1', activeSheet);
-                    window.dandoraDisableSync = false;
-                }
-            }
             iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_UPDATE' }, '*');
         }
     }
