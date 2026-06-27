@@ -302,7 +302,7 @@
 
     // Ataques
     const isTypingInAttacks = activeEl && activeEl.closest('#attacks-body');
-    if (data.ataques && data.ataques.length > 0 && !isTypingInAttacks) {
+    if (Array.isArray(data.ataques) && data.ataques.length > 0 && !isTypingInAttacks) {
       const tbody = document.getElementById('attacks-body');
       if (tbody) {
         tbody.innerHTML = '';
@@ -313,7 +313,7 @@
     // Inventário
     setVal('container-type', data.container_type);
     const isTypingInItems = activeEl && activeEl.closest('#items-list');
-    if (data.itens && data.itens.length > 0 && !isTypingInItems) {
+    if (Array.isArray(data.itens) && data.itens.length > 0 && !isTypingInItems) {
       const list = document.getElementById('items-list');
       if (list) {
         list.innerHTML = '';
@@ -332,7 +332,7 @@
     // Magias
     const isTypingInSpells = activeEl && activeEl.closest('#spells-container');
     const spellsContainer = document.getElementById('spells-container');
-    if (spellsContainer && data.magias && data.magias.length > 0 && !isTypingInSpells) {
+    if (spellsContainer && Array.isArray(data.magias) && data.magias.length > 0 && !isTypingInSpells) {
       spellsContainer.innerHTML = '';
       data.magias.forEach(sp => addSpellCard(sp));
     }
@@ -340,7 +340,7 @@
     // Habilidades
     const isTypingInHabs = activeEl && activeEl.closest('#habilidades-container');
     const habsContainer = document.getElementById('habilidades-container');
-    if (habsContainer && data.habilidades && data.habilidades.length > 0 && !isTypingInHabs) {
+    if (habsContainer && Array.isArray(data.habilidades) && data.habilidades.length > 0 && !isTypingInHabs) {
       habsContainer.innerHTML = '';
       data.habilidades.forEach(hb => addHabilidadeCard(hb));
     }
@@ -670,7 +670,6 @@
       </div>
     `;
     container.appendChild(card);
-    addInputListeners(card);
     saveData();
   };
 
