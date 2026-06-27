@@ -1135,6 +1135,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if(dashBtn) dashBtn.classList.remove('hidden');
         const outBtn = document.getElementById('logout-btn');
         if(outBtn) outBtn.classList.remove('hidden');
+        const profBtn = document.getElementById('profile-btn');
+        if(profBtn) profBtn.classList.remove('hidden');
+        
+        if (typeof updateNavBadge === 'function') updateNavBadge();
         
         if (currentUser.role === 'master') {
             const mName = document.getElementById('master-name');
