@@ -553,10 +553,16 @@ function openSheetModal(tId = null, pEmail = null, isReadOnly = false) {
         }
     }
     document.getElementById('sheet-modal').classList.remove('hidden');
+    const bBtn = document.getElementById('global-back-btn');
+    if (bBtn) bBtn.style.display = 'none';
 }
 
 function closeSheetModal() {
     document.getElementById('sheet-modal').classList.add('hidden');
+    const bBtn = document.getElementById('global-back-btn');
+    if (bBtn && currentView !== 'table-manager-view' && currentView !== 'player-table-view' && currentView !== 'home-view') {
+        bBtn.style.display = globalHistory.length > 0 ? 'flex' : 'none';
+    }
     
     const iframe = document.getElementById('sheet-iframe');
     if (iframe) {
