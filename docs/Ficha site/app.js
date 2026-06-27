@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    DANDORA RPG â€” Ficha de Personagem â€” Lógica
    Persistência LocalStorage + Exportar/Importar JSON
    ============================================================ */
@@ -895,6 +895,13 @@
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
+
+  window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'DANDORA_SYNC_UPDATE') {
+      loadData();
+    }
+  });
+});
 
   /* ==========================================================
      SISTEMA DE ROLAGEM (BG3 STYLE)

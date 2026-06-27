@@ -469,8 +469,8 @@ function renderTablePlayers() {
                 <div style="display:flex; align-items:center; flex:1; min-width: 100%;">
                     ${portrait}
                     <div>
-                        <h3 style="margin:0;">${p.nome} <span style="font-size: 0.8rem; color: var(--gold-dim);">${level}</span></h3>
-                        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">${pClass} • Jogador: ${m.playerName}</p>
+                        <h3 style="margin:0;">${m.playerName}</h3>
+                        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">${p.nome} - ${pClass} <span style="font-size: 0.8rem; color: var(--gold-dim);">${level}</span></p>
                     </div>
                 </div>
                 <div style="display:flex; gap:8px; width: 100%; margin-top: 5px;">
@@ -936,7 +936,7 @@ function deleteTable(tableId) {
  * Remove o jogador da lista de membros e da lista de mesas do jogador.
  */
 function kickPlayer(playerEmail, playerName) {
-    if (!currentUser || currentUser.role !== 'master' || !currentTableId) return;
+    if (!currentUser || sessionStorage.getItem('currentMode') !== 'master' || !currentTableId) return;
 
     const confirmed = confirm(
         `ðŸš« EXPULSAR JOGADOR\n\n"${playerName}"\n\nEste jogador será removido desta mesa. Ele precisará de um novo convite para entrar novamente.\n\nDeseja continuar?`
@@ -1159,6 +1159,11 @@ window.addEventListener('dandoraDataSync', () => {
         
         if (typeof renderMissions === 'function') renderMissions();
         if (typeof renderSessions === 'function') renderSessions();
+        
+        const iframe = document.getElementById('sheet-iframe');
+        if (iframe && iframe.contentWindow && document.getElementById('sheet-modal').classList.contains('active')) {
+            iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_UPDATE' }, '*');
+        }
     } else if (currentView === 'table-player-view') {
         if (typeof renderPlayerCompanions === 'function') renderPlayerCompanions();
     }
