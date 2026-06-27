@@ -424,7 +424,7 @@ function openTableManager(tableId) {
 function switchTableTab(tabId) {
     document.querySelectorAll('.tm-tab').forEach(t => t.classList.remove('active'));
     
-    if (window.event && window.event.currentTarget) {
+    if (window.event && window.event.currentTarget && window.event.currentTarget.classList) {
         window.event.currentTarget.classList.add('active');
     } else {
         document.querySelectorAll('.tm-tab').forEach(t => {
@@ -672,7 +672,7 @@ function openPlayerTable(tableId) {
 function switchPlayerTab(tabId) {
     document.querySelectorAll('.pt-tab').forEach(t => t.classList.remove('active'));
     
-    if (window.event && window.event.currentTarget) {
+    if (window.event && window.event.currentTarget && window.event.currentTarget.classList) {
         window.event.currentTarget.classList.add('active');
     } else {
         document.querySelectorAll('.pt-tab').forEach(t => {
