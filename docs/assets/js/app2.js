@@ -1295,14 +1295,32 @@ window.addEventListener('message', (event) => {
 // ==========================================
 window.masterRollsHistory = [];
 
+function getActiveTableId() {
+    const mode = sessionStorage.getItem('currentMode');
+    if (mode === 'master') {
+        return typeof currentTableId !== 'undefined' ? currentTableId : null;
+    } else {
+        if (typeof currentPlayerTableId !== 'undefined' && currentPlayerTableId && currentUser) {
+            const playerTables = JSON.parse(localStorage.getItem(`dandora_player_tables_${currentUser.email}`)) || [];
+            const pTable = playerTables.find(t => t.id === currentPlayerTableId);
+            if (pTable && pTable.masterTableId) {
+                return pTable.masterTableId;
+            }
+        }
+    }
+    return null;
+}
+
 function broadcastRoll(rollData) {
-    if (!window.activeTableId || !window.dandoraDatabase) return;
+    const tid = getActiveTableId();
+    if (!tid || !window.dandoraDatabase) return;
     rollData.timestamp = Date.now();
-    window.dandoraDatabase.ref('tables/' + window.activeTableId + '/rolls').push(rollData);
+    window.dandoraDatabase.ref('tables/' + tid + '/rolls').push(rollData);
 }
 
 function initRollSync() {
-    if (!window.activeTableId || !window.dandoraDatabase) return;
+    const tid = getActiveTableId();
+    if (!tid || !window.dandoraDatabase) return;
     
     // Clear current history
     window.masterRollsHistory = [];
@@ -1310,7 +1328,7 @@ function initRollSync() {
     if (container) container.innerHTML = '';
     
     // Listen for new rolls
-    window.dandoraDatabase.ref('tables/' + window.activeTableId + '/rolls')
+    window.dandoraDatabase.ref('tables/' + tid + '/rolls')
         .orderByChild('timestamp')
         .limitToLast(100)
         .on('child_added', (snapshot) => {
