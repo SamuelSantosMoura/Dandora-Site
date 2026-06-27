@@ -27,7 +27,11 @@ function navigateTo(viewId, isBack = false) {
     // Show or hide back button
     const backBtn = document.getElementById('global-back-btn');
     if (backBtn) {
-        backBtn.style.display = globalHistory.length > 0 ? 'flex' : 'none';
+        if (viewId === 'table-manager-view' || viewId === 'player-table-view' || viewId === 'home-view') {
+            backBtn.style.display = 'none';
+        } else {
+            backBtn.style.display = globalHistory.length > 0 ? 'flex' : 'none';
+        }
     }
     
     sessionStorage.setItem('currentView', currentView);

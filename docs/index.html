@@ -35,19 +35,19 @@ window.onerror = function(msg, url, line, col, error) {
 </head>
 <body>
     
-    <!-- GLOBAL BACK BUTTON -->
-    <button id="global-back-btn" class="btn-outline" style="display:none; position:fixed; top:20px; left:20px; z-index:9999; border-radius:30px; padding: 0.5rem 1.2rem; background: var(--bg-dark);" onclick="goBack()">
-        <i class="fa-solid fa-arrow-left"></i> Voltar
-    </button>
-
     <!-- Navbar / Header -->
     <nav class="main-nav">
         <div class="nav-container">
-            <div class="logo" onclick="navigateTo('home-view')">
-                <!-- Símbolo oficial de Dandora -->
-                <!-- Símbolo oficial de Dandora (Imagem) -->
-                <img src="assets/images/dandora-icon.jpg" alt="Logo Dandora" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
-                Dandora RPG
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <!-- GLOBAL BACK BUTTON -->
+                <button id="global-back-btn" class="btn-outline" style="display:none; border-radius:30px; padding: 0.4rem 1rem; font-size: 0.85rem;" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar
+                </button>
+                <div class="logo" onclick="navigateTo('home-view')">
+                    <!-- Símbolo oficial de Dandora (Imagem) -->
+                    <img src="assets/images/dandora-icon.jpg" alt="Logo Dandora" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                    Dandora RPG
+                </div>
             </div>
             <div class="nav-links">
                 <button class="nav-btn" onclick="navigateTo('home-view')"><i class="fa-solid fa-house"></i> Início</button>
@@ -1035,8 +1035,8 @@ Altura     Dano
     </dialog>
 
 
-    <script src="assets/js/firebase-sync2.js?v=12"></script>
-    <script src="assets/js/app2.js?v=12"></script>
+    <script src="assets/js/firebase-sync2.js?v=13"></script>
+    <script src="assets/js/app2.js?v=13"></script>
     <script src="assets/js/pdf-viewer.js?v=8"></script>
     <script src="assets/js/npc.js?v=8"></script>
     <script src="assets/js/eventos.js?v=8"></script>
