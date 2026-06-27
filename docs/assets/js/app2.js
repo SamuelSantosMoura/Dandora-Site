@@ -419,6 +419,9 @@ function openTableManager(tableId) {
     
     // Navigate
     navigateTo('table-manager-view');
+    
+    // Inicia a sincronização de rolagens
+    if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
 }
 
 function switchTableTab(tabId) {
@@ -679,6 +682,9 @@ function openPlayerTable(tableId) {
     
     // Navigate
     navigateTo('player-table-view');
+    
+    // Inicia a sincronização de rolagens
+    if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
 }
 
 function switchPlayerTab(tabId) {
@@ -1216,6 +1222,11 @@ document.addEventListener('DOMContentLoaded', () => {
         navigateTo(storedView, true);
         globalHistory = tempHistory;
         sessionStorage.setItem('globalHistory', JSON.stringify(globalHistory));
+        
+        // Inicia a sincronização de rolagens se estiver numa mesa
+        if ((storedView === 'table-manager-view' || storedView === 'player-table-view') && typeof initRollSync === 'function') {
+            setTimeout(initRollSync, 1000);
+        }
     } else {
         navigateTo('home-view');
     }
@@ -1284,7 +1295,7 @@ window.addEventListener('message', (event) => {
         if (typeof syncPlayerSheetToTable === 'function') syncPlayerSheetToTable(event.data.data);
     } else if (event.data && event.data.type === 'DANDORA_ROLL') {
         // Broadcast the roll if we are in a table
-        if (window.activeTableId && window.dandoraDatabase) {
+        if (getActiveTableId() && window.dandoraDatabase) {
             broadcastRoll(event.data.data);
         }
     }
