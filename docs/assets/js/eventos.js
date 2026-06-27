@@ -366,12 +366,12 @@ function rolarEvento(tipo) {
   const lista = eventos[tipo];
   const resultado = Math.floor(Math.random() * lista.length);
   const eventoDiv = document.getElementById('evento');
-  eventoDiv.innerHTML = \`
+  eventoDiv.innerHTML = `
     <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.12em;color:var(--gold-dark);text-transform:uppercase;margin-bottom:10px;">
-      \${tipo.toUpperCase()} — Evento \${resultado + 1} de \${lista.length}
+      ${tipo.toUpperCase()} — Evento ${resultado + 1} de ${lista.length}
     </div>
-    <p style="margin:0;">\${lista[resultado]}</p>
-  \`;
+    <p style="margin:0;">${lista[resultado]}</p>
+  `;
 }
 
 function adicionarEvento() {
@@ -380,7 +380,7 @@ function adicionarEvento() {
   if (novoEvento) {
     eventos[tipo].push(novoEvento);
     document.getElementById('novo-evento').value = "";
-    alert(\`Evento adicionado à categoria "\${tipo}"!\`);
+    alert(`Evento adicionado à categoria "${tipo}"!`);
   } else {
     alert("Digite um evento antes de adicionar.");
   }
