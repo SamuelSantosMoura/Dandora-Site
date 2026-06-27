@@ -1278,5 +1278,165 @@ window.addEventListener('dandoraDataSync', () => {
 window.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'DANDORA_SHEET_UPDATED') {
         if (typeof syncPlayerSheetToTable === 'function') syncPlayerSheetToTable(event.data.data);
+    } else if (event.data && event.data.type === 'DANDORA_ROLL') {
+        // Broadcast the roll if we are in a table
+        if (window.activeTableId && window.dandoraDatabase) {
+            broadcastRoll(event.data.data);
+        }
     }
 });
+
+// ==========================================
+// REAL-TIME ROLLS PANEL
+// ==========================================
+window.masterRollsHistory = [];
+
+function broadcastRoll(rollData) {
+    if (!window.activeTableId || !window.dandoraDatabase) return;
+    rollData.timestamp = Date.now();
+    window.dandoraDatabase.ref('tables/' + window.activeTableId + '/rolls').push(rollData);
+}
+
+function initRollSync() {
+    if (!window.activeTableId || !window.dandoraDatabase) return;
+    
+    // Clear current history
+    window.masterRollsHistory = [];
+    const container = document.getElementById('master-roll-history');
+    if (container) container.innerHTML = '';
+    
+    // Listen for new rolls
+    window.dandoraDatabase.ref('tables/' + window.activeTableId + '/rolls')
+        .orderByChild('timestamp')
+        .limitToLast(100)
+        .on('child_added', (snapshot) => {
+            const roll = snapshot.val();
+            // Evitar duplicados
+            if (!window.masterRollsHistory.some(r => r.timestamp === roll.timestamp)) {
+                window.masterRollsHistory.push(roll);
+                renderMasterRolls();
+                
+                // Repassa a rolagem para o Iframe da ficha do jogador (se estiver aberta)
+                const iframe = document.getElementById('sheet-iframe');
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_ROLL', data: roll }, '*');
+                }
+            }
+        });
+}
+
+function renderMasterRolls() {
+    const container = document.getElementById('master-roll-history');
+    const filterEl = document.getElementById('roll-filter');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    const filter = filterEl ? filterEl.value : 'all';
+    
+    // Reverse array to show newest at top (if we prepend)
+    const sorted = [...window.masterRollsHistory].sort((a,b) => b.timestamp - a.timestamp);
+    
+    let renderedCount = 0;
+    
+    sorted.forEach(roll => {
+        // Player should not see Master's rolls if we implement this view for players
+        // But for the master view, show everything.
+        
+        if (filter === 'simple' && roll.complex) return;
+        if (filter === 'complex' && !roll.complex) return;
+        
+        renderedCount++;
+        
+        const card = document.createElement('div');
+        card.style.background = 'rgba(25, 25, 25, 0.9)';
+        card.style.border = '1px solid var(--gold-dark)';
+        card.style.borderRadius = '6px';
+        card.style.padding = '10px';
+        card.style.marginBottom = '10px';
+        card.style.animation = 'fadeIn 0.5s ease';
+        
+        let header = `
+            <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px dashed var(--gold-dim); padding-bottom: 5px; margin-bottom: 8px;">
+                <div>
+                    <span style="font-weight: bold; color: var(--gold-primary); font-size: 1rem;">
+                        ${roll.isMaster ? '🧙 Mestre' : '🧝 ' + (roll.characterName || 'Desconhecido')}
+                    </span>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px;">
+                        ${roll.title}
+                    </div>
+                </div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">
+                    ${new Date(roll.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </div>
+            </div>
+        `;
+        
+        let body = '';
+        if (roll.complex) {
+            body = `
+                <div style="font-size: 0.85rem; margin-bottom: 5px;">Fórmula: <span style="color: var(--text-light);">${roll.calculation}</span></div>
+                <div style="text-align: right; margin-top: 5px;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Resultado Final</span><br>
+                    <span style="font-size: 1.5rem; font-weight: bold; color: var(--gold-light);">${roll.finalResult}</span>
+                </div>
+            `;
+        } else {
+            let diceHTML = '';
+            if (roll.rolls) {
+                roll.rolls.forEach((r, idx) => {
+                    let isWinner = (idx === roll.winningIndex);
+                    let color = isWinner ? 'var(--gold-primary)' : 'var(--text-muted)';
+                    let weight = isWinner ? 'bold' : 'normal';
+                    let extra = '';
+                    if (isWinner && r === 20) extra = '<span style="color: #4CAF50; font-size: 0.7rem; display: block;">Crítico!</span>';
+                    if (isWinner && r === 1) extra = '<span style="color: #F44336; font-size: 0.7rem; display: block;">Falha!</span>';
+                    
+                    diceHTML += `
+                        <div style="display: inline-block; text-align: center; margin-right: 10px; opacity: ${isWinner ? 1 : 0.5};">
+                            <i class="fa-solid fa-dice-d20" style="color: ${color}; font-size: 1.2rem;"></i>
+                            <div style="font-weight: ${weight}; margin-top: 3px;">${r}</div>
+                            ${extra}
+                        </div>
+                    `;
+                });
+            }
+            
+            body = `
+                <div style="margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">
+                    Bônus: <span style="color: var(--text-light);">${roll.bonus > 0 ? '+'+roll.bonus : roll.bonus}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div>${diceHTML}</div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Total</span><br>
+                        <span style="font-size: 1.5rem; font-weight: bold; color: var(--gold-light);">${roll.finalResult}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        card.innerHTML = header + body;
+        container.appendChild(card);
+    });
+    
+    if (renderedCount === 0) {
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 2rem;">Nenhuma rolagem recente...</div>';
+    }
+}
+
+window.clearMasterRollHistory = function() {
+    if (confirm("Limpar o histórico de rolagens na sua tela? (Isso não apaga do banco de dados)")) {
+        window.masterRollsHistory = [];
+        renderMasterRolls();
+    }
+};
+
+// Modifique openTable para chamar initRollSync
+const originalOpenTable = window.openTable;
+window.openTable = function(tableId) {
+    if (typeof originalOpenTable === 'function') {
+        originalOpenTable(tableId);
+    }
+    setTimeout(initRollSync, 500);
+};

@@ -465,12 +465,37 @@ window.onerror = function(msg, url, line, col, error) {
                 
                 <!-- TAB: PLAYERS -->
                 <div id="tm-players" class="tm-content active">
-                    <div class="dashboard-header">
-                        <h2>Fichas dos Jogadores</h2>
-                        <button class="btn-outline" onclick="generateInviteLink()"><i class="fa-solid fa-link"></i> Convidar</button>
-                    </div>
-                    <div class="tables-grid" id="tm-players-list">
-                        <!-- Jogadores serão injetados aqui -->
+                    <div style="display: flex; gap: 2rem; align-items: flex-start; height: 100%;">
+                        
+                        <!-- Lista de Fichas (Esquerda) -->
+                        <div style="flex: 2;">
+                            <div class="dashboard-header">
+                                <h2>Fichas dos Jogadores</h2>
+                                <button class="btn-outline" onclick="generateInviteLink()"><i class="fa-solid fa-link"></i> Convidar</button>
+                            </div>
+                            <div class="tables-grid" id="tm-players-list">
+                                <!-- Jogadores serão injetados aqui -->
+                            </div>
+                        </div>
+
+                        <!-- Painel de Rolagens (Direita) -->
+                        <div style="flex: 1; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--gold-dim); border-radius: 8px; display: flex; flex-direction: column; height: 600px; padding: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--gold-dark); padding-bottom: 0.5rem;">
+                                <h3 style="margin: 0; font-family: var(--font-epic); color: var(--gold-primary); font-size: 1.1rem;">🎲 Rolagens na Mesa</h3>
+                                <button class="btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="clearMasterRollHistory()" title="Limpar histórico"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <select id="roll-filter" class="attr-input" style="width: 100%; padding: 0.5rem;" onchange="renderMasterRolls()">
+                                    <option value="all">Filtro: Todas as Rolagens</option>
+                                    <option value="simple">Testes (Atributos e Perícias)</option>
+                                    <option value="complex">Rolagens Complexas (Dano/Magias)</option>
+                                </select>
+                            </div>
+                            <div id="master-roll-history" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;">
+                                <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 2rem;">Aguardando rolagens...</div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 

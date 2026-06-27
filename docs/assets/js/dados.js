@@ -177,6 +177,17 @@ function mdExecuteRoll(diceArray, bonus, title, formula) {
         mdSaveHistory();
         mdRenderHistory();
 
+        // Broadcast to table
+        if (typeof broadcastRoll === 'function') {
+            broadcastRoll({
+                title: hItem.title,
+                complex: true,
+                calculation: calcStr,
+                finalResult: finalResult,
+                isMaster: true
+            });
+        }
+
     }, 1400);
 }
 

@@ -1116,6 +1116,14 @@
     }
     renderHistory();
     saveData();
+
+    // Broadcast para a tela do mestre/painel de rolagens
+    const broadcastData = { ...rollData };
+    broadcastData.characterName = val('nome') || 'Desconhecido';
+    window.parent.postMessage({
+      type: 'DANDORA_ROLL',
+      data: broadcastData
+    }, '*');
   }
 
   function renderHistory() {
@@ -1392,10 +1400,34 @@
         finalResult: finalResult
       };
       
-      window.rollHistory.unshift(historyItem);
-      if (window.rollHistory.length > 50) window.rollHistory.pop();
-      if(typeof renderHistory === 'function') renderHistory();
-      if(typeof saveData === 'function') saveData();
+      if (typeof addRollToHistory === 'function') {
+        addRollToHistory(historyItem);
+      } else {
+        window.rollHistory.unshift(historyItem);
+        if (window.rollHistory.length > 50) window.rollHistory.pop();
+        if(typeof renderHistory === 'function') renderHistory();
+        if(typeof saveData === 'function') saveData();
+        
+        // Broadcast
+        historyItem.characterName = val('nome') || 'Desconhecido';
+        window.parent.postMessage({ type: 'DANDORA_ROLL', data: historyItem }, '*');
+      }
       
     }, 1500);
   };
+
+  // --- Sincronização Recebida do Mestre ---
+  window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'DANDORA_SYNC_ROLL') {
+      const roll = event.data.data;
+      if (roll.isMaster) return; // Jogadores não veem rolagens do mestre
+      
+      // Evitar duplicatas baseadas no timestamp (ou adicionando se não houver)
+      const exists = window.rollHistory.some(r => r.timestamp === roll.timestamp || (r.date === roll.date && r.title === roll.title));
+      if (!exists) {
+        window.rollHistory.unshift(roll);
+        if (window.rollHistory.length > 50) window.rollHistory.pop();
+        if (typeof renderHistory === 'function') renderHistory();
+      }
+    }
+  });

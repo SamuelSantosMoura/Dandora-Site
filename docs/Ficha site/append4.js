@@ -213,10 +213,19 @@
         finalResult: finalResult
       };
       
-      window.rollHistory.unshift(historyItem);
-      if (window.rollHistory.length > 50) window.rollHistory.pop();
-      if(typeof renderHistory === 'function') renderHistory();
-      if(typeof saveData === 'function') saveData();
+      if (typeof addRollToHistory === 'function') {
+        addRollToHistory(historyItem);
+      } else {
+        window.rollHistory = window.rollHistory || [];
+        window.rollHistory.unshift(historyItem);
+        if (window.rollHistory.length > 50) window.rollHistory.pop();
+        if(typeof renderHistory === 'function') renderHistory();
+        if(typeof saveData === 'function') saveData();
+        
+        // Broadcast
+        historyItem.characterName = (typeof val === 'function' ? val('nome') : null) || 'Desconhecido';
+        window.parent.postMessage({ type: 'DANDORA_ROLL', data: historyItem }, '*');
+      }
       
     }, 1500);
   };
