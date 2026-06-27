@@ -1326,6 +1326,9 @@ function broadcastRoll(rollData) {
     const tid = getActiveTableId();
     if (!tid || !window.dandoraDatabase) return;
     rollData.timestamp = Date.now();
+    if (currentUser && currentUser.name) {
+        rollData.playerName = currentUser.name;
+    }
     window.dandoraDatabase.ref('tables/' + tid + '/rolls').push(rollData);
 }
 
@@ -1393,7 +1396,7 @@ function renderMasterRolls() {
             <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px dashed var(--gold-dim); padding-bottom: 5px; margin-bottom: 8px;">
                 <div>
                     <span style="font-weight: bold; color: var(--gold-primary); font-size: 1rem;">
-                        ${roll.isMaster ? '🧙 Mestre' : '🧝 ' + (roll.characterName || 'Desconhecido')}
+                        ${roll.isMaster ? '🧙 Mestre' : '🧝 ' + (roll.playerName ? roll.playerName + ' - ' : '') + (roll.characterName || 'Desconhecido')}
                     </span>
                     <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px;">
                         ${roll.title}
