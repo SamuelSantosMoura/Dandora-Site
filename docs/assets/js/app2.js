@@ -700,7 +700,7 @@ function savePlayerNotes() {
 
 // ==========================================
 // CHARACTER VAULT LOGIC
-//function syncPlayerSheetToTable(data) {
+function syncPlayerSheetToTable(data) {
     // Envia a ficha em tempo real quando o jogador digita algo
     if (currentPlayerTableId && currentUser) {
         const playerTablesKey = `dandora_player_tables_${currentUser.email}`;
