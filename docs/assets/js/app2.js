@@ -571,7 +571,7 @@ function joinTable(inviteCodeParam = null) {
     if (!currentUser) return false;
     let tableCode = inviteCodeParam;
     if (!tableCode) {
-        tableCode = prompt("Digite o CÃ“DIGO de convite (5 dígitos) da mesa:");
+        tableCode = prompt("Digite o CÓDIGO de convite (5 dígitos) da mesa:");
     }
     if (!tableCode) return false;
     
@@ -994,7 +994,7 @@ function deleteTable(tableId) {
     if (!table) return;
 
     const confirmed = confirm(
-        `âš ï¸ EXCLUIR MESA\n\n"${table.name}"\n\nIsso removerá a mesa para TODOS os jogadores que estão nela. Esta ação não pode ser desfeita!\n\nDeseja continuar?`
+        `⚠️ EXCLUIR MESA\n\n"${table.name}"\n\nIsso removerá a mesa para TODOS os jogadores que estão nela. Esta ação não pode ser desfeita!\n\nDeseja continuar?`
     );
     if (!confirmed) return;
 

@@ -1,4 +1,4 @@
-﻿    const eventos = {
+    const eventos = {
       urbano: [
         "Festival da Colheita: A cidade está em festa para celebrar uma colheita abundante, com banquetes, música e competições.",
         "Invasão de Goblins: Um bando de goblins ataca as muralhas da cidade durante a noite, causando pânico e destruição.",
@@ -34,12 +34,12 @@
       ],
       floresta: [
         "Bando de Lobos: Um bando de lobos famintos cerca os personagens durante a noite.",
-        "Ãrvore Falante: Uma árvore mágica fala em enigmas e oferece conselhos ou desafios.",
+        "Árvore Falante: Uma árvore mágica fala em enigmas e oferece conselhos ou desafios.",
         "Plantas Venenosas: Uma planta tóxica libera esporos perigosos quando tocada.",
         "Tribo Secreta: Os personagens são observados por uma tribo escondida que vive na floresta.",
         "Ritual Druídico: Um círculo de druidas realiza um ritual e convida (ou ameaça) os personagens.",
         "Fadas Travessas: Fadas brincalhonas pregam peças nos aventureiros.",
-        "Armadilha Natural: Galhos e cipós formam uma armadilha para capturar animais â€” ou aventureiros.",
+        "Armadilha Natural: Galhos e cipós formam uma armadilha para capturar animais — ou aventureiros.",
         "Clareira Mágica: Um local encantado com propriedades curativas ou ilusórias.",
         "Fera Mística: Uma criatura rara como um unicórnio ou uma pantera espectral cruza o caminho do grupo.",
         "Túmulo Antigo: Um velho túmulo escondido entre raízes revela segredos de uma era passada.",
@@ -101,9 +101,9 @@
         "Ataque Aéreo: Harpias, Grifos ou Wyverns mergulham para tentar arrancar tripulantes do convés.",
         "Inspeção Real: Um navio de guerra de uma nação poderosa intercepta o grupo, exigindo abordar.",
         "Mensagem na Garrafa: O vigia avista uma garrafa flutuando. Dentro há um mapa do tesouro, um pedido de socorro ou a alma de um bruxo aprisionada.",
-        "O Mar Brilhante: Ã€ noite, o mar brilha com uma luz neon intensa a cada movimento do casco. Lindo, mas atrai predadores noturnos.",
+        "O Mar Brilhante: À noite, o mar brilha com uma luz neon intensa a cada movimento do casco. Lindo, mas atrai predadores noturnos.",
         "Praga no Porão: Ratos, insetos ou uma doença mágica infestam os estoques de comida.",
-        "Tromba D'água: Um tornado de água se forma no horizonte â€” o piloto deve manobrar para evitar.",
+        "Tromba D'água: Um tornado de água se forma no horizonte — o piloto deve manobrar para evitar.",
         "O Passageiro Clandestino: Alguém é encontrado escondido entre as cargas. Pode ser um fugitivo político, uma criança, um assassino ou uma criatura que muda de forma.",
         "Incêndio a Bordo: Um acidente na cozinha inicia um fogo. Em um navio de madeira e piche, no meio do mar, isso é catastrófico."
       ],
@@ -131,7 +131,7 @@
         "Calor Infernal: A temperatura sobe drasticamente. Personagens com armaduras pesadas começam a sofrer exaustão.",
         "Zona de Silêncio: O grupo entra em uma área onde nenhum som é produzido. Magias verbais falham.",
         "Fonte dos Desejos Corrompida: Uma fonte com água escura. Jogar uma moeda concede um pequeno bônus temporário ou uma maldição cômica por 1 hora.",
-        "Inundação Lenta: Os personagens pisam em uma poça que fica cada vez mais funda. Ãgua começa a brotar das pedras, ameaçando encher a sala.",
+        "Inundação Lenta: Os personagens pisam em uma poça que fica cada vez mais funda. Água começa a brotar das pedras, ameaçando encher a sala.",
         "Maré de Ratos: Centenas de ratos correm pelo corredor na direção dos jogadores, fugindo de algo maior.",
         "Gravidade Invertida: Em uma seção específica do corredor, a gravidade se inverte repentinamente. Os personagens 'caem' para o teto.",
         "Musgo Luminescente: As paredes são cobertas por um musgo que brilha quando alguém mente ou sente medo, revelando a posição do grupo.",
@@ -156,7 +156,7 @@
         "Os jogadores se deparam com um campo de batalha recente e perigosos inimigos ainda estão lá.",
         "Um dos jogadores é confundido com uma pessoa importante por um grupo de NPCs.",
         "Pegadas gigantes cruzam o caminho dos jogadores, desaparecendo misteriosamente perto de um penhasco.",
-        "Um santuário antigo à beira da estrada atrai os jogadores com uma aura reconfortante â€” mas há um teste espiritual a ser enfrentado.",
+        "Um santuário antigo à beira da estrada atrai os jogadores com uma aura reconfortante — mas há um teste espiritual a ser enfrentado.",
         "O grupo encontra um animal ferido; ajudá-lo pode render uma bênção ou atrair predadores perigosos.",
         "Ao acampar à noite, os sonhos dos jogadores se entrelaçam, revelando uma mensagem enigmática em comum.",
         "Um viajante desesperado corre na direção dos jogadores, dizendo estar sendo perseguido por algo invisível.",
@@ -185,7 +185,7 @@
       const eventoDiv = document.getElementById('evento');
       eventoDiv.innerHTML = `
         <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.12em;color:var(--gold-dark);text-transform:uppercase;margin-bottom:10px;">
-          ${tipo.toUpperCase()} â€” Evento ${resultado + 1} de ${lista.length}
+          ${tipo.toUpperCase()} — Evento ${resultado + 1} de ${lista.length}
         </div>
         <p style="margin:0;">${lista[resultado]}</p>
       `;

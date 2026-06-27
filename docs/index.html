@@ -86,21 +86,21 @@ window.onerror = function(msg, url, line, col, error) {
             </div>
 
             <div class="features-grid">
-                <!-- Ãrea do Mestre -->
+                <!-- Área do Mestre -->
                 <div class="feature-card glass-panel">
                     <div class="card-icon">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
-                    <h2>Ãrea do Mestre</h2>
+                    <h2>Área do Mestre</h2>
                     <p>Acesse o "Escudo do Mestre". Crie mesas, envie convites, gerencie as fichas dos jogadores e acompanhe o status da sua campanha em tempo real.</p>
                 </div>
 
-                <!-- Ãrea do Jogador -->
+                <!-- Área do Jogador -->
                 <div class="feature-card glass-panel">
                     <div class="card-icon">
                         <i class="fa-solid fa-dice-d20"></i>
                     </div>
-                    <h2>Ãrea do Jogador</h2>
+                    <h2>Área do Jogador</h2>
                     <p>Entre em mesas com códigos de acesso, crie suas fichas de personagem personalizadas usando o modelo oficial e evolua seus atributos.</p>
                 </div>
 
@@ -412,7 +412,7 @@ window.onerror = function(msg, url, line, col, error) {
                 
                 <div class="pdf-controls-group">
                     <button class="btn-outline small" id="prev-page" disabled style="opacity:0.4;"><i class="fa-solid fa-chevron-left"></i></button>
-                    <span class="pdf-page-info">Pág. <span id="page-num">â€”</span> / <span id="page-count">â€”</span></span>
+                    <span class="pdf-page-info">Pág. <span id="page-num">—</span> / <span id="page-count">—</span></span>
                     <button class="btn-outline small" id="next-page" disabled style="opacity:0.4;"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
 
@@ -499,7 +499,7 @@ window.onerror = function(msg, url, line, col, error) {
                 <div id="tm-sessions" class="tm-content hidden">
                     <div class="dashboard-header" style="margin-bottom:1.8rem;">
                         <div>
-                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">DIÃRIO DE CAMPANHA</h2>
+                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">DIÁRIO DE CAMPANHA</h2>
                             <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Planeje e organize os eventos de cada sessão</p>
                         </div>
                         <button class="btn-epic" onclick="createNewSession()"><i class="fa-solid fa-scroll"></i> Nova Sessão</button>
@@ -523,7 +523,7 @@ window.onerror = function(msg, url, line, col, error) {
                         </button>
                     </div>
                     <div style="text-align:center; margin-bottom:28px;">
-                        <button onclick="gerarNPC()" class="btn-epic" style="font-size:16px; padding:13px 36px; letter-spacing:0.12em;">âœ¦ Invocar NPC âœ¦</button>
+                        <button onclick="gerarNPC()" class="btn-epic" style="font-size:16px; padding:13px 36px; letter-spacing:0.12em;">✦ Invocar NPC ✦</button>
                     </div>
                     <div class="box" id="npc" style="display:none; background: rgba(20,20,25,0.8); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 2rem; box-shadow: var(--glass-shadow);">
                         <!-- Conteúdo gerado aqui -->
@@ -533,14 +533,14 @@ window.onerror = function(msg, url, line, col, error) {
                 <div id="tm-iniciativa" class="tm-content hidden">
                     <div class="dashboard-header">
                         <h2>Ordem de Combate</h2>
-                        <button id="resetBtn" class="btn-epic" style="padding: 0.5rem 1rem; font-size: 0.9rem;">ðŸ—‘ï¸ Limpar Lista</button>
+                        <button id="resetBtn" class="btn-epic" style="padding: 0.5rem 1rem; font-size: 0.9rem;">🗑️ Limpar Lista</button>
                     </div>
                     <section class="table-card">
                       <div class="controls" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
                         <input id="nameInput" class="input-modern" type="text" placeholder="Nome" style="flex:1; min-width:150px;" />
                         <input id="initInput" class="input-modern" type="number" placeholder="Iniciativa" style="width:100px;" />
-                        <button id="addBtn" class="btn-outline">âž• Adicionar</button>
-                        <button id="rollBtn" class="btn-outline">ðŸŽ² d20 + mod</button>
+                        <button id="addBtn" class="btn-outline">➕ Adicionar</button>
+                        <button id="rollBtn" class="btn-outline">🎲 d20 + mod</button>
                       </div>
                       <table style="width:100%; text-align:left; border-collapse:collapse; color: var(--text-light);">
                         <thead>
@@ -561,12 +561,12 @@ window.onerror = function(msg, url, line, col, error) {
                         <h2>Gerador de Eventos</h2>
                     </div>
                     <div class="buttons" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-                      <button class="btn-outline" onclick="rolarEvento('urbano')">ðŸ™ Urbano</button>
-                      <button class="btn-outline" onclick="rolarEvento('floresta')">ðŸŒ² Floresta</button>
-                      <button class="btn-outline" onclick="rolarEvento('deserto')">ðŸœ Deserto</button>
-                      <button class="btn-outline" onclick="rolarEvento('alto-mar')">âš“ Alto-Mar</button>
-                      <button class="btn-outline" onclick="rolarEvento('masmorra')">ðŸ’€ Masmorra</button>
-                      <button class="btn-outline" onclick="rolarEvento('viagens')">ðŸ—º Viagens</button>
+                      <button class="btn-outline" onclick="rolarEvento('urbano')">🏙️ Urbano</button>
+                      <button class="btn-outline" onclick="rolarEvento('floresta')">🌳 Floresta</button>
+                      <button class="btn-outline" onclick="rolarEvento('deserto')">🏜️ Deserto</button>
+                      <button class="btn-outline" onclick="rolarEvento('alto-mar')">⚓ Alto-Mar</button>
+                      <button class="btn-outline" onclick="rolarEvento('masmorra')">💀 Masmorra</button>
+                      <button class="btn-outline" onclick="rolarEvento('viagens')">🗺️ Viagens</button>
                     </div>
                     <div id="evento" class="table-card" style="margin-bottom:20px; min-height: 100px;"></div>
                 </div>
@@ -593,7 +593,7 @@ window.onerror = function(msg, url, line, col, error) {
                                     <option value="epico">Feiras de Luxo / Dragões (Diamante e Ouro)</option>
                                 </select>
                             </div>
-                            <button class="btn-epic" onclick="gerarTesouro()" style="padding: 10px 20px;">ðŸ’° Gerar Moedas</button>
+                            <button class="btn-epic" onclick="gerarTesouro()" style="padding: 10px 20px;">💰 Gerar Moedas</button>
                         </div>
                         <div id="tesouro-resultado" style="margin-top: 20px; display:none; background: rgba(0,0,0,0.3); border:1px solid var(--gold-dim); border-radius:8px; padding: 15px;">
                             <div id="tesouro-valores" style="font-size: 1.2rem; margin-bottom: 15px;"></div>
@@ -609,15 +609,15 @@ window.onerror = function(msg, url, line, col, error) {
                     <div class="table-card">
                         <h3 style="color:var(--gold-primary); margin-bottom: 15px; font-family:var(--font-epic);"><i class="fa-solid fa-wand-sparkles"></i> Gerador de Itens Mágicos</h3>
                       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
-                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Tipo</label><select id="sel-tipo" class="input-modern" style="width:100%;"><option value="aleatorio">ðŸŽ² Aleatório</option><option value="arma">âš” Arma</option><option value="armadura">ðŸ›¡ Armadura</option><option value="acessorio">ðŸ’ Acessório</option><option value="consumivel">ðŸ§ª Consumível</option><option value="reliquia">âœ¦ Relíquia</option><option value="cajado">ðŸª„ Cajado / Varinha</option><option value="escudo">ðŸ›¡ Escudo</option></select></div>
-                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Raridade</label><select id="sel-raridade" class="input-modern" style="width:100%;"><option value="aleatorio">ðŸŽ² Aleatória</option><option value="comum">Comum</option><option value="incomum">Incomum</option><option value="raro">Raro</option><option value="muito-raro">Muito Raro</option><option value="lendario">Lendário</option><option value="artefato">Artefato</option></select></div>
-                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Escola</label><select id="sel-escola" class="input-modern" style="width:100%;"><option value="aleatorio">ðŸŽ² Aleatória</option><option value="abjuracao">Abjuração</option><option value="conjuracao">Conjuração</option><option value="divinacao">Divinação</option><option value="encantamento">Encantamento</option><option value="evocacao">Evocação</option><option value="ilusao">Ilusão</option><option value="necromancia">Necromancia</option><option value="transmutacao">Transmutação</option></select></div>
-                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Maldição</label><select id="sel-maldicao" class="input-modern" style="width:100%;"><option value="aleatorio">ðŸŽ² Aleatória</option><option value="nenhuma">Sem maldição</option><option value="forcada">Com maldição</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Tipo</label><select id="sel-tipo" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatório</option><option value="arma">⚔️ Arma</option><option value="armadura">🛡️ Armadura</option><option value="acessorio">💍 Acessório</option><option value="consumivel">🧪 Consumível</option><option value="reliquia">✦ Relíquia</option><option value="cajado">🪄 Cajado / Varinha</option><option value="escudo">🛡️ Escudo</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Raridade</label><select id="sel-raridade" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatória</option><option value="comum">Comum</option><option value="incomum">Incomum</option><option value="raro">Raro</option><option value="muito-raro">Muito Raro</option><option value="lendario">Lendário</option><option value="artefato">Artefato</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Escola</label><select id="sel-escola" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatória</option><option value="abjuracao">Abjuração</option><option value="conjuracao">Conjuração</option><option value="divinacao">Divinação</option><option value="encantamento">Encantamento</option><option value="evocacao">Evocação</option><option value="ilusao">Ilusão</option><option value="necromancia">Necromancia</option><option value="transmutacao">Transmutação</option></select></div>
+                        <div><label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Maldição</label><select id="sel-maldicao" class="input-modern" style="width:100%;"><option value="aleatorio">🎲 Aleatória</option><option value="nenhuma">Sem maldição</option><option value="forcada">Com maldição</option></select></div>
                       </div>
                       <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                         <label style="color:var(--gold-dim);">Quantidade:</label>
                         <input type="number" id="qty-itens" class="input-modern" value="1" min="1" max="10" style="width: 80px; text-align:center;">
-                        <button class="btn-epic" onclick="gerarItens()" id="btn-gerar-item" style="margin-left:auto;">âœ¦ Invocar Item</button>
+                        <button class="btn-epic" onclick="gerarItens()" id="btn-gerar-item" style="margin-left:auto;">✦ Invocar Item</button>
                       </div>
                     </div>
                     <div id="item-resultado" class="table-card" style="margin-top:20px; display:none;"></div>
@@ -694,18 +694,18 @@ window.onerror = function(msg, url, line, col, error) {
                             <div class="md-card md-custom-card">
                                 <div class="md-card-title"><i class="fa-solid fa-sliders"></i> Mesa Customizada</div>
                                 <div class="md-counters-grid">
-                                    <div class="md-counter-item"><span class="md-counter-label">d4</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(4,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d4">0</span><button class="md-cnt-btn" onclick="mdAdjDie(4,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d6</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(6,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d6">0</span><button class="md-cnt-btn" onclick="mdAdjDie(6,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d8</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(8,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d8">0</span><button class="md-cnt-btn" onclick="mdAdjDie(8,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d10</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(10,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d10">0</span><button class="md-cnt-btn" onclick="mdAdjDie(10,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d12</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(12,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d12">0</span><button class="md-cnt-btn" onclick="mdAdjDie(12,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d20</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(20,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d20">0</span><button class="md-cnt-btn" onclick="mdAdjDie(20,1)">+</button></div></div>
-                                    <div class="md-counter-item"><span class="md-counter-label">d100</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(100,-1)">âˆ’</button><span class="md-cnt-val" id="md-cnt-d100">0</span><button class="md-cnt-btn" onclick="mdAdjDie(100,1)">+</button></div></div>
-                                    <div class="md-counter-item md-bonus-item"><span class="md-counter-label">Bonus</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjBonus(-1)">âˆ’</button><input type="number" id="md-bonus" value="0" class="md-bonus-input" oninput="mdBonusInput()"><button class="md-cnt-btn" onclick="mdAdjBonus(1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d4</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(4,-1)">-</button><span class="md-cnt-val" id="md-cnt-d4">0</span><button class="md-cnt-btn" onclick="mdAdjDie(4,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d6</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(6,-1)">-</button><span class="md-cnt-val" id="md-cnt-d6">0</span><button class="md-cnt-btn" onclick="mdAdjDie(6,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d8</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(8,-1)">-</button><span class="md-cnt-val" id="md-cnt-d8">0</span><button class="md-cnt-btn" onclick="mdAdjDie(8,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d10</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(10,-1)">-</button><span class="md-cnt-val" id="md-cnt-d10">0</span><button class="md-cnt-btn" onclick="mdAdjDie(10,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d12</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(12,-1)">-</button><span class="md-cnt-val" id="md-cnt-d12">0</span><button class="md-cnt-btn" onclick="mdAdjDie(12,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d20</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(20,-1)">-</button><span class="md-cnt-val" id="md-cnt-d20">0</span><button class="md-cnt-btn" onclick="mdAdjDie(20,1)">+</button></div></div>
+                                    <div class="md-counter-item"><span class="md-counter-label">d100</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjDie(100,-1)">-</button><span class="md-cnt-val" id="md-cnt-d100">0</span><button class="md-cnt-btn" onclick="mdAdjDie(100,1)">+</button></div></div>
+                                    <div class="md-counter-item md-bonus-item"><span class="md-counter-label">Bonus</span><div class="md-counter-controls"><button class="md-cnt-btn" onclick="mdAdjBonus(-1)">-</button><input type="number" id="md-bonus" value="0" class="md-bonus-input" oninput="mdBonusInput()"><button class="md-cnt-btn" onclick="mdAdjBonus(1)">+</button></div></div>
                                 </div>
                                 <div class="md-formula-display">
                                     <span class="md-formula-label">Formula</span>
-                                    <div class="md-preview" id="md-preview">â€”</div>
+                                    <div class="md-preview" id="md-preview">—</div>
                                 </div>
                                 <div class="md-action-row">
                                     <button class="md-btn-clear" onclick="mdClearRoller()"><i class="fa-solid fa-rotate-left"></i> Limpar</button>
@@ -725,7 +725,7 @@ window.onerror = function(msg, url, line, col, error) {
                     </div>
                     
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸŽ¯ Dificuldade</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🎯 Dificuldade</h3>
                         <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
 Tarefa              DT    Exemplo
 Fácil               5     Escutar uma conversa atrás da porta (Percepção)
@@ -736,7 +736,7 @@ Quase Impossível   30     Convencer alguém que não gosta de você a lutar par
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">âš”ï¸ Reações</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">⚔️ Reações</h3>
                         <p style="margin-bottom:0.5rem;"><strong>Contra-Ataque:</strong><br>
                         Condição: Um inimigo precisa errar um ataque corpo a corpo em você.<br>
                         Efeito: O personagem faz um ataque corpo a corpo contra o atacante. Se o contra-ataque for bem-sucedido, ele causa 50% do dano normal.</p>
@@ -754,25 +754,22 @@ Quase Impossível   30     Convencer alguém que não gosta de você a lutar par
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸŽ² Vantagem &amp; Desvantagem</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🎲 Vantagem &amp; Desvantagem</h3>
                         <p><strong>Vantagem:</strong> +1 dado (máx. 5d20), usa o maior.<br>
                         <strong>Desvantagem:</strong> Usa o menor valor entre os dados rolados.</p>
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸ§  Pontos de Loucura (PL)</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🧠 Pontos de Loucura (PL)</h3>
                         <p style="margin-bottom:0.5rem;">Ganhos por falhas em testes de Vontade em eventos traumáticos.</p>
-                        <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
-PL Total   Efeito
-1â€“3        Loucura curta
-4â€“6        Loucura temporária
-7â€“10       Permanente (moderada)
-11+        Permanente (grave)
-                        </pre>
+                        <pre style="background:transparent; border:none; color:var(--text-light); font-family:var(--font-main); margin:0;">1-3        Loucura curta
+4-6        Loucura temporária
+7-10       Permanente (moderada)
+11+        Permanente (grave)</pre>
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸ’¤ Descanso e Recuperação</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">💤 Descanso e Recuperação</h3>
                         <p style="margin-bottom:0.5rem;"><strong>Descanso Curto:</strong><br>
                         • PV: 1d4 + Con<br>
                         • PA: Recupera 2d8 + o modificador de Vontade (Von) do personagem</p>
@@ -782,7 +779,7 @@ PL Total   Efeito
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">â˜ ï¸ Dano por Queda</h3>
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">☠️ Dano por Queda</h3>
                         <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
 Altura     Dano
 2m         1d4
@@ -797,18 +794,17 @@ Altura     Dano
                     </div>
 
                     <div class="table-card" style="margin-bottom:1.5rem;">
-                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">ðŸŒŸ Inspiração (1d10 após morte de aliado)</h3>
-                        <pre style="color:var(--text-light); font-family:var(--font-ui); white-space:pre-wrap;">
-1:  Determinação Inquebrantável â€“ Resistência 10 contra controle.
-2:  Força do Ã“dio â€“ +2 For e 1 ação padrão extra.
-3:  Vingança Sombria â€“ +3 Destreza e ataques ignoram resistência.
-4:  Chamas da Vingança â€“ +5 ataque contra o inimigo que matou o aliado.
-5:  Ecos da Morte â€“ Inimigos -3 em ataque e resistência (10m).
-6:  Mente em Luto â€“ Resistência mental 10.
-7:  Resoluto â€“ Recupera 4d8+4 PV e 4d6 PM/PA.
-8:  Renascimento Espiritual â€“ +3 Destreza e +3m deslocamento.
-9:  Loucura Selvagem â€“ Ganha 2 PL, +4 em dano, ignora armadura.
-10: Espírito de Sacrifício â€“ Um aliado pode agir imediatamente com +3 em todos os testes até o final do turno.
+                        <h3 style="margin-bottom:1rem; border-bottom:1px solid var(--gold-dim); padding-bottom:0.5rem;">🌟 Inspiração (1d10 após morte de aliado)</h3>
+                        <pre style="background:transparent; border:none; color:var(--text-light); font-family:var(--font-main); margin:0; white-space:pre-wrap;">1:  Determinação Inquebrantável - Resistência 10 contra controle.
+2:  Força do Ódio - +2 For e 1 ação padrão extra.
+3:  Vingança Sombria - +3 Destreza e ataques ignoram resistência.
+4:  Chamas da Vingança - +5 ataque contra o inimigo que matou o aliado.
+5:  Ecos da Morte - Inimigos -3 em ataque e resistência (10m).
+6:  Mente em Luto - Resistência mental 10.
+7:  Resoluto - Recupera 4d8+4 PV e 4d6 PM/PA.
+8:  Renascimento Espiritual - +3 Destreza e +3m deslocamento.
+9:  Loucura Selvagem - Ganha 2 PL, +4 em dano, ignora armadura.
+10: Espírito de Sacrifício - Um aliado pode agir imediatamente com +3 em todos os testes até o final do turno.
                         </pre>
                     </div>
                 </div>
@@ -829,15 +825,15 @@ Altura     Dano
                 <div class="md-final-value" id="md-final-value">0</div>
                 <div class="md-calculation" id="md-calculation"></div>
             </div>
-            <button class="btn-outline" onclick="mdCloseOverlay()" style="margin-top:1.5rem;">âœ¦ Fechar</button>
+            <button class="btn-outline" onclick="mdCloseOverlay()" style="margin-top:1.5rem;">✦ Fechar</button>
         </div>
     </div>
 
-    <!-- ===== HISTÃ“RICO SIDEBAR (MESTRE) ===== -->
+    <!-- ===== HISTÓRICO SIDEBAR (MESTRE) ===== -->
     <div class="md-history-sidebar" id="md-history-sidebar">
         <div class="md-history-head">
-            <h3>ðŸ“œ Histórico de Rolagens</h3>
-            <button class="btn-outline small" onclick="mdToggleHistory()">âœ•</button>
+            <h3>📜 Histórico de Rolagens</h3>
+            <button class="btn-outline small" onclick="mdToggleHistory()">✕</button>
         </div>
         <div id="md-history-list" class="md-history-list"></div>
         <div style="padding:1rem; border-top:1px solid var(--gold-dim);">
@@ -877,22 +873,22 @@ Altura     Dano
         <td class="name" style="padding:10px;"></td>
         <td class="num initiative" style="padding:10px;"></td>
         <td class="num actions" style="padding:10px;">
-            <button class="btn-outline edit" style="padding: 4px 8px; font-size: 12px; margin-right:5px;" title="Editar">âœï¸</button>
-            <button class="btn-outline danger remove" style="padding: 4px 8px; font-size: 12px; color: var(--red-blood); border-color: var(--red-blood);" title="Remover">ðŸ—‘ï¸</button>
+            <button class="btn-outline edit" style="padding: 4px 8px; font-size: 12px; margin-right:5px;" title="Editar">✏️</button>
+            <button class="btn-outline danger remove" style="padding: 4px 8px; font-size: 12px; color: var(--red-blood); border-color: var(--red-blood);" title="Remover">🗑️</button>
         </td>
         </tr>
     </template>
 
     <dialog id="editDialog" style="background:transparent; border:none;">
         <form method="dialog" id="editForm" class="glass-panel" style="min-width:320px; background:var(--bg-dark); color:var(--text-light); border:1px solid var(--gold-dim); border-radius:6px; padding:24px;">
-        <h3 style="margin:0 0 16px;">âœ¦ Editar Entrada</h3>
+        <h3 style="margin:0 0 16px;">✦ Editar Entrada</h3>
         <label style="display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.06em;color:var(--gold-dark);text-transform:uppercase;">Nome</label>
         <input id="editName" type="text" style="width:100%;margin:6px 0 14px; background:rgba(0,0,0,0.5); color:white; border:1px solid var(--gold-dim); padding: 8px;">
         <label style="display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.06em;color:var(--gold-dark);text-transform:uppercase;">Iniciativa (número)</label>
         <input id="editInit" type="number" step="1" style="width:100%;margin:6px 0 20px; background:rgba(0,0,0,0.5); color:white; border:1px solid var(--gold-dim); padding: 8px;">
         <div style="display:flex;gap:10px;justify-content:flex-end;">
             <button class="btn-outline" value="cancel">Cancelar</button>
-            <button class="btn-outline" value="ok" style="color:var(--gold-primary); border-color:var(--gold-primary);">âœ¦ Salvar</button>
+            <button class="btn-outline" value="ok" style="color:var(--gold-primary); border-color:var(--gold-primary);">✦ Salvar</button>
         </div>
         </form>
     </dialog>
