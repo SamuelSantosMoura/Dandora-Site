@@ -291,19 +291,47 @@ window.onerror = function(msg, url, line, col, error) {
                         <span class="role">Aventureiro</span>
                     </div>
                 </div>
-                <ul class="sidebar-menu">
-                    <li class="active"><i class="fa-solid fa-table"></i> Minhas Aventuras</li>
+                <ul class="sidebar-menu pd-tabs">
+                    <li class="pd-tab active" onclick="switchPlayerDashTab('pd-aventuras')"><i class="fa-solid fa-table"></i> Minhas Aventuras</li>
+                    <li class="pd-tab" onclick="switchPlayerDashTab('pd-fichas')"><i class="fa-solid fa-scroll"></i> Minhas Fichas</li>
+                    <li class="pd-tab" onclick="switchPlayerDashTab('pd-notes')"><i class="fa-solid fa-book"></i> Anotações Globais</li>
                     <li onclick="navigateTo('library-view')"><i class="fa-solid fa-book-open"></i> Biblioteca (Livros)</li>
                 </ul>
             </aside>
             <div class="dashboard-content">
-                <div class="dashboard-header">
-                    <h2>Bem-vindo, Aventureiro</h2>
-                    <button class="btn-epic" onclick="joinTable()"><i class="fa-solid fa-right-to-bracket"></i> Entrar em uma Mesa</button>
+                
+                <!-- Aventuras -->
+                <div id="pd-aventuras" class="pd-content active">
+                    <div class="dashboard-header">
+                        <h2>Bem-vindo, Aventureiro</h2>
+                        <button class="btn-epic" onclick="joinTable()"><i class="fa-solid fa-right-to-bracket"></i> Entrar em uma Mesa</button>
+                    </div>
+                    <div class="tables-grid" id="player-tables-list">
+                        <!-- Mesas do jogador serão injetadas aqui -->
+                    </div>
                 </div>
-                <div class="tables-grid" id="player-tables-list">
-                    <!-- Mesas do jogador serão injetadas aqui -->
+
+                <!-- Fichas -->
+                <div id="pd-fichas" class="pd-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Cofre de Fichas</h2>
+                        <button class="btn-epic" onclick="createNewBlankSheet()"><i class="fa-solid fa-plus"></i> Criar Ficha Independente</button>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas fichas salvas. Você pode criar novas fichas e depois usá-las em qualquer mesa.</p>
+                    <div class="tables-grid" id="pd-vault-list">
+                        <!-- JS vai injetar as fichas salvas aqui -->
+                    </div>
                 </div>
+
+                <!-- Anotações Globais -->
+                <div id="pd-notes" class="pd-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Anotações Globais</h2>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas ideias de builds, rascunhos e anotações independentes de mesa.</p>
+                    <textarea id="pd-notes-area" style="width: 100%; height: 500px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1.5rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6; font-size: 1.1rem;" oninput="savePlayerGlobalNotes()" placeholder="Escreva aqui suas ideias..."></textarea>
+                </div>
+                
             </div>
         </section>
 
@@ -1037,8 +1065,8 @@ Altura     Dano
     </dialog>
 
 
-    <script src="assets/js/firebase-sync2.js?v=15"></script>
-    <script src="assets/js/app2.js?v=15"></script>
+    <script src="assets/js/firebase-sync2.js?v=16"></script>
+    <script src="assets/js/app2.js?v=16"></script>
     <script src="assets/js/pdf-viewer.js?v=8"></script>
     <script src="assets/js/npc.js?v=8"></script>
     <script src="assets/js/eventos.js?v=8"></script>

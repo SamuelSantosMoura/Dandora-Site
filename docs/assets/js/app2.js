@@ -536,32 +536,45 @@ function masterViewPlayerSheet(memberIdx) {
     }
 }
 
-function openSheetModal(tId = null, pEmail = null, isReadOnly = false) {
+function openSheetModal(tId = null, pEmail = null, isReadOnly = false, vaultId = null) {
     const iframe = document.getElementById('sheet-iframe');
     if (iframe) {
-        let tableId = tId;
-        let playerEmail = pEmail;
-        
-        if (!tableId && !playerEmail) {
-            if (sessionStorage.getItem('currentMode') === 'master') {
-                tableId = currentTableId;
-                playerEmail = currentUser.email;
+        if (vaultId) {
+            // Ficha Independente do Cofre
+            const vaultKey = `dandora_vault_${currentUser.email}`;
+            const vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+            const sheet = vault.find(s => s._vaultId === vaultId);
+            if (sheet) {
+                localStorage.setItem(`dandora_sheet_vault_${vaultId}_${currentUser.email}`, JSON.stringify(sheet));
             } else {
-                if (currentPlayerTableId && currentUser) {
-                    const playerTables = JSON.parse(localStorage.getItem(`dandora_player_tables_${currentUser.email}`)) || [];
-                    const pTable = playerTables.find(t => t.id === currentPlayerTableId);
-                    if (pTable) {
-                        tableId = pTable.masterTableId;
-                        playerEmail = currentUser.email;
+                localStorage.setItem(`dandora_sheet_vault_${vaultId}_${currentUser.email}`, "{}");
+            }
+            iframe.src = `Ficha site/index.html?v=7&tableId=vault_${vaultId}&playerEmail=${currentUser.email}&readOnly=false&vaultId=${vaultId}`;
+        } else {
+            let tableId = tId;
+            let playerEmail = pEmail;
+            
+            if (!tableId && !playerEmail) {
+                if (sessionStorage.getItem('currentMode') === 'master') {
+                    tableId = currentTableId;
+                    playerEmail = currentUser.email;
+                } else {
+                    if (currentPlayerTableId && currentUser) {
+                        const playerTables = JSON.parse(localStorage.getItem(`dandora_player_tables_${currentUser.email}`)) || [];
+                        const pTable = playerTables.find(t => t.id === currentPlayerTableId);
+                        if (pTable) {
+                            tableId = pTable.masterTableId;
+                            playerEmail = currentUser.email;
+                        }
                     }
                 }
             }
-        }
-        
-        if (tableId && playerEmail) {
-            iframe.src = `Ficha site/index.html?v=7&tableId=${tableId}&playerEmail=${playerEmail}&readOnly=${isReadOnly}`;
-        } else {
-            iframe.src = `Ficha site/index.html?v=7`;
+            
+            if (tableId && playerEmail) {
+                iframe.src = `Ficha site/index.html?v=7&tableId=${tableId}&playerEmail=${playerEmail}&readOnly=${isReadOnly}`;
+            } else {
+                iframe.src = `Ficha site/index.html?v=7`;
+            }
         }
     }
     document.getElementById('sheet-modal').classList.remove('hidden');
@@ -578,8 +591,35 @@ function closeSheetModal() {
     
     const iframe = document.getElementById('sheet-iframe');
     if (iframe) {
-        iframe.src = 'about:blank';
+        const src = iframe.src;
+        // Save back to vault if it was an independent sheet
+        if (src && src.includes('vaultId=')) {
+            const urlParams = new URLSearchParams(src.split('?')[1]);
+            const vId = urlParams.get('vaultId');
+            const storageKey = `dandora_sheet_vault_${vId}_${currentUser.email}`;
+            const sheetData = JSON.parse(localStorage.getItem(storageKey));
+            if (sheetData && Object.keys(sheetData).length > 0) {
+                // Update or create in vault
+                const vaultKey = `dandora_vault_${currentUser.email}`;
+                let vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+                sheetData._vaultId = vId;
+                sheetData._saveDate = new Date().toLocaleDateString('pt-BR');
+                const idx = vault.findIndex(s => s._vaultId === vId);
+                if (idx >= 0) {
+                    vault[idx] = sheetData;
+                } else {
+                    vault.push(sheetData);
+                }
+                localStorage.setItem(vaultKey, JSON.stringify(vault));
+                if (typeof renderVaultSheetsDashboard === 'function') renderVaultSheetsDashboard();
+                if (typeof renderVaultSheets === 'function') renderVaultSheets();
+            }
+        }
     }
+    
+    // Refresh table if needed
+    if(typeof renderActiveSheet === 'function' && currentView === 'player-table-view') renderActiveSheet();
+    if(typeof renderTablePlayers === 'function' && currentView === 'table-manager-view') renderTablePlayers();
     
     sessionStorage.removeItem('master_editing_player_idx');
     
@@ -657,28 +697,36 @@ function joinTable(inviteCodeParam = null) {
 
 function renderPlayerTables() {
     const list = document.getElementById('player-tables-list');
-    if (!list || !currentUser) return;
-    
-    const tablesKey = `dandora_player_tables_${currentUser.email}`;
-    const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
-    
-    if (userTables.length === 0) {
-        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Você ainda não participa de nenhuma mesa. Clique em "Entrar em uma Mesa" para começar.</p>`;
-        return;
+    if (list && currentUser) {
+        const tablesKey = `dandora_player_tables_${currentUser.email}`;
+        const userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
+        
+        if (userTables.length === 0) {
+            list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Você ainda não participa de nenhuma mesa. Clique em "Entrar em uma Mesa" para começar.</p>`;
+        } else {
+            list.innerHTML = userTables.map(t => `
+                <div class="table-card glass-panel">
+                    <h3>${t.name}</h3>
+                    <p><i class="fa-solid fa-crown"></i> ${t.master}</p>
+                    <div style="display:flex; gap:8px; margin-top:1rem;">
+                        <button class="btn-outline" style="flex:1;" onclick="openPlayerTable(${t.id})">Acessar Aventura</button>
+                        <button class="btn-outline" style="border-color:#e07060; color:#e07060; padding:0.5rem 0.8rem; flex-shrink:0;" onclick="leaveTable(${t.id}, '${t.code}', '${t.masterEmail}', ${t.masterTableId})" title="Sair da mesa">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
     }
     
-    list.innerHTML = userTables.map(t => `
-        <div class="table-card glass-panel">
-            <h3>${t.name}</h3>
-            <p><i class="fa-solid fa-crown"></i> ${t.master}</p>
-            <div style="display:flex; gap:8px; margin-top:1rem;">
-                <button class="btn-outline" style="flex:1;" onclick="openPlayerTable(${t.id})">Acessar Aventura</button>
-                <button class="btn-outline" style="border-color:#e07060; color:#e07060; padding:0.5rem 0.8rem; flex-shrink:0;" onclick="leaveTable(${t.id}, '${t.code}', '${t.masterEmail}', ${t.masterTableId})" title="Sair da mesa">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
+    // Also render dashboard vault and load global notes
+    if (currentUser) {
+        if (typeof renderVaultSheetsDashboard === 'function') renderVaultSheetsDashboard();
+        const notesArea = document.getElementById('pd-notes-area');
+        if (notesArea) {
+            notesArea.value = localStorage.getItem(`dandora_global_notes_${currentUser.email}`) || '';
+        }
+    }
 }
 
 function openPlayerTable(tableId) {
@@ -729,6 +777,31 @@ function switchPlayerTab(tabId) {
     }
     
     sessionStorage.setItem('currentPlayerTableTab', tabId);
+}
+
+function switchPlayerDashTab(tabId) {
+    document.querySelectorAll('.pd-tab').forEach(t => t.classList.remove('active'));
+    
+    if (window.event && window.event.currentTarget && window.event.currentTarget.classList) {
+        window.event.currentTarget.classList.add('active');
+    } else {
+        document.querySelectorAll('.pd-tab').forEach(t => {
+            if(t.getAttribute('onclick') && t.getAttribute('onclick').includes(tabId)) t.classList.add('active');
+        });
+    }
+    
+    document.querySelectorAll('.pd-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+    
+    sessionStorage.setItem('currentPlayerDashTab', tabId);
+}
+
+function savePlayerGlobalNotes() {
+    if (!currentUser) return;
+    const area = document.getElementById('pd-notes-area');
+    if (area) {
+        localStorage.setItem(`dandora_global_notes_${currentUser.email}`, area.value);
+    }
 }
 
 function savePlayerNotes() {
@@ -974,17 +1047,69 @@ function deleteSheetFromVault(id) {
     
     localStorage.setItem(vaultKey, JSON.stringify(vault));
     renderVaultSheets();
+    if (typeof renderVaultSheetsDashboard === 'function') renderVaultSheetsDashboard();
 }
 
 function createNewBlankSheet() {
-    if(!confirm("Isso limpará sua Ficha Ativa atual. Se não a salvou no cofre, ela será perdida! Continuar?")) return;
-    const sheetKey = getActiveSheetKey();
-    localStorage.removeItem(sheetKey);
-    renderActiveSheet();
-    openSheetModal();
+    const vaultId = Date.now().toString();
+    const vaultKey = `dandora_vault_${currentUser.email}`;
+    let vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+    
+    const newSheet = {
+        _vaultId: vaultId,
+        _saveDate: new Date().toLocaleDateString('pt-BR'),
+        nome: "Novo Personagem"
+    };
+    
+    vault.push(newSheet);
+    localStorage.setItem(vaultKey, JSON.stringify(vault));
+    
+    if (typeof renderVaultSheetsDashboard === 'function') renderVaultSheetsDashboard();
+    
+    // Open in modal for editing immediately
+    openSheetModal(null, null, false, vaultId);
 }
 
+function editVaultSheet(vaultId) {
+    openSheetModal(null, null, false, vaultId);
+}
 
+function renderVaultSheetsDashboard() {
+    const list = document.getElementById('pd-vault-list');
+    if (!list || !currentUser) return;
+    
+    const vaultKey = `dandora_vault_${currentUser.email}`;
+    const vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+    
+    if (vault.length === 0) {
+        list.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">Seu cofre está vazio. Você pode criar fichas independentes e elas aparecerão aqui.</p>`;
+        return;
+    }
+    
+    list.innerHTML = vault.map(sheet => {
+        const classe = sheet.classe || 'Aventureiro';
+        const nivel = sheet.nivel ? `Nv. ${sheet.nivel}` : '';
+        const portrait = sheet.portrait ? `<img src="${sheet.portrait}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-dim); margin-right: 10px;">` : `<i class="fa-solid fa-user" style="font-size: 1.5rem; color: var(--gold-primary); margin-right: 10px;"></i>`;
+        
+        return `
+        <div class="table-card glass-panel" style="position: relative;">
+            <div style="display:flex; align-items:center; margin-bottom: 10px;">
+                ${portrait}
+                <div>
+                    <h3 style="font-size:1.1rem; margin:0;">${sheet.nome} <span style="font-size:0.8rem; color:var(--gold-dim);">${nivel}</span></h3>
+                    <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">${classe}</p>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Salvo em: ${sheet._saveDate}</p>
+            
+            <div style="display:flex; gap: 5px;">
+                <button class="btn-epic w-100" onclick="editVaultSheet('${sheet._vaultId}')"><i class="fa-solid fa-pen"></i> Editar Ficha</button>
+                <button class="btn-outline" style="border-color: #f57878; color: #f57878; padding: 10px;" onclick="deleteSheetFromVault('${sheet._vaultId}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
 
 // ==========================================
 // TABLE MANAGEMENT ACTIONS
