@@ -1139,7 +1139,7 @@ function generateInviteLink() {
  * e remove a referência da mesa na lista de todos os jogadores membros.
  */
 function deleteTable(tableId) {
-    if (!currentUser || currentUser.role !== 'master') return;
+    if (!currentUser || getMode() !== 'master') return;
 
     const tablesKey = `dandora_tables_${currentUser.email}`;
     let userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
@@ -1228,7 +1228,7 @@ function kickPlayer(playerEmail, playerName) {
  * Remove apenas a entrada desse jogador; a mesa continua existindo para os outros.
  */
 function leaveTable(playerTableId, tableCode, masterEmail, masterTableId) {
-    if (!currentUser || currentUser.role !== 'player') return;
+    if (!currentUser || getMode() !== 'player') return;
 
     const tablesKey = `dandora_player_tables_${currentUser.email}`;
     let userTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
@@ -1293,7 +1293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (typeof updateNavBadge === 'function') updateNavBadge();
         
-        if (currentUser.role === 'master') {
+        if (getMode() === 'master') {
             const mName = document.getElementById('master-name');
             if(mName) mName.textContent = currentUser.name;
             renderMasterTables();
