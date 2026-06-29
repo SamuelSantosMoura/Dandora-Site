@@ -494,6 +494,535 @@
           [
             "Perdeu três dedos em experimentos. Substituiu dois por versões mecânicas melhoradas e deixou o terceiro ausente como lembrete.",
             "Sonha em criar um golem que possa sonhar. Ainda não sabe se isso seria maravilhoso ou terrível."
+      }
+    ];
+    
+    // Novas ocupações com no mínimo 3 habilidades úteis em combate
+    OCUPACOES.push(
+      {
+        nome: "Arcanista",
+        habilidades: [
+          {
+            titulo: "Distorção Espacial",
+            desc: "O arcanista altera o tecido do espaço, teleportando um aliado em perigo para até 9m de distância.",
+            mecanica: "Teleporta um aliado em até 9m."
+          },
+          {
+            titulo: "Escudo de Mana",
+            desc: "O arcanista canaliza sua energia para proteger um aliado. O alvo ganha resistência a todo dano até o início do próximo turno do arcanista.",
+            mecanica: "Um aliado ganha resistência a todo dano por 1 rodada."
+          },
+          {
+            titulo: "Raio Arcano Concentrado",
+            desc: "Dispara energia pura que atinge um inimigo com impacto violento, causando 2d8 de dano arcano e empurrando-o 3m para trás.",
+            mecanica: "Causa 2d8 de dano arcano e empurra o alvo 3m."
+          }
+        ],
+        historia: [
+          [
+            "Estuda o fluxo invisível da magia há décadas. Considera o mundo físico apenas uma ilusão grosseira em comparação à beleza dos padrões arcanos.",
+            "Já desvendou segredos que enlouqueceriam mentes menores. O custo foi apenas uma leve insônia permanente e a incapacidade de tolerar ignorância.",
+            "Prefere a companhia de livros à de pessoas. Livros raramente fazem perguntas estúpidas ou atrapalham a concentração."
+          ],
+          [
+            "Nasceu com a habilidade de ver as linhas de mana do mundo. Isso o tornou um prodígio, mas também um alvo para aqueles que desejam controlar tal poder.",
+            "Guarda um pequeno orbe brilhante em seu bolso. Afirma que é o núcleo de uma estrela morta. Ninguém ousou contestar."
+          ]
+        ]
+      },
+      {
+        nome: "Ladino",
+        habilidades: [
+          {
+            titulo: "Ponto Cego",
+            desc: "O ladino distrai um inimigo com um movimento rápido. O próximo ataque contra esse inimigo tem Vantagem garantida.",
+            mecanica: "Próximo ataque contra o alvo tem Vantagem."
+          },
+          {
+            titulo: "Armadilha de Tropeço",
+            desc: "Usando uma corda ou rasteira rápida, o ladino derruba um inimigo. O alvo fica Caído e perde metade de seu deslocamento no próximo turno.",
+            mecanica: "Inimigo fica Caído e com metade do deslocamento."
+          },
+          {
+            titulo: "Arremesso Preciso",
+            desc: "Atira uma adaga exatamente na articulação do inimigo, causando 1d6 de dano e reduzindo o deslocamento dele à metade por 1 rodada.",
+            mecanica: "Causa 1d6 de dano e reduz o deslocamento do alvo à metade."
+          }
+        ],
+        historia: [
+          [
+            "Sabe que a melhor maneira de vencer uma luta é garantir que o oponente não saiba que está lutando até ser tarde demais.",
+            "Possui um conjunto de ferramentas de arrombamento herdado de seu mentor. Considera cadeados apenas sugestões temporárias.",
+            "Acredita firmemente na redistribuição de riquezas, começando pela redistribuição das riquezas dos outros para os seus próprios bolsos."
+          ],
+          [
+            "Cresceu nas sombras de uma cidade grande. A escuridão sempre foi mais acolhedora do que a luz implacável do sol.",
+            "Tem uma coleção de moedas de diferentes reinos. Cada uma representa um trabalho concluído com sucesso e uma fuga por pouco."
+          ]
+        ]
+      },
+      {
+        nome: "Cavaleiro Real",
+        habilidades: [
+          {
+            titulo: "Postura Inabalável",
+            desc: "O cavaleiro assume uma base defensiva perfeita. Ele e todos os aliados a até 3m ganham +2 na Classe de Armadura por 1 rodada.",
+            mecanica: "Aliados em 3m ganham +2 CA por 1 rodada."
+          },
+          {
+            titulo: "Golpe de Punição",
+            desc: "O cavaleiro concentra sua honra em um ataque devastador, causando 1d8 de dano extra e forçando o inimigo a focar seus ataques nele.",
+            mecanica: "Causa 1d8 dano extra e atrai o foco do inimigo."
+          },
+          {
+            titulo: "Brado de Inspiração",
+            desc: "Solta um grito de guerra que reanima um aliado caído ou prestes a cair, concedendo-lhe 1d6 PV temporários imediatamente.",
+            mecanica: "Um aliado recebe 1d6 PV temporários."
+          }
+        ],
+        historia: [
+          [
+            "Treinado desde a infância nas artes da guerra e da cortesia. Acha que a segunda é frequentemente mais letal que a primeira.",
+            "Sua armadura brilha mesmo após semanas na estrada. Há rumores de que ele tem um escudeiro invisível, ou apenas uma obsessão doentia por polimento.",
+            "Acredita que a verdadeira força de um reino reside na retidão de seus defensores."
+          ],
+          [
+            "Fez um juramento de proteger os fracos. Descobriu rapidamente que os fracos muitas vezes estão em situações incrivelmente perigosas.",
+            "Carrega o estandarte de uma casa nobre caída. Jura que, enquanto viver, o nome deles não será esquecido."
+          ]
+        ]
+      },
+      {
+        nome: "Pugilista",
+        habilidades: [
+          {
+            titulo: "Gancho Desnorteante",
+            desc: "Atinge o queixo do inimigo com força bruta, causando 1d8 de dano. O inimigo fica Desorientado, tendo Desvantagem em seu próximo ataque.",
+            mecanica: "Causa 1d8 de dano; inimigo tem Desvantagem no próximo ataque."
+          },
+          {
+            titulo: "Esquiva Perfeita",
+            desc: "Lê o movimento do oponente, desviando do ataque e contra-atacando instantaneamente com um soco rápido que causa 1d6 de dano.",
+            mecanica: "Absorve/esquiva de um ataque e causa 1d6 de dano de contra-ataque."
+          },
+          {
+            titulo: "Arremesso Corporal",
+            desc: "Agarra um inimigo de tamanho médio ou menor e o usa como projétil contra outro inimigo próximo, causando 1d6 de dano a ambos.",
+            mecanica: "Arremessa inimigo em outro, causando 1d6 a ambos."
+          }
+        ],
+        historia: [
+          [
+            "Nunca precisou de uma lâmina. Suas mãos calejadas quebraram mais espadas do que a maioria dos guerreiros sequer desembainhou.",
+            "Lutou em arenas clandestinas por anos. Cada cicatriz em seu corpo tem um preço que foi pago em sangue e ouro.",
+            "Fala pouco. Prefere que seus punhos comuniquem suas objeções."
+          ],
+          [
+            "Aprendeu a lutar nas ruas, onde as regras de combate são ditadas por quem sobrevive no fim da noite.",
+            "Geralmente está envolto em ataduras manchadas. Diz que é para proteger as mãos, mas todos sabem que é para esconder as marcas de suas vitórias."
+          ]
+        ]
+      },
+      {
+        nome: "Bardo de Batalha",
+        habilidades: [
+          {
+            titulo: "Acorde Dissonante",
+            desc: "Toca uma nota mágica terrivelmente aguda. Inimigos a até 4m sofrem 1d6 de dano sônico e ficam surdos até o fim da rodada.",
+            mecanica: "Inimigos em 4m sofrem 1d6 de dano sônico e surdez."
+          },
+          {
+            titulo: "Ritmo Frenético",
+            desc: "Acelera a batida de sua música. O grupo inteiro ganha +3m de deslocamento e não pode ser Imobilizado por 1 rodada.",
+            mecanica: "Grupo ganha +3m deslocamento e imunidade a Imobilização por 1 rodada."
+          },
+          {
+            titulo: "Melodia Revigorante",
+            desc: "A melodia calma e constante restaura as energias. Um aliado pode gastar um Dado de Vida imediatamente para se curar como ação livre.",
+            mecanica: "Aliado pode gastar um Dado de Vida livremente."
+          }
+        ],
+        historia: [
+          [
+            "Acha que a maioria das batalhas carece de uma trilha sonora adequada. Está aqui para corrigir esse erro terrível.",
+            "Seu alaúde já foi usado como clava em mais de uma ocasião. Acredita que a música deve ser sentida fisicamente.",
+            "Viaja com os combatentes para compor epopeias precisas. A verdade é melhor que a ficção, especialmente quando rima."
+          ],
+          [
+            "Foi expulso da escola de música por introduzir magias de ataque em sonatas clássicas. O professor não sobreviveu ao segundo movimento.",
+            "Costuma dedilhar as cordas do instrumento antes mesmo da luta começar, prevendo o andamento do combate."
+          ]
+        ]
+      },
+      {
+        nome: "Sacerdote",
+        habilidades: [
+          {
+            titulo: "Cura Divina",
+            desc: "Canaliza a energia de sua fé para fechar as feridas de um aliado, restaurando 2d6 de Pontos de Vida.",
+            mecanica: "Restaura 2d6 PV de um aliado."
+          },
+          {
+            titulo: "Santuário Menor",
+            desc: "Cria uma aura protetora de 3m ao seu redor. Inimigos têm Desvantagem para atacar qualquer aliado dentro dessa aura.",
+            mecanica: "Aura de 3m; ataques inimigos contra aliados na aura têm Desvantagem."
+          },
+          {
+            titulo: "Julgamento Sagrado",
+            desc: "Invoca uma luz punitiva dos céus contra um inimigo blasfemo, causando 2d6 de dano radiante instantâneo.",
+            mecanica: "Causa 2d6 de dano radiante a um inimigo."
+          }
+        ],
+        historia: [
+          [
+            "Serve a uma divindade de luz e cura, mas entende que às vezes a luz precisa queimar para purificar.",
+            "Caminha pelo campo de batalha com a mesma serenidade que caminharia nos jardins do templo. A fé é sua verdadeira armadura.",
+            "Tem uma palavra de conforto para os feridos e uma oração de misericórdia para os caídos. Para os inimigos, oferece apenas julgamento."
+          ],
+          [
+            "Deixou o conforto do clero para levar a palavra aos cantos mais sombrios do mundo. Descobriu que as sombras são densas e famintas.",
+            "Suas vestes brancas raramente permanecem assim, manchadas com o sangue daqueles que tentou salvar."
+          ]
+        ]
+      },
+      {
+        nome: "Xamã",
+        habilidades: [
+          {
+            titulo: "Totem de Proteção",
+            desc: "Invoca um espírito protetor através de um pequeno totem. Aliados a até 6m ganham +1 na CA e Vantagem em resistências mágicas.",
+            mecanica: "Aliados em 6m ganham +1 CA e Vantagem em resistências mágicas."
+          },
+          {
+            titulo: "Vínculo Espiritual",
+            desc: "O xamã se liga espiritualmente a um aliado. Metade do dano que esse aliado sofreria é transferido para o xamã, mas é reduzido à metade novamente.",
+            mecanica: "Transfere parte do dano de um aliado para si com redução."
+          },
+          {
+            titulo: "Fúria dos Elementos",
+            desc: "Chama um raio elétrico ou rajada de fogo que atinge até dois inimigos próximos, causando 1d8 de dano a cada um.",
+            mecanica: "Causa 1d8 de dano elementar a dois inimigos."
+          }
+        ],
+        historia: [
+          [
+            "Ouve as vozes dos ancestrais na brisa e nas pedras. Eles frequentemente dão conselhos não solicitados e criticam suas escolhas de vida.",
+            "Sua magia não vem de livros ou divindades, mas da terra sob seus pés e do sangue em suas veias.",
+            "Veste peles e ossos que contam histórias das caçadas antigas. Os espíritos dessas criaturas ainda o acompanham."
+          ],
+          [
+            "A tribo foi destruída, mas os espíritos de seu povo caminham com ele. Ele busca um lugar onde possam finalmente descansar.",
+            "Tem o hábito de pedir permissão às árvores antes de colher seus frutos ou quebrar seus galhos."
+          ]
+        ]
+      },
+      {
+        nome: "Caçador",
+        habilidades: [
+          {
+            titulo: "Marca da Presa",
+            desc: "O caçador estuda e marca o inimigo. Todos os ataques aliados contra esse inimigo recebem +2 de dano até ele cair.",
+            mecanica: "Aliados causam +2 de dano contra o alvo marcado."
+          },
+          {
+            titulo: "Tiro Penetrante",
+            desc: "Dispara um projétil com força extrema que atravessa o inimigo, causando 1d10 de dano e atingindo outro alvo diretamente atrás dele (1d6 de dano).",
+            mecanica: "Causa 1d10 no alvo principal e 1d6 no inimigo atrás."
+          },
+          {
+            titulo: "Esconderijo Natural",
+            desc: "Utiliza elementos do ambiente para ocultar a si e a um aliado, tornando-os alvos impossíveis de focar (Invisibilidade Menor) por 1 rodada.",
+            mecanica: "Oculta a si e a um aliado por 1 rodada."
+          }
+        ],
+        historia: [
+          [
+            "Sobrevivente nato. Sabe onde encontrar água no deserto e comida na tundra. Em combate, a cidade é apenas outro tipo de selva.",
+            "Seu arco é uma extensão de seu braço. Suas flechas são forjadas com pontas que garantem que a presa não sofra mais do que o necessário.",
+            "Não confia na civilização. Paredes de pedra são armadilhas; o céu aberto é a única liberdade verdadeira."
+          ],
+          [
+            "Há anos persegue uma fera mítica que lhe tirou a visão de um olho. A cicatriz lateja sempre que o perigo se aproxima.",
+            "Aprendeu a ler o vento e os rastros não por hobby, mas porque não dominar essas habilidades significava a morte."
+          ]
+        ]
+      },
+      {
+        nome: "Bruxo",
+        habilidades: [
+          {
+            titulo: "Toque Sombrio",
+            desc: "Canaliza energia necrótica através de um toque, causando 1d8 de dano a um inimigo e curando um aliado na metade desse valor.",
+            mecanica: "Causa 1d8 dano necrótico e cura um aliado na metade."
+          },
+          {
+            titulo: "Maldição Debilitante",
+            desc: "O bruxo profere palavras sombrias que enfraquecem as juntas do inimigo, concedendo-lhe -2 em suas jogadas de ataque por 2 rodadas.",
+            mecanica: "Alvo recebe -2 nos ataques por 2 rodadas."
+          },
+          {
+            titulo: "Passo das Sombras",
+            desc: "Utiliza as sombras como portal. O bruxo e um aliado trocam de posição instantaneamente para confundir ou salvar o parceiro.",
+            mecanica: "O bruxo troca de posição instantaneamente com um aliado."
+          }
+        ],
+        historia: [
+          [
+            "Fez um pacto com uma entidade do vazio que ocasionalmente sussurra coisas perturbadoras em sua mente. Ele aprendeu a ignorá-la na maior parte do tempo.",
+            "Sua magia tem cheiro de ozônio e cinzas frias. Onde ele pisa, a grama escurece sutilmente.",
+            "Vê os medos das pessoas refletidos em seus olhos. Acha essa informação incrivelmente útil e ocasionalmente deprimente."
+          ],
+          [
+            "Estudou os tomos proibidos que outros magos trancaram. Argumenta que o conhecimento não tem moralidade, apenas aplicação.",
+            "Seus olhos têm um brilho antinatural quando está irritado. A maioria das pessoas prefere não deixá-lo irritado."
+          ]
+        ]
+      },
+      {
+        nome: "Nobre",
+        habilidades: [
+          {
+            titulo: "Ordem de Ataque",
+            desc: "Com autoridade inquestionável, o nobre comanda um aliado a realizar um ataque imediato contra um alvo, fora do turno desse aliado.",
+            mecanica: "Um aliado realiza um ataque imediato extra."
+          },
+          {
+            titulo: "Presença Majestosa",
+            desc: "A postura superior do nobre faz os inimigos em 6m hesitarem; eles recebem -2 em suas jogadas de ataque neste turno.",
+            mecanica: "Inimigos em 6m têm -2 nos ataques neste turno."
+          },
+          {
+            titulo: "Suborno de Emergência",
+            desc: "Joga um punhado de moedas de ouro ou joias brilhantes no chão. Inimigos menos inteligentes ou gananciosos perdem seu próximo turno recolhendo.",
+            mecanica: "Inimigos perdem o próximo turno por ganância/distração."
+          }
+        ],
+        historia: [
+          [
+            "Nasceu em lençóis de seda e foi criado com talheres de prata. A sujeira e o sangue do mundo real ainda lhe causam um leve nojo, mas ele se adapta.",
+            "Sua linhagem é antiga e respeitada. Seu nome abre portas em palácios, mas nas estradas atrai ladrões.",
+            "Garante aos outros que o combate é apenas 'política executada com ferramentas menos refinadas'."
+          ],
+          [
+            "Foi traído e deserdado por sua família. Agora usa suas habilidades de liderança nas trincheiras, buscando poder para recuperar o que é seu.",
+            "Sempre veste roupas impecáveis, mesmo no meio de uma masmorra imunda. Aparência é metade da batalha."
+          ]
+        ]
+      },
+      {
+        nome: "Bárbaro",
+        habilidades: [
+          {
+            titulo: "Grito Feroz",
+            desc: "Um rugido primitivo que gela o sangue. Todos os inimigos em 9m ficam Amedrontados e não podem se aproximar do bárbaro por 1 rodada.",
+            mecanica: "Inimigos em 9m ficam Amedrontados por 1 rodada."
+          },
+          {
+            titulo: "Golpe Devastador",
+            desc: "Abre mão da própria defesa para aplicar um ataque furioso, causando 2d12 de dano. O bárbaro sofre Vantagem nos ataques contra ele na próxima rodada.",
+            mecanica: "Causa 2d12 de dano, mas fica vulnerável no próximo turno."
+          },
+          {
+            titulo: "Resistência Brutal",
+            desc: "Ignora a dor através pura teimosia. Quando sofreria dano que o deixaria inconsciente, o bárbaro reduz o dano à metade e se mantém de pé.",
+            mecanica: "Reduz à metade dano letal e se mantém lutando."
+          }
+        ],
+        historia: [
+          [
+            "A raiva não é uma emoção, é uma ferramenta, um escudo, e um combustível inesgotável.",
+            "Cresceu nas montanhas geladas, onde a fraqueza significa a morte por congelamento ou devorado. Nunca foi fraco.",
+            "Acha a civilização complicada demais. Resolver problemas com uma grande machadada é elegante em sua simplicidade."
+          ],
+          [
+            "Seu corpo é um mapa de cicatrizes de feras monstruosas. Ele tem orgulho de cada uma delas, lembrando o gosto de cada criatura.",
+            "Só confia em pessoas que conseguem acompanhar seu ritmo em uma bebedeira. A lista é incrivelmente curta."
+          ]
+        ]
+      },
+      {
+        nome: "Guerreiro",
+        habilidades: [
+          {
+            titulo: "Golpe de Fenda",
+            desc: "Um movimento amplo e poderoso que atinge até dois inimigos adjacentes ao guerreiro, causando 1d8 de dano a cada um.",
+            mecanica: "Atinge dois inimigos adjacentes causando 1d8 de dano a ambos."
+          },
+          {
+            titulo: "Defesa Total",
+            desc: "O guerreiro assume a linha de frente, forçando inimigos próximos a focarem nele e ganhando +4 na CA contra esses ataques por 1 rodada.",
+            mecanica: "Provoca os inimigos e ganha +4 CA por 1 rodada."
+          },
+          {
+            titulo: "Desarmar",
+            desc: "Com um golpe técnico e preciso, o guerreiro atinge as mãos do oponente, desarmando-o e jogando sua arma a 3m de distância.",
+            mecanica: "Inimigo deixa cair a arma, lançada a 3m."
+          }
+        ],
+        historia: [
+          [
+            "Soldado veterano de inúmeras campanhas. Conhece o cheiro do medo e da lama melhor do que o cheiro de pão fresco.",
+            "Sua espada é uma extensão de seu corpo, mantida sempre afiada. A disciplina militar é a única religião que ele realmente segue.",
+            "Não luta por glória ou ouro, luta porque é a única coisa que sabe fazer tão bem que se torna arte."
+          ],
+          [
+            "Serviu a senhores que não mereciam seu sacrifício. Agora, aluga sua lâmina para aqueles que a causa ele julga justa.",
+            "Sempre verifica suas ferramentas de combate três vezes antes de dormir. A paranoia o manteve vivo."
+          ]
+        ]
+      },
+      {
+        nome: "Cientista",
+        habilidades: [
+          {
+            titulo: "Granada Biológica",
+            desc: "Lança um frasco experimental que explode em uma nuvem tóxica. Inimigos em uma área de 3m sofrem 1d6 de dano venenoso e ficam envenenados.",
+            mecanica: "Dano em área (1d6 venenoso) e envenena os inimigos."
+          },
+          {
+            titulo: "Estimulante Experimental",
+            desc: "Injeta rapidamente um soro volátil em um aliado. Ele ganha +3m de movimento e cura 1d8 PV, mas sofre 1 de dano colateral no fim do turno.",
+            mecanica: "Cura 1d8, dá +3m movimento, aliado sofre 1 de dano no final."
+          },
+          {
+            titulo: "Raio Paralisador",
+            desc: "Dispara uma engenhoca portátil que emite um pulso magnético, imobilizando o alvo por 1 rodada se suas pernas forem afetadas.",
+            mecanica: "Imobiliza um alvo por 1 rodada."
+          }
+        ],
+        historia: [
+          [
+            "A ciência não tem limites, apenas orçamentos limitados e excessiva preocupação ética dos outros.",
+            "Seus equipamentos frequentemente faíscam e zumbem perigosamente. Assegura a todos que 'está tudo perfeitamente calculado'.",
+            "Acredita que magia é apenas ciência que ainda não foi explicada em um quadro negro."
+          ],
+          [
+            "Foi expulso da academia de inventores por suas teorias sobre fusão biológica. Acha que o mundo está atrasado.",
+            "Sempre carrega um caderno de anotações. Observa as mortes em combate para 'coleta de dados'."
+          ]
+        ]
+      },
+      {
+        nome: "Padeiro",
+        habilidades: [
+          {
+            titulo: "Rolo de Massa Giratório",
+            desc: "Brandindo o rolo de amassar com destreza, o padeiro atinge a cabeça do inimigo causando 1d6 de dano e o desorientando (Desvantagem no próximo ataque).",
+            mecanica: "Causa 1d6 de dano e dá Desvantagem ao alvo no próximo ataque."
+          },
+          {
+            titulo: "Farinha nos Olhos",
+            desc: "Lança rapidamente um punhado de farinha finamente moída nos olhos do inimigo, deixando-o Cego por 1 rodada.",
+            mecanica: "O inimigo fica Cego por 1 rodada."
+          },
+          {
+            titulo: "Pão Escudo Anão",
+            desc: "Saca um pão anão endurecido de meses de idade e o usa para aparar o ataque letal destinado a um aliado, anulando o dano completamente.",
+            mecanica: "Anula o dano do próximo ataque contra um aliado adjacente."
+          }
+        ],
+        historia: [
+          [
+            "Passou a vida acordando de madrugada para sovar massa. Seus braços são fortes como os de um ferreiro. Pães pesados não se sozinham.",
+            "Um dia, bandidos entraram em sua padaria para roubar os lucros. Eles saíram voando pelas janelas. Desde então, ele é muito respeitado.",
+            "Acredita que todos os problemas do mundo poderiam ser resolvidos com um bom croissant amanteigado."
+          ],
+          [
+            "A vida aventuresca o encontrou porque precisava de ingredientes raros que as rotas comerciais normais não entregavam.",
+            "Carrega cheiro de levedura e canela constantes, não importa há quanto tempo esteja na estrada."
+          ]
+        ]
+      },
+      {
+        nome: "Cozinheiro",
+        habilidades: [
+          {
+            titulo: "Caldo Fervente",
+            desc: "Arremessa um frasco de sopa fervente no rosto do inimigo, causando 1d6 de dano de fogo e distraindo-o severamente.",
+            mecanica: "Causa 1d6 de dano de fogo e distrai o alvo."
+          },
+          {
+            titulo: "Faca de Açougueiro",
+            desc: "Aplica técnicas de corte de carnes em combate. Realiza um golpe rápido que causa 1d8 de dano cortante e inflige Sangramento.",
+            mecanica: "Causa 1d8 cortante e Sangramento no alvo."
+          },
+          {
+            titulo: "Refeição Revigorante Rápida",
+            desc: "Entrega uma pequena iguaria perfeita para combate. O aliado come como ação bônus, curando 1d4 PV e ganhando Vantagem em seu próximo ataque.",
+            mecanica: "Aliado cura 1d4 PV e ganha Vantagem no ataque."
+          }
+        ],
+        historia: [
+          [
+            "A cozinha de um restaurante lotado é uma zona de guerra. Cortar vegetais rapidamente lhe deu os reflexos de um espadachim.",
+            "Sua maior motivação para sobreviver é não deixar que os paladares medíocres dominem o mundo.",
+            "Nunca desperdiça nada. Avalia monstros mortos murmurando sobre 'tempero certo' e 'textura macia'."
+          ],
+          [
+            "Costumava servir à realeza, mas foi banido quando criticou a falta de paladar do rei em público. Acha que valeu a pena.",
+            "Carrega um conjunto de facas de chef que cuida melhor do que alguns pais cuidam dos filhos."
+          ]
+        ]
+      },
+      {
+        nome: "Vendedor",
+        habilidades: [
+          {
+            titulo: "Oferta Imperdível",
+            desc: "Distrai um inimigo acenando um item aparentemente mágico. O inimigo fica hipnotizado e perde sua ação bônus na próxima rodada.",
+            mecanica: "Inimigo perde sua ação bônus."
+          },
+          {
+            titulo: "Pechincha Agressiva",
+            desc: "Ataca o ego e as posses do alvo, xingando sua armadura e técnica. O abalo psicológico reduz a CA do inimigo em 2 por 1 rodada.",
+            mecanica: "Reduz a CA do inimigo em 2 por 1 rodada."
+          },
+          {
+            titulo: "Amostra Grátis Explosiva",
+            desc: "Joga alegremente uma pequena sacola que reage com o ar. Causa 2d4 de dano em área, sem pedir devolução.",
+            mecanica: "Causa 2d4 de dano em área (3m)."
+          }
+        ],
+        historia: [
+          [
+            "Consegue vender areia no deserto e água no oceano. A oratória não é apenas um talento, é uma arma afiada e mortal.",
+            "O campo de batalha é apenas um mercado com negociações mais agressivas. E ele nunca perde uma negociação.",
+            "Sorri incansavelmente. O sorriso pode ser caloroso ou aterrorizante, dependendo de que lado do balcão o oponente está."
+          ],
+          [
+            "Perdeu tudo em um naufrágio. Aventura-se porque tesouros de masmorras têm uma margem de lucro de 100%.",
+            "Mede os inimigos avaliando quanto vale o equipamento deles no mercado negro."
+          ]
+        ]
+      },
+      {
+        nome: "Caçador de Recompensas",
+        habilidades: [
+          {
+            titulo: "Boleadeira Precisa",
+            desc: "Arremessa uma boleadeira nas pernas do oponente, causando 1d4 de dano contundente, derrubando e Imobilizando o alvo.",
+            mecanica: "Causa 1d4 dano, derruba e Imobiliza o inimigo."
+          },
+          {
+            titulo: "Golpe Sujo",
+            desc: "Não luta limpo. Atinge um ponto vital doloroso que causa 1d6 de dano e Atordoa o inimigo por 1 rodada, impedindo-o de agir.",
+            mecanica: "Causa 1d6 de dano e Atordoa o alvo por 1 rodada."
+          },
+          {
+            titulo: "Foco no Contrato",
+            desc: "Analisa friamente o inimigo principal. Pelas próximas 2 rodadas, os ataques contra esse inimigo ignoram as penalidades de cobertura.",
+            mecanica: "Ataques aliados contra o alvo marcado ignoram cobertura."
+          }
+        ],
+        historia: [
+          [
+            "Para ele, todo mundo tem um preço na cabeça. É só questão de saber quem está pagando.",
+            "Dorme com um olho aberto e a mão no cabo da faca. É assim que sobrevive a profissão que atrai rancores mortais.",
+            "Nunca leva nada para o lado pessoal. É apenas negócios. Frios, duros e lucrativos negócios."
+          ],
+          [
+            "Costumava prender criminosos sob a lei, mas a lei pagava mal. Agora ele faz a própria justiça por uma comissão justa.",
+            "Carrega algemas e amarras feitas de materiais incrivelmente resistentes. Acha a fuga do prisioneiro um desrespeito profissional."
           ]
         ]
       }
