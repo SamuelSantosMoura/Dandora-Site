@@ -494,6 +494,8 @@
           [
             "Perdeu três dedos em experimentos. Substituiu dois por versões mecânicas melhoradas e deixou o terceiro ausente como lembrete.",
             "Sonha em criar um golem que possa sonhar. Ainda não sabe se isso seria maravilhoso ou terrível."
+          ]
+        ]
       }
     ];
     
