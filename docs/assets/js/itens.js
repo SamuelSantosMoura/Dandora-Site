@@ -337,7 +337,7 @@
       const historia = rand(historiaPool);
 
       // Valor estimado
-      const valoresBase = { comum:'5–50 po', incomum:'51–500 po', raro:'501–5.000 po', 'muito-raro':'5.001–50.000 po', lendario:'50.001–500.000 po', artefato:'Inestimável' };
+      const valoresBase = { comum:'5–50 MP', incomum:'50–100 MP', raro:'1–20 MO', 'muito-raro':'21–500 MO', lendario:'1–5 MD', artefato:'5–10 MD (ou Inestimável)' };
 
       return { nome, tipo, raridade, escola, bonus, icone, propriedades, maldicaoTexto, historia, valor: valoresBase[raridade] };
     }
