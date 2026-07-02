@@ -295,12 +295,7 @@
        GERADOR PRINCIPAL
     ======================================================== */
 
-    function gerarItem() {
-      const selTipo      = document.getElementById('sel-tipo').value;
-      const selRaridade  = document.getElementById('sel-raridade').value;
-      const selEscola    = document.getElementById('sel-escola').value;
-      const selMaldicao  = document.getElementById('sel-maldicao').value;
-
+    function gerarItemBase(selTipo, selRaridade, selEscola, selMaldicao) {
       const tipo     = escolherTipo(selTipo);
       const raridade = escolherRaridade(selRaridade);
       const escola   = escolherEscola(selEscola);
@@ -340,6 +335,15 @@
       const valoresBase = { comum:'5–50 MP', incomum:'50–100 MP', raro:'1–20 MO', 'muito-raro':'21–500 MO', lendario:'1–5 MD', artefato:'5–10 MD (ou Inestimável)' };
 
       return { nome, tipo, raridade, escola, bonus, icone, propriedades, maldicaoTexto, historia, valor: valoresBase[raridade] };
+    }
+
+    function gerarItem() {
+      const selTipo      = document.getElementById('sel-tipo').value;
+      const selRaridade  = document.getElementById('sel-raridade').value;
+      const selEscola    = document.getElementById('sel-escola').value;
+      const selMaldicao  = document.getElementById('sel-maldicao').value;
+      
+      return gerarItemBase(selTipo, selRaridade, selEscola, selMaldicao);
     }
 
     /* ========================================================
@@ -650,6 +654,107 @@
         
         if (success) {
             alert('Item Mágico enviado para o jogador com sucesso!');
+        } else {
+            alert('Erro ao enviar. O jogador pode não ter uma ficha ativa.');
+        }
+    }
+
+    // Sistema de Baú
+    let bauAtual = { moedas: null, itens: [] };
+
+    function gerarBau() {
+        const local = document.getElementById('sel-bau-local').value;
+        const nivel = document.getElementById('sel-bau-nivel').value;
+        
+        let poolTipos = ['aleatorio'];
+        if (local === 'masmorra') poolTipos = ['arma', 'armadura', 'escudo', 'consumivel'];
+        else if (local === 'mansao') poolTipos = ['acessorio', 'reliquia', 'consumivel'];
+        else if (local === 'igreja') poolTipos = ['reliquia', 'cajado', 'consumivel'];
+        else if (local === 'abandonado') poolTipos = ['consumivel', 'acessorio', 'armadura'];
+        else if (local === 'acampamento') poolTipos = ['arma', 'escudo', 'consumivel'];
+
+        // Quantidade de itens baseada no nível
+        let qtdItens = 1;
+        let raridadeBase = 'aleatorio';
+        if (nivel === 'pobre') { qtdItens = randInt(1, 2); raridadeBase = rand(['comum', 'comum', 'incomum']); }
+        else if (nivel === 'medio') { qtdItens = randInt(1, 3); raridadeBase = rand(['comum', 'incomum', 'raro']); }
+        else if (nivel === 'rico') { qtdItens = randInt(2, 4); raridadeBase = rand(['incomum', 'raro', 'muito-raro']); }
+        else if (nivel === 'epico') { qtdItens = randInt(3, 5); raridadeBase = rand(['raro', 'muito-raro', 'lendario']); }
+
+        bauAtual.itens = [];
+        for (let i = 0; i < qtdItens; i++) {
+            const tipo = rand(poolTipos);
+            bauAtual.itens.push(gerarItemBase(tipo, raridadeBase, 'aleatorio', 'aleatorio'));
+        }
+
+        // Moedas baseadas no nível
+        const moedas = { mb: 0, mp: 0, mo: 0, md: 0 };
+        if (nivel === 'pobre') { moedas.mb = randInt(20, 150); moedas.mp = randInt(5, 30); }
+        else if (nivel === 'medio') { moedas.mb = randInt(100, 300); moedas.mp = randInt(20, 100); moedas.mo = randInt(1, 10); }
+        else if (nivel === 'rico') { moedas.mp = randInt(100, 400); moedas.mo = randInt(10, 50); if(Math.random()>0.8) moedas.md = randInt(1,2); }
+        else if (nivel === 'epico') { moedas.mo = randInt(50, 200); moedas.md = randInt(2, 10); }
+        
+        bauAtual.moedas = moedas;
+
+        // Renderização
+        let htmlMoedas = '';
+        if (moedas.md > 0) htmlMoedas += `<span style="color:#b9f2ff; margin-right:15px;">💎 ${moedas.md} MD</span>`;
+        if (moedas.mo > 0) htmlMoedas += `<span style="color:#ffd700; margin-right:15px;">🪙 ${moedas.mo} MO</span>`;
+        if (moedas.mp > 0) htmlMoedas += `<span style="color:#c0c0c0; margin-right:15px;">🥈 ${moedas.mp} MP</span>`;
+        if (moedas.mb > 0) htmlMoedas += `<span style="color:#cd7f32; margin-right:15px;">🥉 ${moedas.mb} MB</span>`;
+        if (htmlMoedas === '') htmlMoedas = '<span style="color:var(--text-muted)">Nenhuma moeda</span>';
+        
+        document.getElementById('bau-moedas').innerHTML = htmlMoedas;
+        
+        let htmlItens = '';
+        bauAtual.itens.forEach(item => {
+            const dot = `<span class="rarity-dot" style="background:${RARIDADE_COR[item.raridade]};color:${RARIDADE_COR[item.raridade]};display:inline-block;width:8px;height:8px;border-radius:50%;"></span>`;
+            htmlItens += `
+            <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--gold-dim); padding: 10px; border-radius: 8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-family:var(--font-epic); color:var(--gold-primary);">${item.icone} ${item.nome}</div>
+                  <div style="font-size:0.8rem; color:var(--text-muted);">${RARIDADE_LABEL[item.raridade]} · ${TIPOS[item.tipo].nome}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  ${dot}
+                  <span style="font-size:12px;color:var(--gold-dark);">${item.valor}</span>
+                </div>
+              </div>
+            </div>`;
+        });
+        document.getElementById('bau-itens').innerHTML = htmlItens;
+
+        const resDiv = document.getElementById('bau-resultado');
+        resDiv.style.display = 'block';
+        carregarJogadoresNaSelect(document.getElementById('bau-player-select'));
+    }
+
+    function enviarBauParaJogador() {
+        const email = document.getElementById('bau-player-select').value;
+        if (!email) { alert('Selecione um jogador!'); return; }
+        if (!bauAtual.moedas && bauAtual.itens.length === 0) return;
+
+        const success = enviarParaFicha(email, (ficha) => {
+            if (bauAtual.moedas) {
+                ficha.moedas_diamante = (parseInt(ficha.moedas_diamante) || 0) + (bauAtual.moedas.md || 0);
+                ficha.moedas_ouro = (parseInt(ficha.moedas_ouro) || 0) + (bauAtual.moedas.mo || 0);
+                ficha.moedas_prata = (parseInt(ficha.moedas_prata) || 0) + (bauAtual.moedas.mp || 0);
+                ficha.moedas_bronze = (parseInt(ficha.moedas_bronze) || 0) + (bauAtual.moedas.mb || 0);
+            }
+            if (!ficha.itens) ficha.itens = [];
+            bauAtual.itens.forEach(item => {
+                ficha.itens.push({
+                    nome: `${item.icone} ${item.nome} (${RARIDADE_LABEL[item.raridade]})`,
+                    quantidade: 1,
+                    slots: 1
+                });
+            });
+        });
+
+        if (success) {
+            alert('Baú enviado para o jogador com sucesso!');
+            document.getElementById('bau-resultado').style.display = 'none';
         } else {
             alert('Erro ao enviar. O jogador pode não ter uma ficha ativa.');
         }

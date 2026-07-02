@@ -661,6 +661,44 @@ window.onerror = function(msg, url, line, col, error) {
                         </div>
                     </div>
 
+                    <!-- GERADOR DE BAÚ -->
+                    <div class="table-card" style="margin-bottom: 30px;">
+                        <h3 style="color:var(--gold-primary); margin-bottom: 15px; font-family:var(--font-epic);"><i class="fa-solid fa-box-open"></i> Gerar Baú / Saque</h3>
+                        <div style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
+                            <div>
+                                <label style="color:var(--gold-dim); display:block; margin-bottom:5px; font-size:0.85rem;">Localização do Baú</label>
+                                <select id="sel-bau-local" class="input-modern" style="min-width: 200px;">
+                                    <option value="masmorra">Masmorra (Armas, Armaduras, Poções)</option>
+                                    <option value="mansao">Mansão / Nobreza (Joias, Acessórios, Relíquias)</option>
+                                    <option value="igreja">Igreja / Templo (Relíquias Divinas, Poções, Cajados)</option>
+                                    <option value="abandonado">Local Abandonado (Consumíveis, Itens Comuns)</option>
+                                    <option value="acampamento">Acampamento Inimigo (Armas, Escudos, Ouro/Prata)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="color:var(--gold-dim); display:block; margin-bottom:5px; font-size:0.85rem;">Nível do Baú</label>
+                                <select id="sel-bau-nivel" class="input-modern" style="min-width: 120px;">
+                                    <option value="pobre">Pobre</option>
+                                    <option value="medio">Médio</option>
+                                    <option value="rico">Rico</option>
+                                    <option value="epico">Épico</option>
+                                </select>
+                            </div>
+                            <button class="btn-epic" onclick="gerarBau()" style="padding: 10px 20px;">📦 Abrir Baú</button>
+                        </div>
+                        <div id="bau-resultado" style="margin-top: 20px; display:none; background: rgba(0,0,0,0.3); border:1px solid var(--gold-dim); border-radius:8px; padding: 15px;">
+                            <h4 style="color:var(--gold-primary); margin-top:0; margin-bottom:10px;">Conteúdo do Baú:</h4>
+                            <div id="bau-moedas" style="font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);"></div>
+                            <div id="bau-itens" style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;"></div>
+                            
+                            <div style="display:flex; gap:10px; align-items:center; border-top:1px solid var(--gold-dim); padding-top:15px;">
+                                <label style="color:var(--gold-dim); font-size:0.85rem;">Enviar tudo para:</label>
+                                <select id="bau-player-select" class="input-modern" style="min-width:150px;"></select>
+                                <button class="btn-outline" onclick="enviarBauParaJogador()"><i class="fa-solid fa-paper-plane"></i> Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- GERADOR DE ITENS MAGICOS -->
                     <div class="table-card">
                         <h3 style="color:var(--gold-primary); margin-bottom: 15px; font-family:var(--font-epic);"><i class="fa-solid fa-wand-sparkles"></i> Gerador de Itens Mágicos</h3>
