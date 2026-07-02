@@ -720,8 +720,11 @@ window.onerror = function(msg, url, line, col, error) {
 
                 <!-- TAB: MONSTROS -->
                 <div id="tm-monstros" class="tm-content hidden">
-                    <div class="dashboard-header">
+                    <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <h2>Monstros</h2>
+                        <button class="btn-epic" onclick="openPdf('assets/Bestiario de Dandora (1).pdf')">
+                            <i class="fa-solid fa-book-journal-whills"></i> Abrir Bestiário de Dandora
+                        </button>
                     </div>
                     <div id="blocos" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
                       <!-- Blocos gerados via JS -->
@@ -1103,6 +1106,7 @@ Altura     Dano
     </dialog>
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="assets/js/firebase-sync2.js?v=17"></script>
     <script src="assets/js/app2.js?v=17"></script>
     <script src="assets/js/pdf-viewer.js?v=9"></script>
