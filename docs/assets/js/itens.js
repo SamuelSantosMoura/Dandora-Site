@@ -617,7 +617,6 @@
             localStorage.setItem(membersKey, JSON.stringify(members));
             
             // Tenta atualizar também o backup local do jogador se possível 
-            // (Na realidade isso precisaria de um backend ou polling, mas atualizamos no localStorage global dele também)
             const playerFichasKey = `dandora_fichas_${playerEmail}`;
             let fichasJogador = JSON.parse(localStorage.getItem(playerFichasKey)) || [];
             let fichaOriginal = fichasJogador.find(f => f.id === member.activeSheet.id);
@@ -625,6 +624,17 @@
                 modifierFn(fichaOriginal);
                 localStorage.setItem(playerFichasKey, JSON.stringify(fichasJogador));
             }
+
+            // ATUALIZA DIRETAMENTE A CHAVE DA FICHA EM TEMPO REAL
+            const sheetKey = `dandora_sheet_${currentTableId}_${playerEmail}`;
+            let currentSheetData = JSON.parse(localStorage.getItem(sheetKey));
+            if (currentSheetData) {
+                modifierFn(currentSheetData);
+                localStorage.setItem(sheetKey, JSON.stringify(currentSheetData));
+            } else {
+                localStorage.setItem(sheetKey, JSON.stringify(member.activeSheet));
+            }
+            
             return true;
         }
         return false;

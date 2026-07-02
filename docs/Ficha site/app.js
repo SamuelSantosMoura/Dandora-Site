@@ -29,6 +29,13 @@
     updateAllDice();
     updateSlots();
     updateSaveIndicator();
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORAGE_KEY) {
+        loadData();
+        showToast('Atualização recebida do Mestre!');
+      }
+    });
   });
 
   /* ==========================================================
