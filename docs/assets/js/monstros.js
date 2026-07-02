@@ -1,64 +1,21 @@
 const numBlocos = 10;
     
-    // Cache global do PDF
-    let bestiaryPdfDoc = null;
-
-    async function loadBestiaryPdf() {
-        if (bestiaryPdfDoc) return bestiaryPdfDoc;
-        try {
-            // pdfjsLib comes from the global scope included in index.html
-            const url = 'assets/Bestiario de Dandora (1).pdf';
-            const loadingTask = pdfjsLib.getDocument(url);
-            bestiaryPdfDoc = await loadingTask.promise;
-            return bestiaryPdfDoc;
-        } catch (error) {
-            console.error("Erro ao carregar o bestiário PDF:", error);
-            return null;
-        }
-    }
-
-    async function renderPdfPage(pageNum, index) {
-        const canvasId = `canvas-${index}`;
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) return;
+    function renderPdfPage(pageNum, index) {
+        const iframe = document.getElementById(`pdf-frame-${index}`);
+        if (!iframe) return;
         
-        const ctx = canvas.getContext('2d');
         if (!pageNum || pageNum < 1) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            iframe.src = "";
             return;
         }
         
         // Salva a preferência de página localmente
         localStorage.setItem(`bloco-${index}-pdf-page`, pageNum);
 
-        const pdf = await loadBestiaryPdf();
-        if (!pdf) return;
-        
-        if (pageNum > pdf.numPages) {
-            alert(`O PDF tem apenas ${pdf.numPages} páginas.`);
-            return;
-        }
-        
-        try {
-            const page = await pdf.getPage(parseInt(pageNum));
-            const scale = 1.5; 
-            const viewport = page.getViewport({scale: scale});
-            
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            canvas.style.width = "100%";
-            canvas.style.height = "auto";
-            canvas.style.border = "1px solid var(--gold-dim)";
-            canvas.style.borderRadius = "4px";
-            
-            const renderContext = {
-                canvasContext: ctx,
-                viewport: viewport
-            };
-            await page.render(renderContext).promise;
-        } catch (e) {
-            console.error(e);
-        }
+        // Usa o visualizador de PDF nativo do navegador através de um iframe
+        // Isso burla o bloqueio de CORS do protocolo file://
+        // O parâmetro #page= permite ir direto para a página, e view=FitH ajusta a largura
+        iframe.src = `assets/Bestiario de Dandora (1).pdf#page=${pageNum}&view=FitH`;
     }
 
     function switchMonstroTab(index, mode) {
@@ -130,8 +87,8 @@ const numBlocos = 10;
                 </div>
                 <button class="btn-outline" style="padding:10px;" onclick="renderPdfPage(document.getElementById('pdf-page-${index}').value, ${index})"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
             </div>
-            <div style="width:100%; min-height:100px; background:rgba(0,0,0,0.3); border:1px dashed var(--gold-dim); display:flex; align-items:center; justify-content:center; border-radius:4px; overflow:hidden;">
-                <canvas id="canvas-${index}" style="max-width:100%;"></canvas>
+            <div style="width:100%; height:400px; background:rgba(0,0,0,0.3); border:1px dashed var(--gold-dim); display:flex; align-items:center; justify-content:center; border-radius:4px; overflow:hidden;">
+                <iframe id="pdf-frame-${index}" src="" style="width:100%; height:100%; border:none;"></iframe>
             </div>
         </div>
       </div>`;
