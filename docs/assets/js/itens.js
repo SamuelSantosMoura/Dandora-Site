@@ -547,20 +547,26 @@
 
     function carregarJogadoresNaSelect(selectElement) {
         if (!selectElement) return;
-        if (typeof currentTableId === 'undefined' || !currentTableId) return;
         
-        const membersKey = `dandora_table_members_${currentTableId}`;
+        let tid = null;
+        if (typeof getActiveTableId === 'function') {
+            tid = getActiveTableId();
+        } else if (typeof currentTableId !== 'undefined') {
+            tid = currentTableId;
+        }
+        if (!tid) return;
+        
+        const membersKey = `dandora_table_members_${tid}`;
         const members = JSON.parse(localStorage.getItem(membersKey)) || [];
         
         selectElement.innerHTML = '<option value="">-- Selecione o Jogador --</option>';
         
         members.forEach(m => {
-            if (m.activeSheet && m.activeSheet.nome) {
-                const opt = document.createElement('option');
-                opt.value = m.playerEmail;
-                opt.textContent = `${m.activeSheet.nome} (${m.playerName})`;
-                selectElement.appendChild(opt);
-            }
+            const sheetName = (m.activeSheet && m.activeSheet.nome) || (m.activeSheetSummary && m.activeSheetSummary.nome) || "Ficha Vazia";
+            const opt = document.createElement('option');
+            opt.value = m.playerEmail;
+            opt.textContent = `${sheetName} (${m.playerName})`;
+            selectElement.appendChild(opt);
         });
     }
 
@@ -605,14 +611,23 @@
 
     // Função genérica para enviar modificações para a ficha de um jogador
     function enviarParaFicha(playerEmail, modifierFn) {
-        if (typeof currentTableId === 'undefined' || !currentTableId) return false;
+        let tid = null;
+        if (typeof getActiveTableId === 'function') {
+            tid = getActiveTableId();
+        } else if (typeof currentTableId !== 'undefined') {
+            tid = currentTableId;
+        }
+        if (!tid) return false;
         
         // Atualiza na mesa
-        const membersKey = `dandora_table_members_${currentTableId}`;
+        const membersKey = `dandora_table_members_${tid}`;
         let members = JSON.parse(localStorage.getItem(membersKey)) || [];
         let member = members.find(m => m.playerEmail === playerEmail);
         
-        if (member && member.activeSheet) {
+        if (member) {
+            // Garante que activeSheet existe para não quebrar o modifierFn
+            if (!member.activeSheet) member.activeSheet = { itens: [], moedas_bronze:0, moedas_prata:0, moedas_ouro:0, moedas_diamente:0 };
+            
             modifierFn(member.activeSheet);
             localStorage.setItem(membersKey, JSON.stringify(members));
             
@@ -626,7 +641,7 @@
             }
 
             // ATUALIZA DIRETAMENTE A CHAVE DA FICHA EM TEMPO REAL
-            const sheetKey = `dandora_sheet_${currentTableId}_${playerEmail}`;
+            const sheetKey = `dandora_sheet_${tid}_${playerEmail}`;
             let currentSheetData = JSON.parse(localStorage.getItem(sheetKey));
             if (currentSheetData) {
                 modifierFn(currentSheetData);
