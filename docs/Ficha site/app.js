@@ -103,6 +103,10 @@
 
       // Inventário
       container_type: val('container-type'),
+      moedas_bronze: val('moedas-bronze'),
+      moedas_prata: val('moedas-prata'),
+      moedas_ouro: val('moedas-ouro'),
+      moedas_diamante: val('moedas-diamante'),
       itens: collectItems(),
 
       // Anotações
@@ -333,6 +337,10 @@
 
     // Inventário
     setVal('container-type', data.container_type);
+    setVal('moedas-bronze', data.moedas_bronze);
+    setVal('moedas-prata', data.moedas_prata);
+    setVal('moedas-ouro', data.moedas_ouro);
+    setVal('moedas-diamante', data.moedas_diamante);
     const isTypingInItems = activeEl && activeEl.closest('#items-list');
     if (Array.isArray(data.itens) && data.itens.length > 0 && !isTypingInItems) {
       const list = document.getElementById('items-list');

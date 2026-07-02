@@ -610,27 +610,10 @@
         if (!tesouroAtual) return;
         
         const success = enviarParaFicha(email, (ficha) => {
-            // Se a ficha não tiver inventário inicializado
-            if (!ficha.inventario) ficha.inventario = [];
-            
-            // Para simplificar, vamos adicionar as moedas como um item "Tesouro" no inventário
-            // Ou somar em um item de moedas existente. Como a ficha padrão tem apenas lista de itens:
-            
-            let texto = [];
-            if (tesouroAtual.md > 0) texto.push(`${tesouroAtual.md} MD`);
-            if (tesouroAtual.mo > 0) texto.push(`${tesouroAtual.mo} MO`);
-            if (tesouroAtual.mp > 0) texto.push(`${tesouroAtual.mp} MP`);
-            if (tesouroAtual.mb > 0) texto.push(`${tesouroAtual.mb} MB`);
-            
-            const desc = "Moedas: " + texto.join(', ');
-            
-            ficha.inventario.push({
-                nome: "Saco de Moedas (Recebido)",
-                qtd: 1,
-                peso: "0",
-                desc: desc,
-                id: Date.now()
-            });
+            ficha.moedas_diamante = (parseInt(ficha.moedas_diamante) || 0) + (tesouroAtual.md || 0);
+            ficha.moedas_ouro = (parseInt(ficha.moedas_ouro) || 0) + (tesouroAtual.mo || 0);
+            ficha.moedas_prata = (parseInt(ficha.moedas_prata) || 0) + (tesouroAtual.mp || 0);
+            ficha.moedas_bronze = (parseInt(ficha.moedas_bronze) || 0) + (tesouroAtual.mb || 0);
         });
         
         if (success) {
@@ -655,15 +638,13 @@
         const item = JSON.parse(dataArea.value);
         
         const success = enviarParaFicha(email, (ficha) => {
-            if (!ficha.inventario) ficha.inventario = [];
+            if (!ficha.itens) ficha.itens = [];
             
             // Adiciona o item mágico
-            ficha.inventario.push({
-                nome: `${item.icone} ${item.nome}`,
-                qtd: 1,
-                peso: "1", // Padrão
-                desc: `Raridade: ${RARIDADE_LABEL[item.raridade]} | ${TIPOS[item.tipo].nome}\n${item.propriedades.join('\n')}\nLore: ${item.historia}`,
-                id: Date.now()
+            ficha.itens.push({
+                nome: `${item.icone} ${item.nome} (${RARIDADE_LABEL[item.raridade]})`,
+                quantidade: 1,
+                slots: 1 // Padrão
             });
         });
         
