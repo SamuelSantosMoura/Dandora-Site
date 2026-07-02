@@ -260,6 +260,25 @@
       return `${prefixo} ${base} ${sufixo}`;
     }
 
+    function gerarNomeMundano(tipo, raridade) {
+      const bases = {
+        arma: ['Espada Longa', 'Espada Curta', 'Machado de Batalha', 'Arco Curto', 'Besta Leve', 'Adaga de Aço', 'Maça', 'Lança', 'Rapieira'],
+        armadura: ['Cota de Malha', 'Armadura de Couro', 'Peitoral de Aço', 'Armadura Acolchoada', 'Vestes de Pano', 'Couraça de Bronze'],
+        escudo: ['Escudo de Madeira', 'Escudo de Ferro', 'Broquel', 'Escudo Pesado', 'Rodela de Aço'],
+        acessorio: ['Anel de Ouro', 'Anel de Prata', 'Colar de Bronze', 'Amuleto Simples', 'Bracelete de Couro', 'Cordão de Ouro'],
+        consumivel: ['Poção de Cura', 'Poção de Mana', 'Antídoto', 'Bálsamo Restaurador', 'Ração de Viagem', 'Erva Medicinal', 'Frasco de Fogo Alquímico'],
+        reliquia: ['Estátua Antiga', 'Cálice de Ouro', 'Papiro Amassado', 'Joia Bruta', 'Moeda Comemorativa', 'Cristal Opaco'],
+        cajado: ['Cajado de Madeira', 'Varinha Torcida', 'Foco Arcano Simples', 'Bordão de Caminhante']
+      };
+      let nome = rand(bases[tipo] || bases.arma);
+      if (raridade === 'incomum') nome += ' (+1)';
+      else if (raridade === 'raro') nome += ' (+2)';
+      else if (raridade === 'muito-raro') nome += ' (+3)';
+      else if (raridade === 'lendario') nome += ' (+4)';
+      else if (raridade === 'artefato') nome += ' (+5)';
+      return nome;
+    }
+
     function formatarPropriedade(prop) {
       let texto = prop.texto;
       if (prop.n) {
@@ -295,16 +314,22 @@
        GERADOR PRINCIPAL
     ======================================================== */
 
-    function gerarItemBase(selTipo, selRaridade, selEscola, selMaldicao) {
+    function gerarItemBase(selTipo, selRaridade, selEscola, selMaldicao, isMundane = false) {
       const tipo     = escolherTipo(selTipo);
       const raridade = escolherRaridade(selRaridade);
       const escola   = escolherEscola(selEscola);
       const maldito  = temMaldicao(selMaldicao, raridade);
       const bonus    = gerarBonus(raridade);
 
-      const prefixo = rand(PREFIXOS_NOME);
-      const sufixo  = rand(SUFIXOS_NOME);
-      const nome    = gerarNomeItem(tipo, prefixo, sufixo);
+      let nome;
+      if (isMundane) {
+        nome = gerarNomeMundano(tipo, raridade);
+      } else {
+        const prefixo = rand(PREFIXOS_NOME);
+        const sufixo  = rand(SUFIXOS_NOME);
+        nome = gerarNomeItem(tipo, prefixo, sufixo);
+      }
+      
       const icone   = rand(TIPOS[tipo].icones);
 
       // Propriedades mágicas
@@ -684,7 +709,7 @@
         bauAtual.itens = [];
         for (let i = 0; i < qtdItens; i++) {
             const tipo = rand(poolTipos);
-            bauAtual.itens.push(gerarItemBase(tipo, raridadeBase, 'aleatorio', 'aleatorio'));
+            bauAtual.itens.push(gerarItemBase(tipo, raridadeBase, 'aleatorio', 'nenhuma', true));
         }
 
         // Moedas baseadas no nível
