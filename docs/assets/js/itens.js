@@ -547,7 +547,7 @@
 
     function carregarJogadoresNaSelect(selectElement) {
         if (!selectElement) return;
-        if (!window.currentTableId) return;
+        if (typeof currentTableId === 'undefined' || !currentTableId) return;
         
         const membersKey = `dandora_table_members_${currentTableId}`;
         const members = JSON.parse(localStorage.getItem(membersKey)) || [];
@@ -605,7 +605,7 @@
 
     // Função genérica para enviar modificações para a ficha de um jogador
     function enviarParaFicha(playerEmail, modifierFn) {
-        if (!window.currentTableId) return false;
+        if (typeof currentTableId === 'undefined' || !currentTableId) return false;
         
         // Atualiza na mesa
         const membersKey = `dandora_table_members_${currentTableId}`;
