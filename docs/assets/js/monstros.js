@@ -1,26 +1,139 @@
-    const numBlocos = 6;
+const numBlocos = 10;
+    
+    // Cache global do PDF
+    let bestiaryPdfDoc = null;
+
+    async function loadBestiaryPdf() {
+        if (bestiaryPdfDoc) return bestiaryPdfDoc;
+        try {
+            // pdfjsLib comes from the global scope included in index.html
+            const url = 'assets/Bestiario de Dandora (1).pdf';
+            const loadingTask = pdfjsLib.getDocument(url);
+            bestiaryPdfDoc = await loadingTask.promise;
+            return bestiaryPdfDoc;
+        } catch (error) {
+            console.error("Erro ao carregar o bestiário PDF:", error);
+            return null;
+        }
+    }
+
+    async function renderPdfPage(pageNum, index) {
+        const canvasId = `canvas-${index}`;
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        if (!pageNum || pageNum < 1) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            return;
+        }
+        
+        // Salva a preferência de página localmente
+        localStorage.setItem(`bloco-${index}-pdf-page`, pageNum);
+
+        const pdf = await loadBestiaryPdf();
+        if (!pdf) return;
+        
+        if (pageNum > pdf.numPages) {
+            alert(`O PDF tem apenas ${pdf.numPages} páginas.`);
+            return;
+        }
+        
+        try {
+            const page = await pdf.getPage(parseInt(pageNum));
+            const scale = 1.5; 
+            const viewport = page.getViewport({scale: scale});
+            
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            canvas.style.width = "100%";
+            canvas.style.height = "auto";
+            canvas.style.border = "1px solid var(--gold-dim)";
+            canvas.style.borderRadius = "4px";
+            
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            await page.render(renderContext).promise;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function switchMonstroTab(index, mode) {
+        const manualDiv = document.getElementById(`manual-${index}`);
+        const pdfDiv = document.getElementById(`pdf-${index}`);
+        const btnManual = document.getElementById(`btn-manual-${index}`);
+        const btnPdf = document.getElementById(`btn-pdf-${index}`);
+        
+        if (mode === 'manual') {
+            manualDiv.style.display = 'block';
+            pdfDiv.style.display = 'none';
+            btnManual.classList.add('btn-epic');
+            btnManual.classList.remove('btn-outline');
+            btnPdf.classList.add('btn-outline');
+            btnPdf.classList.remove('btn-epic');
+            localStorage.setItem(`bloco-${index}-mode`, 'manual');
+        } else {
+            manualDiv.style.display = 'none';
+            pdfDiv.style.display = 'block';
+            btnPdf.classList.add('btn-epic');
+            btnPdf.classList.remove('btn-outline');
+            btnManual.classList.add('btn-outline');
+            btnManual.classList.remove('btn-epic');
+            localStorage.setItem(`bloco-${index}-mode`, 'pdf');
+            
+            const pg = document.getElementById(`pdf-page-${index}`).value;
+            if(pg) {
+                renderPdfPage(pg, index);
+            }
+        }
+    }
 
     function criarBloco(index) {
       return `
-      <div class="table-card" id="card-${index}">
-        <label for="nome-${index}" style="color:var(--gold-dim); display:block; margin-bottom:5px;">Nome da Criatura</label>
-        <input class="input-modern" type="text" id="nome-${index}" placeholder="ex.: Goblin Ferrugem" style="width:100%; margin-bottom:10px;" />
-        <div style="display:flex;gap:10px; margin-bottom:10px;">
-          <div style="flex:1;">
-            <label for="vida-${index}" style="color:var(--gold-dim); display:block; margin-bottom:5px;">Vida</label>
-            <input class="input-modern" type="text" id="vida-${index}" placeholder="ex.: 45 / 45" style="width:100%;" />
-          </div>
-          <div style="flex:1;">
-            <label for="ca-${index}" style="color:var(--gold-dim); display:block; margin-bottom:5px;">CA</label>
-            <input class="input-modern" type="text" id="ca-${index}" placeholder="ex.: 15" style="width:100%;" />
-          </div>
+      <div class="table-card" id="card-${index}" style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; gap:10px;">
+            <button id="btn-manual-${index}" class="btn-epic" style="flex:1; padding:8px; font-size:0.8rem;" onclick="switchMonstroTab(${index}, 'manual')">Manual</button>
+            <button id="btn-pdf-${index}" class="btn-outline" style="flex:1; padding:8px; font-size:0.8rem;" onclick="switchMonstroTab(${index}, 'pdf')">PDF Oficial</button>
         </div>
-        <label for="anotacoes-${index}" style="color:var(--gold-dim); display:block; margin-bottom:5px;">Anotações</label>
-        <textarea class="input-modern" id="anotacoes-${index}" rows="4" placeholder="Habilidades, resistências, status…" style="width:100%; resize:vertical; margin-bottom:15px;"></textarea>
         
-        <button class="btn-outline" style="width:100%;" onclick="exportarMonstroPDF(${index})">
-          <i class="fa-solid fa-file-pdf"></i> Salvar PDF da Ficha
-        </button>
+        <!-- MODO MANUAL -->
+        <div id="manual-${index}">
+            <label for="nome-${index}" style="color:var(--gold-dim); display:block; margin-bottom:5px;">Nome da Criatura</label>
+            <input class="input-modern" type="text" id="nome-${index}" placeholder="ex.: Goblin Ferrugem" style="width:100%; margin-bottom:10px;" />
+            <div style="display:flex;gap:10px; margin-bottom:10px;">
+              <div style="flex:1;">
+                <label for="vida-${index}" style="color:var(--gold-dim); display:block; margin-bottom:5px;">Vida</label>
+                <input class="input-modern" type="text" id="vida-${index}" placeholder="ex.: 45 / 45" style="width:100%;" />
+              </div>
+              <div style="flex:1;">
+                <label for="ca-${index}" style="color:var(--gold-dim); display:block; margin-bottom:5px;">CA</label>
+                <input class="input-modern" type="text" id="ca-${index}" placeholder="ex.: 15" style="width:100%;" />
+              </div>
+            </div>
+            <label for="anotacoes-${index}" style="color:var(--gold-dim); display:block; margin-bottom:5px;">Anotações</label>
+            <textarea class="input-modern" id="anotacoes-${index}" rows="4" placeholder="Habilidades, resistências, status…" style="width:100%; resize:vertical; margin-bottom:15px;"></textarea>
+            
+            <button class="btn-outline" style="width:100%;" onclick="exportarMonstroPDF(${index})">
+              <i class="fa-solid fa-file-pdf"></i> Salvar PDF Próprio
+            </button>
+        </div>
+
+        <!-- MODO PDF -->
+        <div id="pdf-${index}" style="display:none; text-align:center;">
+            <div style="display:flex; gap:10px; align-items:flex-end; margin-bottom:15px;">
+                <div style="flex:1; text-align:left;">
+                    <label style="color:var(--gold-dim); display:block; margin-bottom:5px;">Página no PDF:</label>
+                    <input class="input-modern" type="number" id="pdf-page-${index}" placeholder="Pág. (ex: 35)" style="width:100%;" min="1" />
+                </div>
+                <button class="btn-outline" style="padding:10px;" onclick="renderPdfPage(document.getElementById('pdf-page-${index}').value, ${index})"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+            </div>
+            <div style="width:100%; min-height:100px; background:rgba(0,0,0,0.3); border:1px dashed var(--gold-dim); display:flex; align-items:center; justify-content:center; border-radius:4px; overflow:hidden;">
+                <canvas id="canvas-${index}" style="max-width:100%;"></canvas>
+            </div>
+        </div>
       </div>`;
     }
 
@@ -36,12 +149,25 @@
       localStorage.setItem(`bloco-${index}-anotacoes`, document.getElementById(`anotacoes-${index}`).value);
     }
 
+    // Inicialização ao carregar a página
     for (let i = 0; i < numBlocos; i++) {
+      // Carregar modo (manual ou pdf)
+      const mode = localStorage.getItem(`bloco-${i}-mode`) || 'manual';
+      switchMonstroTab(i, mode);
+
+      // Carregar dados textuais do modo manual
       document.getElementById(`nome-${i}`).value      = localStorage.getItem(`bloco-${i}-nome`)      || '';
       document.getElementById(`vida-${i}`).value      = localStorage.getItem(`bloco-${i}-vida`)      || '';
       document.getElementById(`ca-${i}`).value        = localStorage.getItem(`bloco-${i}-ca`)        || '';
       document.getElementById(`anotacoes-${i}`).value = localStorage.getItem(`bloco-${i}-anotacoes`) || '';
+      
+      // Carregar página em PDF salva (se houver)
+      const savedPage = localStorage.getItem(`bloco-${i}-pdf-page`);
+      if (savedPage) {
+          document.getElementById(`pdf-page-${i}`).value = savedPage;
+      }
 
+      // Adicionar listeners para modo manual
       document.getElementById(`nome-${i}`).addEventListener('input',      () => salvarDados(i));
       document.getElementById(`vida-${i}`).addEventListener('input',      () => salvarDados(i));
       document.getElementById(`ca-${i}`).addEventListener('input',        () => salvarDados(i));
@@ -54,15 +180,13 @@
       const ca = document.getElementById(`ca-${index}`).value.trim() || '--';
       const anotacoes = document.getElementById(`anotacoes-${index}`).value.trim() || 'Nenhuma anotação.';
 
-      // Criar um container temporário e invisível para gerar o PDF
       const pdfContainer = document.createElement('div');
       pdfContainer.style.padding = '30px';
-      pdfContainer.style.background = '#111'; // Fundo dark
+      pdfContainer.style.background = '#111';
       pdfContainer.style.color = '#e0e0e0';
       pdfContainer.style.fontFamily = "'Inter', sans-serif";
       pdfContainer.style.width = '600px';
 
-      // Estilo do PDF
       pdfContainer.innerHTML = `
         <div style="border: 2px solid #c9a84c; border-radius: 8px; padding: 20px; background: rgba(0,0,0,0.4);">
           <h1 style="color: #c9a84c; font-family: 'Cinzel', serif; border-bottom: 1px solid #c9a84c; padding-bottom: 10px; margin-top: 0;">
@@ -79,10 +203,8 @@
         </div>
       `;
 
-      // Anexar temporariamente ao body
       document.body.appendChild(pdfContainer);
 
-      // Opções para o html2pdf
       const opt = {
         margin:       10,
         filename:     `${nome}.pdf`,
@@ -91,9 +213,7 @@
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      // Gerar PDF
       html2pdf().set(opt).from(pdfContainer).save().then(() => {
-        // Remover container temporário
         document.body.removeChild(pdfContainer);
       });
     }
