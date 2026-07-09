@@ -226,11 +226,21 @@
     return attacks;
   }
 
-  function collectSpells() {
+    function collectSpells() {
     const spells = [];
-    document.querySelectorAll('.spell-card').forEach(card => {
-      const inputs = card.querySelectorAll('input');
+    document.querySelectorAll('.spell-card.magia-card').forEach(card => {
+      const inputs = card.querySelectorAll('input[type="text"]');
       const textarea = card.querySelector('textarea');
+      
+      const aprimoramentos = {
+        potencia: card.querySelector('.aprimoramento-potencia')?.checked || false,
+        alcance: card.querySelector('.aprimoramento-alcance')?.checked || false,
+        persist: card.querySelector('.aprimoramento-persist')?.checked || false,
+        coercao: card.querySelector('.aprimoramento-coercao')?.checked || false,
+        eficiencia: card.querySelector('.aprimoramento-eficiencia')?.checked || false,
+        difusao: card.querySelector('.aprimoramento-difusao')?.checked || false,
+      };
+
       if (inputs.length >= 8) {
         spells.push({
           nome: inputs[0].value,
@@ -241,7 +251,8 @@
           duracao: inputs[5].value,
           pa: inputs[6].value,
           resistencia: inputs[7].value,
-          efeito: textarea ? textarea.value : ''
+          efeito: textarea ? textarea.value : '',
+          aprimoramentos: aprimoramentos
         });
       }
     });
@@ -428,7 +439,7 @@
     const spellsContainer = document.getElementById('spells-container');
     if (spellsContainer && Array.isArray(data.magias) && data.magias.length > 0 && !isTypingInSpells) {
       spellsContainer.innerHTML = '';
-      data.magias.forEach(sp => addSpellCard(sp));
+      data.magias.forEach(m => addSpellCard(m));
     }
 
     // Habilidades
@@ -742,10 +753,12 @@
     if (!container) return;
 
     const d = data || {};
+    const ap = d.aprimoramentos || {};
+    
     const card = document.createElement('div');
-    card.className = 'spell-card';
+    card.className = 'spell-card magia-card';
     card.innerHTML = `
-      <button class="spell-remove" onclick="removeSpellCard(this)" title="Remover magia">âœ•</button>
+      <button class="spell-remove" onclick="removeSpellCard(this)" title="Remover magia">✕</button>
       <div class="spell-top">
         <div>
           <label class="field-label">Nome da Magia / Ritual</label>
@@ -774,7 +787,7 @@
           <input type="text" value="${esc(d.duracao)}" placeholder="Instantânea">
         </div>
         <div>
-          <label class="field-label">PA</label>
+          <label class="field-label">PA Base</label>
           <input type="text" value="${esc(d.pa)}" placeholder="2">
         </div>
       </div>
@@ -785,6 +798,37 @@
       <div class="spell-effect">
         <label class="field-label">Dano / Efeito</label>
         <textarea placeholder="Descreva o efeito da magia...">${esc(d.efeito)}</textarea>
+      </div>
+      
+      <!-- Aprimoramentos -->
+      <div class="spell-enhancements" style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--gold-dim); border-radius: 4px;">
+        <label class="field-label" style="display:block; margin-bottom:8px; color: var(--gold-light);">✦ Aprimoramentos da Magia</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+          <label style="display:flex; align-items:center; gap:5px; font-size:0.85rem; color:var(--text-light); cursor:pointer;" title="+1 dado de dano ou cura">
+            <input type="checkbox" class="aprimoramento-potencia" ${ap.potencia ? 'checked' : ''} onchange="saveData()"> Potência
+          </label>
+          <label style="display:flex; align-items:center; gap:5px; font-size:0.85rem; color:var(--text-light); cursor:pointer;" title="Alcance +50% (Mínimo +3m)">
+            <input type="checkbox" class="aprimoramento-alcance" ${ap.alcance ? 'checked' : ''} onchange="saveData()"> Alcance
+          </label>
+          <label style="display:flex; align-items:center; gap:5px; font-size:0.85rem; color:var(--text-light); cursor:pointer;" title="Duração +50% ou +2 rodadas">
+            <input type="checkbox" class="aprimoramento-persist" ${ap.persist ? 'checked' : ''} onchange="saveData()"> Persistência
+          </label>
+          <label style="display:flex; align-items:center; gap:5px; font-size:0.85rem; color:var(--text-light); cursor:pointer;" title="Aumenta DT em +1">
+            <input type="checkbox" class="aprimoramento-coercao" ${ap.coercao ? 'checked' : ''} onchange="saveData()"> Coerção
+          </label>
+          <label style="display:flex; align-items:center; gap:5px; font-size:0.85rem; color:var(--text-light); cursor:pointer;" title="-1 PA">
+            <input type="checkbox" class="aprimoramento-eficiencia" ${ap.eficiencia ? 'checked' : ''} onchange="saveData()"> Eficiência
+          </label>
+          <label style="display:flex; align-items:center; gap:5px; font-size:0.85rem; color:var(--text-light); cursor:pointer;" title="Afeta +1 alvo">
+            <input type="checkbox" class="aprimoramento-difusao" ${ap.difusao ? 'checked' : ''} onchange="saveData()"> Difusão
+          </label>
+        </div>
+      </div>
+      
+      <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+          <button class="btn-dandora" style="padding: 5px 15px; font-size: 0.8rem; border-color: var(--gold-light);" onclick="useMagiaChat(this)">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Lançar Magia
+          </button>
       </div>
     `;
     container.appendChild(card);
@@ -802,6 +846,62 @@
         saveData();
       }, 300);
     }
+  };
+
+  window.useMagiaChat = function(btn) {
+      const card = btn.closest('.spell-card');
+      const inputs = card.querySelectorAll('input[type="text"]');
+      const textarea = card.querySelector('textarea');
+      
+      const nome = inputs[0] && inputs[0].value ? inputs[0].value : 'Magia sem nome';
+      let pa = inputs[6] && inputs[6].value ? parseInt(inputs[6].value) || 0 : 0;
+      let dt = inputs[7] && inputs[7].value ? inputs[7].value : 'Não possui';
+      let desc = textarea && textarea.value ? textarea.value : '';
+      
+      let modificadoresTxt = [];
+      
+      // Aplicando modificadores
+      if (card.querySelector('.aprimoramento-potencia')?.checked) {
+          modificadoresTxt.push('✦ Potência (+1 Dado Dano/Cura)');
+      }
+      if (card.querySelector('.aprimoramento-alcance')?.checked) {
+          modificadoresTxt.push('✦ Alcance (+50%)');
+      }
+      if (card.querySelector('.aprimoramento-persist')?.checked) {
+          modificadoresTxt.push('✦ Persistência (+50% duração/rodadas)');
+      }
+      if (card.querySelector('.aprimoramento-coercao')?.checked) {
+          modificadoresTxt.push('✦ Coerção (+1 DT)');
+          dt = dt + " (+1 Aprimorado)";
+      }
+      if (card.querySelector('.aprimoramento-eficiencia')?.checked) {
+          modificadoresTxt.push('✦ Eficiência (-1 PA)');
+          pa = Math.max(1, pa - 1);
+      }
+      if (card.querySelector('.aprimoramento-difusao')?.checked) {
+          modificadoresTxt.push('✦ Difusão (+1 Alvo)');
+      }
+      
+      let fullDesc = `[Custo: ${pa} PA] | [Resistência: ${dt}]\n\n`;
+      
+      if (modificadoresTxt.length > 0) {
+          fullDesc += `[APRIMORADA]:\n${modificadoresTxt.join('\n')}\n\n`;
+      }
+      
+      fullDesc += `${desc}`;
+      
+      // Broadcast para o Chat Geral
+      window.parent.postMessage({
+        type: 'DANDORA_CHAT_MSG',
+        payload: {
+          type: 'skill',
+          content: JSON.stringify({
+            name: nome,
+            desc: fullDesc,
+            cost: pa + ' PA'
+          })
+        }
+      }, '*');
   };
 
   window.addHabilidadeCard = function (data) {
