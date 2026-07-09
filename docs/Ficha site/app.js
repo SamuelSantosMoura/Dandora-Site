@@ -130,6 +130,61 @@
       // Habilidades
       habilidades: collectHabilidades(),
 
+      // INFORMAÇÕES & LORE
+      proficiencias: {
+        armasSimples: val('prof-armas-simples'),
+        armadurasLeves: val('prof-armaduras-leves'),
+        armasMarciais: val('prof-armas-marciais'),
+        armadurasMedias: val('prof-armaduras-medias'),
+        armasFogo: val('prof-armas-fogo'),
+        armadurasPesadas: val('prof-armaduras-pesadas'),
+        escudos: val('prof-escudos'),
+        extras: val('prof-extras')
+      },
+      idiomas: {
+        dandoriano: val('idioma-dandoriano'),
+        elfico: val('idioma-elfico'),
+        gronmal: val('idioma-gronmal'),
+        feriano: val('idioma-feriano'),
+        anoniano: val('idioma-anoniano'),
+        infernal: val('idioma-infernal'),
+        fairyano: val('idioma-fairyano'),
+        arquiano: val('idioma-arquiano'),
+        marino: val('idioma-marino'),
+        draconico: val('idioma-draconico'),
+        vaxaia: val('idioma-vaxaia'),
+        myceliano: val('idioma-myceliano'),
+        natur: val('idioma-natur'),
+        celestial: val('idioma-celestial'),
+        abissal: val('idioma-abissal'),
+        pequenico: val('idioma-pequenico'),
+        sublinguagem: val('idioma-sublinguagem'),
+        extras: val('idiomas-extras')
+      },
+      herancaInfo: {
+        tamanho: val('heranca-tamanho'),
+        deslocamento: val('heranca-deslocamento'),
+        idade: val('heranca-idade'),
+        altura: val('heranca-altura'),
+        peso: val('heranca-peso'),
+        fraquezas: val('heranca-fraquezas'),
+        resistencias: val('heranca-resistencias'),
+        imunidades: val('heranca-imunidades'),
+        sentidos: val('heranca-sentidos'),
+        tracos: val('heranca-tracos'),
+        aparencia: val('heranca-aparencia')
+      },
+      backgroundInfo: {
+        nome: val('bg-nome'),
+        personalidade: val('bg-personalidade'),
+        ideais: val('bg-ideais'),
+        vinculos: val('bg-vinculos'),
+        defeitos: val('bg-defeitos'),
+        historia: val('bg-historia'),
+        objetivos: val('bg-objetivos')
+      },
+      contatos: collectContatos(),
+
       // Histórico e Favoritos
       history: window.rollHistory || [],
       customFavorites: window.customFavorites || []
@@ -386,6 +441,73 @@
     window.customFavorites = data.customFavorites || [];
     if(typeof renderFavorites === 'function') renderFavorites();
     renderHistory();
+
+    // INFORMAÇÕES & LORE
+    if (data.proficiencias) {
+      setVal('prof-armas-simples', data.proficiencias.armasSimples);
+      setVal('prof-armaduras-leves', data.proficiencias.armadurasLeves);
+      setVal('prof-armas-marciais', data.proficiencias.armasMarciais);
+      setVal('prof-armaduras-medias', data.proficiencias.armadurasMedias);
+      setVal('prof-armas-fogo', data.proficiencias.armasFogo);
+      setVal('prof-armaduras-pesadas', data.proficiencias.armadurasPesadas);
+      setVal('prof-escudos', data.proficiencias.escudos);
+      setVal('prof-extras', data.proficiencias.extras);
+    }
+
+    if (data.idiomas) {
+      setVal('idioma-dandoriano', data.idiomas.dandoriano);
+      setVal('idioma-elfico', data.idiomas.elfico);
+      setVal('idioma-gronmal', data.idiomas.gronmal);
+      setVal('idioma-feriano', data.idiomas.feriano);
+      setVal('idioma-anoniano', data.idiomas.anoniano);
+      setVal('idioma-infernal', data.idiomas.infernal);
+      setVal('idioma-fairyano', data.idiomas.fairyano);
+      setVal('idioma-arquiano', data.idiomas.arquiano);
+      setVal('idioma-marino', data.idiomas.marino);
+      setVal('idioma-draconico', data.idiomas.draconico);
+      setVal('idioma-vaxaia', data.idiomas.vaxaia);
+      setVal('idioma-myceliano', data.idiomas.myceliano);
+      setVal('idioma-natur', data.idiomas.natur);
+      setVal('idioma-celestial', data.idiomas.celestial);
+      setVal('idioma-abissal', data.idiomas.abissal);
+      setVal('idioma-pequenico', data.idiomas.pequenico);
+      setVal('idioma-sublinguagem', data.idiomas.sublinguagem);
+      setVal('idiomas-extras', data.idiomas.extras);
+    }
+
+    if (data.herancaInfo) {
+      setVal('heranca-tamanho', data.herancaInfo.tamanho);
+      setVal('heranca-deslocamento', data.herancaInfo.deslocamento);
+      setVal('heranca-idade', data.herancaInfo.idade);
+      setVal('heranca-altura', data.herancaInfo.altura);
+      setVal('heranca-peso', data.herancaInfo.peso);
+      setVal('heranca-fraquezas', data.herancaInfo.fraquezas);
+      setVal('heranca-resistencias', data.herancaInfo.resistencias);
+      setVal('heranca-imunidades', data.herancaInfo.imunidades);
+      setVal('heranca-sentidos', data.herancaInfo.sentidos);
+      setVal('heranca-tracos', data.herancaInfo.tracos);
+      setVal('heranca-aparencia', data.herancaInfo.aparencia);
+    }
+
+    if (data.backgroundInfo) {
+      setVal('bg-nome', data.backgroundInfo.nome);
+      setVal('bg-personalidade', data.backgroundInfo.personalidade);
+      setVal('bg-ideais', data.backgroundInfo.ideais);
+      setVal('bg-vinculos', data.backgroundInfo.vinculos);
+      setVal('bg-defeitos', data.backgroundInfo.defeitos);
+      setVal('bg-historia', data.backgroundInfo.historia);
+      setVal('bg-objetivos', data.backgroundInfo.objetivos);
+    }
+
+    // Contatos
+    const isTypingInContatos = activeEl && activeEl.closest('#contatos-container');
+    const contatosContainer = document.getElementById('contatos-container');
+    if (contatosContainer && Array.isArray(data.contatos) && data.contatos.length > 0 && !isTypingInContatos) {
+      contatosContainer.innerHTML = '';
+      data.contatos.forEach(c => addContatoCard(c));
+    } else if (contatosContainer && (!data.contatos || data.contatos.length === 0) && !isTypingInContatos) {
+        contatosContainer.innerHTML = '';
+    }
 
     updateAllBars();
     updateAllDice();
@@ -750,6 +872,103 @@
       }, 300);
     }
   };
+
+  /* ==========================================================
+     CONTATOS E ORGANIZAÇÕES
+  ========================================================== */
+  window.addContatoCard = function (data) {
+    const container = document.getElementById('contatos-container');
+    if (!container) return;
+
+    const d = data || {};
+    const card = document.createElement('div');
+    card.className = 'spell-card'; // Reusing spell-card style for neatness
+    
+    // Set default selects
+    const selCat = d.categoria || 'Organização';
+    const selStatus = d.status || 'Neutro';
+
+    card.innerHTML = `
+      <button class="spell-remove" onclick="removeContatoCard(this)" title="Remover Contato">✕</button>
+      <div class="spell-top">
+        <div style="flex: 1.5;">
+          <label class="field-label">Nome</label>
+          <input type="text" class="contato-nome" value="${esc(d.nome)}" placeholder="Nome do Grupo/NPC...">
+        </div>
+        <div style="flex: 1;">
+          <label class="field-label">Categoria</label>
+          <select class="contato-categoria" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); color: var(--text-light); padding: 5px;">
+            <option value="Organização" ${selCat==='Organização'?'selected':''}>Organização</option>
+            <option value="Guilda" ${selCat==='Guilda'?'selected':''}>Guilda</option>
+            <option value="Facção" ${selCat==='Facção'?'selected':''}>Facção</option>
+            <option value="Reino" ${selCat==='Reino'?'selected':''}>Reino</option>
+            <option value="Família" ${selCat==='Família'?'selected':''}>Família</option>
+            <option value="NPC" ${selCat==='NPC'?'selected':''}>NPC</option>
+            <option value="Aliado" ${selCat==='Aliado'?'selected':''}>Aliado</option>
+            <option value="Inimigo" ${selCat==='Inimigo'?'selected':''}>Inimigo</option>
+            <option value="Contato" ${selCat==='Contato'?'selected':''}>Contato</option>
+          </select>
+        </div>
+        <div style="flex: 1;">
+          <label class="field-label">Status</label>
+          <select class="contato-status" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); color: var(--text-light); padding: 5px;">
+            <option value="Aliado" ${selStatus==='Aliado'?'selected':''}>Aliado</option>
+            <option value="Amigável" ${selStatus==='Amigável'?'selected':''}>Amigável</option>
+            <option value="Neutro" ${selStatus==='Neutro'?'selected':''}>Neutro</option>
+            <option value="Hostil" ${selStatus==='Hostil'?'selected':''}>Hostil</option>
+            <option value="Inimigo" ${selStatus==='Inimigo'?'selected':''}>Inimigo</option>
+            <option value="Desaparecido" ${selStatus==='Desaparecido'?'selected':''}>Desaparecido</option>
+            <option value="Morto" ${selStatus==='Morto'?'selected':''}>Morto</option>
+          </select>
+        </div>
+      </div>
+      <div class="spell-top" style="margin-top: 10px;">
+        <div style="flex: 1;">
+          <label class="field-label">Relação com o Personagem</label>
+          <input type="text" class="contato-relacao" value="${esc(d.relacao)}" placeholder="Mestre, Devedor, Inimigo mortal...">
+        </div>
+      </div>
+      <div class="spell-desc" style="margin-top: 10px;">
+        <label class="field-label">Descrição / Observações</label>
+        <textarea class="contato-desc" placeholder="Anotações sobre este contato...">${esc(d.desc)}</textarea>
+      </div>
+    `;
+    container.appendChild(card);
+    saveData();
+  };
+
+  window.removeContatoCard = function (btn) {
+    const card = btn.closest('.spell-card');
+    if (card) {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(-10px)';
+      card.style.transition = 'all 0.3s ease';
+      setTimeout(() => {
+        card.remove();
+        saveData();
+      }, 300);
+    }
+  };
+
+  function collectContatos() {
+    const contatos = [];
+    const container = document.getElementById('contatos-container');
+    if (!container) return contatos;
+
+    container.querySelectorAll('.spell-card').forEach(card => {
+      const nomeEl = card.querySelector('.contato-nome');
+      if (nomeEl) {
+        contatos.push({
+          nome: nomeEl.value,
+          categoria: card.querySelector('.contato-categoria')?.value || '',
+          status: card.querySelector('.contato-status')?.value || '',
+          relacao: card.querySelector('.contato-relacao')?.value || '',
+          desc: card.querySelector('.contato-desc')?.value || ''
+        });
+      }
+    });
+    return contatos;
+  }
 
   /* ==========================================================
      INVENTÃRIO â€” Espaços de Itens (Slots)
