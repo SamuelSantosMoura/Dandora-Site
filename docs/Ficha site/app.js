@@ -883,6 +883,7 @@
     const card = document.createElement('div');
     card.className = 'spell-card magia-card';
     card.innerHTML = `
+      <button class="spell-share" onclick="shareSpellCard(this)" title="Compartilhar no Chat"><i class="fa-solid fa-share-nodes"></i></button>
       <button class="spell-remove" onclick="removeSpellCard(this)" title="Remover magia">✕</button>
       <div class="spell-top">
         <div>
@@ -1037,7 +1038,8 @@
     const card = document.createElement('div');
     card.className = 'spell-card';
     card.innerHTML = `
-      <button class="spell-remove" onclick="removeHabilidadeCard(this)" title="Remover habilidade">âœ•</button>
+      <button class="spell-share" onclick="shareHabilidadeCard(this)" title="Compartilhar no Chat"><i class="fa-solid fa-share-nodes"></i></button>
+      <button class="spell-remove" onclick="removeHabilidadeCard(this)" title="Remover habilidade">✕</button>
       <div class="spell-top">
         <div style="flex: 2;">
           <label class="field-label">Nome da Habilidade</label>
@@ -1202,7 +1204,7 @@
   }
 
   /* ==========================================================
-     INVENTÃRIO â€” Espaços de Itens (Slots)
+     INVENTÁRIO — Espaços de Itens (Slots)
   ========================================================== */
   window.addItem = function (data) {
     const list = document.getElementById('items-list');
@@ -1222,7 +1224,7 @@
         <input type="number" class="item-qty" value="${d.quantidade !== undefined ? d.quantidade : 1}" min="1" max="99">
       </div>
       <span class="item-slot-total"></span>
-      <button class="btn small danger item-remove-btn" onclick="removeItem(this)" title="Remover item">âœ•</button>
+      <button class="btn small danger item-remove-btn" onclick="removeItem(this)" title="Remover item">✕</button>
     `;
     list.appendChild(row);
 
@@ -1290,6 +1292,57 @@
   window.updateContainerSlots = function () {
     updateSlots();
     saveData();
+  };
+
+  /* ==========================================================
+     LÓGICA DE COMPARTILHAMENTO DE HABILIDADES/MAGIAS
+  ========================================================== */
+  function getInputValue(card, labelText) {
+    const labels = card.querySelectorAll('.field-label');
+    for (let i = 0; i < labels.length; i++) {
+        if (labels[i].textContent.includes(labelText)) {
+            const input = labels[i].nextElementSibling;
+            if (input && (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA')) {
+                return input.value.trim();
+            }
+        }
+    }
+    return '';
+  }
+
+  window.shareSpellCard = function(btn) {
+      const card = btn.closest('.spell-card');
+      if (!card) return;
+      const name = getInputValue(card, 'Nome da Magia') || 'Magia Desconhecida';
+      const cost = getInputValue(card, 'PA Base') || '';
+      const range = getInputValue(card, 'Alcance') || '';
+      const duration = getInputValue(card, 'Duração') || '';
+      const castTime = getInputValue(card, 'Execução') || '';
+      const desc = getInputValue(card, 'Dano / Efeito') || '';
+      
+      window.parent.postMessage({
+          type: 'DANDORA_CHAT_MSG',
+          payload: {
+              type: 'skill_share',
+              content: JSON.stringify({ name, cost: cost ? cost + ' PA' : '', range, duration, castTime, desc })
+          }
+      }, '*');
+  };
+
+  window.shareHabilidadeCard = function(btn) {
+      const card = btn.closest('.spell-card');
+      if (!card) return;
+      const name = getInputValue(card, 'Nome da Habilidade') || 'Habilidade Desconhecida';
+      const cost = getInputValue(card, 'Custo (PA)') || '';
+      const desc = getInputValue(card, 'Descrição') || '';
+      
+      window.parent.postMessage({
+          type: 'DANDORA_CHAT_MSG',
+          payload: {
+              type: 'skill_share',
+              content: JSON.stringify({ name, cost: cost ? cost + ' PA' : '', desc })
+          }
+      }, '*');
   };
 
   /* ==========================================================
@@ -1657,7 +1710,9 @@
         type: 'roll',
         content: JSON.stringify({
           title: rollData.title,
-          detail: `Dado: ${rollData.rolls[rollData.winningIndex]} | Bônus: ${rollData.bonus > 0 ? '+' : ''}${rollData.bonus}`,
+          detail: `Bônus Aplicado: ${rollData.bonus > 0 ? '+' : ''}${rollData.bonus}`,
+          formula: `${rollData.rolls.length}d20${rollData.bonus !== 0 ? (rollData.bonus > 0 ? '+' + rollData.bonus : rollData.bonus) : ''}`,
+          diceStr: rollData.rolls.join(', '),
           result: rollData.finalResult,
           naturalRoll: rollData.rolls[rollData.winningIndex],
           isCritSuccess: rollData.isCritSuccess,
@@ -1976,3 +2031,44 @@
       }
     }
   });
+
+  // --- Rastreamento de Consumo de Recursos ---
+  function initResourceTrackers() {
+    let lastPV = parseInt(document.getElementById('pv-atual')?.value) || 0;
+    let lastPA = parseInt(document.getElementById('pa-atual')?.value) || 0;
+
+    const pvInput = document.getElementById('pv-atual');
+    if (pvInput) {
+      pvInput.addEventListener('blur', () => {
+        let currentPV = parseInt(pvInput.value) || 0;
+        if (currentPV < lastPV) {
+          const diff = lastPV - currentPV;
+          const charName = val('nome') || 'Personagem Desconhecido';
+          window.parent.postMessage({
+            type: 'DANDORA_CHAT_MSG',
+            payload: { type: 'system', content: `${charName} perdeu ${diff} Pontos de Vida (PV).` }
+          }, '*');
+        }
+        lastPV = currentPV;
+      });
+    }
+
+    const paInput = document.getElementById('pa-atual');
+    if (paInput) {
+      paInput.addEventListener('blur', () => {
+        let currentPA = parseInt(paInput.value) || 0;
+        if (currentPA < lastPA) {
+          const diff = lastPA - currentPA;
+          const charName = val('nome') || 'Personagem Desconhecido';
+          window.parent.postMessage({
+            type: 'DANDORA_CHAT_MSG',
+            payload: { type: 'system', content: `${charName} consumiu ${diff} Pontos de Ação (PA).` }
+          }, '*');
+        }
+        lastPA = currentPA;
+      });
+    }
+  }
+
+  // Inicializar listeners após o DOM carregar
+  setTimeout(initResourceTrackers, 1000); // Aguardar o loadData() preencher os valores

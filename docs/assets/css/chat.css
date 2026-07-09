@@ -1,27 +1,34 @@
 /* ==============================================
    CHAT GERAL (GLOBAL)
    ============================================== */
-.chat-container {
+.chat-sidebar {
     position: fixed;
-    right: 20px;
-    bottom: 20px;
-    width: 350px;
-    height: 500px;
-    background: rgba(15, 15, 20, 0.95);
-    border: 1px solid var(--gold-dim);
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    right: 0;
+    top: 0;
+    width: 380px;
+    height: 100vh;
+    background: rgba(15, 15, 20, 0.98);
+    border-left: 1px solid var(--gold-dim);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8);
     display: flex;
     flex-direction: column;
     z-index: 10000;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
-    backdrop-filter: blur(10px);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    backdrop-filter: blur(15px);
 }
 
-.chat-container.closed {
-    transform: translateY(120%) scale(0.9);
-    opacity: 0;
+.chat-sidebar.closed {
+    transform: translateX(100%);
     pointer-events: none;
+}
+
+.chat-filters {
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .chat-header {
@@ -105,56 +112,109 @@
 }
 
 .chat-roll-card {
-    background: linear-gradient(135deg, rgba(138,3,3,0.2), rgba(194,8,8,0.2));
-    border: 1px solid #ff4d4d;
-    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(30,30,40,0.8), rgba(20,20,30,0.9));
+    border: 1px solid var(--gold-dim);
+    border-left: 4px solid var(--gold-primary);
+    padding: 12px 14px;
     border-radius: 8px;
-    min-width: 200px;
-    text-align: center;
+    min-width: 250px;
+    text-align: left;
 }
 
 .chat-roll-title {
     font-family: var(--font-epic);
-    color: #ffcccc;
-    font-size: 0.9rem;
+    color: var(--gold-light);
+    font-size: 1rem;
     margin-bottom: 5px;
+    font-weight: bold;
 }
 
 .chat-roll-detail {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    color: var(--text-muted);
     margin-bottom: 8px;
+}
+
+.chat-roll-formula {
     font-family: monospace;
+    font-size: 0.8rem;
+    color: #aaccff;
+    background: rgba(0,0,0,0.5);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    display: inline-block;
 }
 
 .chat-roll-final {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: white;
-    text-shadow: 0 0 10px red;
+    font-size: 1.4rem;
+    font-family: var(--font-epic);
+    color: var(--text-light);
+    margin-top: 5px;
+}
+
+.crit-success-glow {
+    border-left-color: #3498db;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
+}
+.crit-fail-glow {
+    border-left-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
 }
 
 .chat-skill-card {
-    background: linear-gradient(135deg, rgba(60,110,210,0.2), rgba(100,150,250,0.1));
-    border: 1px solid #78a4f5;
+    background: linear-gradient(135deg, rgba(60,110,210,0.1), rgba(100,150,250,0.05));
+    border: 1px solid rgba(100,150,250,0.3);
+    border-left: 4px solid #78a4f5;
     padding: 12px;
     border-radius: 8px;
-    min-width: 220px;
+    min-width: 250px;
 }
 
 .chat-skill-title {
     font-family: var(--font-epic);
     color: #aaccff;
-    font-size: 0.95rem;
-    margin-bottom: 5px;
+    font-size: 1.05rem;
+    margin-bottom: 8px;
     font-weight: bold;
+}
+
+.chat-skill-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.skill-tag {
+    background: rgba(0,0,0,0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--gold-dim);
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .chat-skill-desc {
     font-size: 0.85rem;
     color: var(--text-light);
-    line-height: 1.4;
+    line-height: 1.5;
     white-space: pre-wrap;
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.chat-system-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-style: italic;
+    margin: 5px 0;
 }
 
 .chat-input-area {

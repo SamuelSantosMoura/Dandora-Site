@@ -351,7 +351,7 @@ window.onerror = function(msg, url, line, col, error) {
                 <ul class="sidebar-menu">
                     <li class="pt-tab active" onclick="switchPlayerTab('pt-sheet')"><i class="fa-solid fa-file-signature"></i> Minha Ficha</li>
                     <li class="pt-tab" onclick="switchPlayerTab('pt-notes')"><i class="fa-solid fa-feather"></i> Anotações da Campanha</li>
-                    <li class="pt-tab" onclick="switchPlayerTab('pt-history')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Rolagens</li>
+                    <!-- Aba do histórico de rolagens foi removida (unificada no chat) -->
                 </ul>
             </aside>
             <div class="dashboard-content glass-panel" style="padding: 2rem; border-radius: 8px;">
@@ -390,29 +390,6 @@ window.onerror = function(msg, url, line, col, error) {
                     <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas anotações pessoais. Apenas você tem acesso.</p>
                     <textarea id="pt-notes-area" style="width: 100%; height: 500px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1.5rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6; font-size: 1.1rem;" oninput="savePlayerNotes()" placeholder="Escreva aqui detalhes sobre NPCs, missões ativas, pistas e eventos importantes..."></textarea>
                 </div>
-
-                <!-- TAB: HISTORY -->
-                <div id="pt-history" class="pt-content hidden">
-                    <div class="dashboard-header" style="margin-bottom:1.8rem;">
-                        <div>
-                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">HISTÓRICO DA MESA</h2>
-                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Visualize todas as rolagens e habilidades usadas na sessão</p>
-                        </div>
-                    </div>
-                    
-                    <div class="table-card" style="display:flex; gap:15px; margin-bottom:20px; align-items:center; flex-wrap:wrap;">
-                        <input type="text" id="pt-history-search" class="input-modern" placeholder="Buscar por habilidade ou magia..." style="flex:1; min-width:200px;" oninput="onHistoryFilterChange()">
-                        <select id="pt-history-player" class="input-modern" style="min-width:180px;" onchange="onHistoryFilterChange()">
-                            <option value="all">Todos os Jogadores</option>
-                        </select>
-                    </div>
-
-                    <div id="pt-history-list" style="overflow-y:auto; max-height:600px; padding-right:10px;">
-                        <!-- Rolagens injetadas via JS -->
-                        <div style="text-align: center; color: var(--text-muted); margin-top: 2rem;">Carregando histórico...</div>
-                    </div>
-                </div>
-
             </div>
         </section>
 
@@ -506,7 +483,6 @@ window.onerror = function(msg, url, line, col, error) {
                     <li class="tm-tab" onclick="switchTableTab('tm-sessions')"><i class="fa-solid fa-calendar-days"></i> Sessões</li>
                     
                     <div style="margin: 1.5rem 0 0.5rem 1.5rem; font-family: var(--font-epic); font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.1em; text-transform: uppercase;">Ferramentas do Mestre</div>
-                    <li class="tm-tab" onclick="switchTableTab('tm-history')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Rolagens</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-npc')"><i class="fa-solid fa-id-card"></i> Gerador de NPC</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-iniciativa')"><i class="fa-solid fa-bolt"></i> Iniciativa</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-eventos')"><i class="fa-solid fa-dice"></i> Eventos</li>
@@ -540,11 +516,12 @@ window.onerror = function(msg, url, line, col, error) {
                                 <h3 style="margin: 0; font-family: var(--font-epic); color: var(--gold-primary); font-size: 1.1rem;">🎲 Rolagens na Mesa</h3>
                                 <button class="btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="clearMasterRollHistory()" title="Limpar histórico"><i class="fa-solid fa-trash"></i></button>
                             </div>
-                            <div style="margin-bottom: 1rem;">
-                                <select id="roll-filter" class="attr-input" style="width: 100%; padding: 0.5rem;" onchange="renderMasterRolls()">
-                                    <option value="all">Filtro: Todas as Rolagens</option>
-                                    <option value="simple">Testes (Atributos e Perícias)</option>
-                                    <option value="complex">Rolagens Complexas (Dano/Magias)</option>
+                            <div style="display: flex; gap: 5px; margin-bottom: 1rem;">
+                                <input type="text" id="roll-search" placeholder="Buscar..." class="input-modern" style="flex: 1;" oninput="renderMasterRolls()">
+                                <select id="roll-filter" class="input-modern" style="width: 120px;" onchange="renderMasterRolls()">
+                                    <option value="all">Tipo: Tudo</option>
+                                    <option value="simple">Testes</option>
+                                    <option value="complex">Dano/Magias</option>
                                 </select>
                             </div>
                             <div id="master-roll-history" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;">
@@ -634,27 +611,6 @@ window.onerror = function(msg, url, line, col, error) {
                         <tbody id="listBody"></tbody>
                       </table>
                     </section>
-                </div>
-
-                <!-- TAB: HISTORY (Mestre) -->
-                <div id="tm-history" class="tm-content hidden">
-                    <div class="dashboard-header" style="margin-bottom:1.8rem;">
-                        <div>
-                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">HISTÓRICO DE ROLAGENS</h2>
-                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Visualize e filtre todas as rolagens e habilidades usadas pelos jogadores</p>
-                        </div>
-                    </div>
-                    
-                    <div class="table-card" style="display:flex; gap:15px; margin-bottom:20px; align-items:center; flex-wrap:wrap;">
-                        <input type="text" id="tm-history-search" class="input-modern" placeholder="Buscar por habilidade ou magia..." style="flex:1; min-width:200px;" oninput="onHistoryFilterChange()">
-                        <select id="tm-history-player" class="input-modern" style="min-width:180px;" onchange="onHistoryFilterChange()">
-                            <option value="all">Todos os Jogadores</option>
-                        </select>
-                    </div>
-
-                    <div id="tm-history-list" style="overflow-y:auto; max-height:700px; padding-right:10px;">
-                        <div style="text-align: center; color: var(--text-muted); margin-top: 2rem;">Carregando histórico...</div>
-                    </div>
                 </div>
 
                 <!-- TAB: EVENTOS -->
@@ -1156,14 +1112,31 @@ Altura     Dano
     <!-- ============================================== -->
     <!-- CHAT GERAL (GLOBAL)                            -->
     <!-- ============================================== -->
-    <div id="dandora-chat-container" class="chat-container closed">
-        <div class="chat-header" onclick="toggleGlobalChat()">
-            <h3><i class="fa-solid fa-comments"></i> Chat Geral</h3>
+    <div id="dandora-chat-container" class="chat-sidebar closed">
+        <div class="chat-header">
+            <h3><i class="fa-solid fa-comments"></i> Chat & Histórico</h3>
             <div style="display:flex; gap:10px; align-items:center;">
                 <span id="chat-unread-badge" class="chat-badge" style="display:none;">0</span>
-                <button class="btn-outline small chat-close-btn"><i class="fa-solid fa-chevron-down"></i></button>
+                <button class="btn-outline small chat-close-btn" onclick="toggleGlobalChat()"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
+        
+        <div class="chat-filters">
+            <input type="text" id="chat-search" class="input-modern" placeholder="Pesquisar..." oninput="filterChatMessages()">
+            <div style="display:flex; gap:5px;">
+                <select id="chat-filter-player" class="input-modern" style="flex:1; padding: 0.5rem;" onchange="filterChatMessages()">
+                    <option value="all">Todos os Jogadores</option>
+                </select>
+                <select id="chat-filter-type" class="input-modern" style="flex:1; padding: 0.5rem;" onchange="filterChatMessages()">
+                    <option value="all">Todos os Tipos</option>
+                    <option value="text">Mensagens</option>
+                    <option value="roll">Rolagens</option>
+                    <option value="skill">Habilidades/Magias</option>
+                    <option value="system">Sistema</option>
+                </select>
+            </div>
+        </div>
+
         <div id="chat-messages" class="chat-messages">
             <div class="chat-placeholder">Conectando ao chat da mesa...</div>
         </div>
@@ -1198,7 +1171,6 @@ Altura     Dano
     <script src="assets/js/dados.js?v=8"></script>
     <script src="assets/js/missoes.js?v=8"></script>
     <script src="assets/js/sessoes.js?v=8"></script>
-    <script src="assets/js/chat.js?v=6"></script>
-    <script src="assets/js/historico-rolagens.js?v=4"></script>
+    <script src="assets/js/chat.js?v=7"></script>
 </body>
 </html>
