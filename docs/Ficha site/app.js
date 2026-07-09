@@ -191,6 +191,32 @@
       history: window.rollHistory || [],
       customFavorites: window.customFavorites || []
     };
+
+    const armasExoticas = [];
+    document.querySelectorAll('.arma-exotica-row').forEach(row => {
+      const inputs = row.querySelectorAll('input[type="text"]');
+      if (inputs[0].value.trim() !== '') {
+        armasExoticas.push(inputs[0].value.trim());
+      }
+    });
+    data.armasExoticas = armasExoticas.join(', ');
+
+    // Coletar Ofícios Dinâmicos
+    const oficios = [];
+    document.querySelectorAll('.oficio-row').forEach(row => {
+        const spec = row.querySelector('.oficio-select')?.value || 'Forja';
+        const bonus = row.querySelector('.skill-bonus')?.value || '';
+        oficios.push({ spec, bonus });
+    });
+    data.oficios = oficios;
+
+    // Coletar Atributo de Arcanismo
+    const arcanismoSelect = document.querySelector('.skill-row[data-skill="arcanismo"] .skill-attr-select');
+    if (arcanismoSelect) {
+        data.arcanismoAttr = arcanismoSelect.value;
+    }
+
+    return data;
   }
 
   function collectSkills() {
@@ -411,6 +437,33 @@
       }
     }
 
+    // Armas Exóticas
+    if (data.armasExoticas) {
+        const list = data.armasExoticas.split(', ');
+        const container = document.getElementById('armas-exoticas-container');
+        if (container) {
+          container.innerHTML = '';
+          list.forEach(arma => {
+            if (arma) addArmaExoticaRow({ nome: arma });
+          });
+        }
+    }
+
+    // Ofícios
+    const oficiosContainer = document.getElementById('oficios-container');
+    if (oficiosContainer) {
+        oficiosContainer.innerHTML = '';
+        if (Array.isArray(data.oficios) && data.oficios.length > 0) {
+            data.oficios.forEach(ofc => addOficioRow(ofc));
+        }
+    }
+
+    // Arcanismo Attr
+    const arcanismoSelect = document.querySelector('.skill-row[data-skill="arcanismo"] .skill-attr-select');
+    if (arcanismoSelect && data.arcanismoAttr) {
+        arcanismoSelect.value = data.arcanismoAttr;
+    }
+
     // Inventário
     setVal('container-type', data.container_type);
     setVal('moedas-bronze', data.moedas_bronze);
@@ -461,7 +514,6 @@
       setVal('prof-armas-simples', data.proficiencias.armasSimples);
       setVal('prof-armas-marciais', data.proficiencias.armasMarciais);
       setVal('prof-armas-fogo', data.proficiencias.armasFogo);
-      setVal('prof-armas-exoticas', data.proficiencias.armasExoticas);
       setVal('prof-armaduras-leves', data.proficiencias.armadurasLeves);
       setVal('prof-armaduras-medias', data.proficiencias.armadurasMedias);
       setVal('prof-armaduras-pesadas', data.proficiencias.armadurasPesadas);
@@ -725,7 +777,7 @@
       <td><input type="text" value="${esc(d.tipo)}" placeholder="Cortante"></td>
       <td><input type="text" value="${esc(d.alcance)}" placeholder="1,5m"></td>
       <td class="col-actions">
-        <button class="btn small danger" onclick="removeAttackRow(this)" title="Remover ataque">âœ•</button>
+        <button class="btn small danger" onclick="removeAttackRow(this)" title="Remover ataque">✕</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -743,6 +795,79 @@
         saveData();
       }, 300);
     }
+  };
+
+  /* ==========================================================
+     OFÍCIOS DINÂMICOS
+  ========================================================== */
+  window.addOficioRow = function(data) {
+    const container = document.getElementById('oficios-container');
+    if (!container) return;
+
+    const d = data || {};
+    const selSpec = d.spec || 'Forja';
+    
+    const row = document.createElement('div');
+    row.className = 'skill-row oficio-row';
+    row.style.background = 'rgba(0,0,0,0.2)';
+    row.style.marginBottom = '5px';
+    row.style.paddingLeft = '5px';
+    row.style.borderLeft = '2px solid var(--gold-dim)';
+    
+    row.innerHTML = `
+      <button class="btn-outline danger" style="padding: 2px 6px; font-size:0.7rem; border-color:var(--danger); color:var(--danger);" onclick="removeOficioRow(this)" title="Remover Ofício">✕</button>
+      <span class="skill-name" style="display:flex; align-items:center; gap:5px; flex:1;">
+        Ofício 
+        <select class="oficio-select" onchange="saveData()" style="background:rgba(0,0,0,0.5); border:1px solid var(--gold-dim); color:var(--text-light); font-size:0.75rem; border-radius:3px; padding:2px;">
+            <option value="Forja" ${selSpec==='Forja'?'selected':''}>Forja [For]</option>
+            <option value="Veneno" ${selSpec==='Veneno'?'selected':''}>Veneno [Int]</option>
+            <option value="Pescaria" ${selSpec==='Pescaria'?'selected':''}>Pescaria [Des]</option>
+            <option value="Alquimia" ${selSpec==='Alquimia'?'selected':''}>Alquimia [Int]</option>
+            <option value="Destilação" ${selSpec==='Destilação'?'selected':''}>Destilação [Int]</option>
+            <option value="Cartografia" ${selSpec==='Cartografia'?'selected':''}>Cartografia [Int]</option>
+            <option value="Alfaiataria" ${selSpec==='Alfaiataria'?'selected':''}>Alfaiataria [Des]</option>
+            <option value="Culinária" ${selSpec==='Culinária'?'selected':''}>Culinária [Von]</option>
+            <option value="Pintura" ${selSpec==='Pintura'?'selected':''}>Pintura/Desenho [Car]</option>
+            <option value="Artesanato" ${selSpec==='Artesanato'?'selected':''}>Artesanato [Des]</option>
+            <option value="Armeiro" ${selSpec==='Armeiro'?'selected':''}>Armeiro [For]</option>
+        </select>
+      </span>
+      <input type="text" placeholder="—" class="skill-bonus" value="${esc(d.bonus)}" oninput="saveData()">
+      <button type="button" class="btn-roll" onclick="rollOficio(this)" title="Rolar">🎲</button>
+    `;
+    
+    container.appendChild(row);
+    saveData();
+  };
+
+  window.removeOficioRow = function(btn) {
+    const row = btn.closest('.oficio-row');
+    if (row) {
+        row.remove();
+        saveData();
+    }
+  };
+
+  window.rollOficio = function(btn) {
+    const row = btn.closest('.oficio-row');
+    const select = row.querySelector('.oficio-select');
+    const bonusInput = row.querySelector('.skill-bonus');
+    const bonus = parseInt(bonusInput ? bonusInput.value : 0) || 0;
+    
+    const spec = select ? select.value : 'Desconhecido';
+    
+    // Mapeamento de atributos de Ofício
+    const specAttrMap = {
+        'Forja': 'For', 'Veneno': 'Int', 'Pescaria': 'Des', 'Alquimia': 'Int',
+        'Destilação': 'Int', 'Cartografia': 'Int', 'Alfaiataria': 'Des',
+        'Culinária': 'Von', 'Pintura': 'Car', 'Artesanato': 'Des', 'Armeiro': 'For'
+    };
+    
+    const attrText = specAttrMap[spec] || 'Int';
+    const mapped = attrMap[attrText];
+    const attrValue = mapped ? parseInt(val('attr-' + mapped.id)) || 0 : 0;
+    
+    executeRoll(`Ofício (${spec}) [${mapped ? mapped.name : attrText}]`, attrValue, bonus, `Rolagem de Ofício`);
   };
 
   /* ==========================================================
@@ -1325,10 +1450,16 @@
   window.rollSkill = function(btn, skillName) {
     const row = btn.closest('.skill-row');
     const attrSpan = row.querySelector('.skill-attr');
+    const attrSelect = row.querySelector('.skill-attr-select');
     const bonusInput = row.querySelector('.skill-bonus');
     const bonus = parseInt(bonusInput ? bonusInput.value : 0) || 0;
     
-    let attrText = attrSpan ? attrSpan.textContent.replace('[', '').replace(']', '') : '';
+    let attrText = '';
+    if (attrSelect) {
+        attrText = attrSelect.value;
+    } else if (attrSpan) {
+        attrText = attrSpan.textContent.replace('[', '').replace(']', '');
+    }
     
     if (attrText === 'For/Des' || attrText === '') {
       // Perícia dúbia ou sem atributo -> abrir modal

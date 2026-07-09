@@ -165,9 +165,16 @@
               <button type="button" class="btn-roll" onclick="rollSkill(this, 'Acrobacia')" title="Rolar">🎲</button>
             </div>
             <div class="skill-row" data-skill="arcanismo">
-              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
-              <span class="skill-name">Arcanismo <span class="skill-attr">[Car]</span></span>
-              <input type="text" placeholder="—" class="skill-bonus">
+              <label class="checkbox-wrapper"><input type="checkbox" onchange="saveData()"><span class="checkbox-mark"></span></label>
+              <span class="skill-name" style="display:flex; align-items:center; gap:5px;">
+                Arcanismo 
+                <select class="skill-attr-select" onchange="saveData()" style="background:rgba(0,0,0,0.5); border:1px solid var(--gold-dim); color:var(--gold-light); font-size:0.75rem; border-radius:3px;">
+                    <option value="Int">Int</option>
+                    <option value="Von">Von</option>
+                    <option value="Car">Car</option>
+                </select>
+              </span>
+              <input type="text" placeholder="—" class="skill-bonus" oninput="saveData()">
               <button type="button" class="btn-roll" onclick="rollSkill(this, 'Arcanismo')" title="Rolar">🎲</button>
             </div>
             <div class="skill-row" data-skill="armas-arco">
@@ -296,12 +303,7 @@
               <input type="text" placeholder="—" class="skill-bonus">
               <button type="button" class="btn-roll" onclick="rollSkill(this, 'Ocultismo')" title="Rolar">🎲</button>
             </div>
-            <div class="skill-row" data-skill="oficio">
-              <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
-              <span class="skill-name">Ofício <span class="skill-attr">[For/Des]</span></span>
-              <input type="text" placeholder="—" class="skill-bonus">
-              <button type="button" class="btn-roll" onclick="rollSkill(this, 'Ofício')" title="Rolar">🎲</button>
-            </div>
+
             <div class="skill-row" data-skill="percepcao">
               <label class="checkbox-wrapper"><input type="checkbox"><span class="checkbox-mark"></span></label>
               <span class="skill-name">Percepção <span class="skill-attr">[Von]</span></span>
@@ -350,6 +352,16 @@
               <input type="text" placeholder="—" class="skill-bonus">
               <button type="button" class="btn-roll" onclick="rollSkill(this, 'Usar Bibliotecas')" title="Rolar">🎲</button>
             </div>
+            
+            <!-- Ofícios Dinâmicos -->
+            <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="font-family:'Cinzel',serif; color:var(--gold-dim); font-size:0.85rem; letter-spacing:0.05em;">OFÍCIOS ESPECIALIZADOS</span>
+                <button type="button" class="btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="addOficioRow()">+ Adicionar</button>
+              </div>
+              <div id="oficios-container"></div>
+            </div>
+
           </div>
           
           <div class="attacks-section">
