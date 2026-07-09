@@ -243,7 +243,18 @@ window.addEventListener('message', function(e) {
     }
 });
 
-// Hooks na navegação (app2.js dispara estes eventos)
-// Precisamos interceptar quando a mesa é aberta ou fechada.
-// Uma maneira fácil é observar o currentView ou injetar no app2.js.
-// O plano inclui chamar initChatForTable na inicialização da view da mesa.
+// Escuta atualizações do Firebase Sync para reconectar o chat se o ID da mesa tiver sido atualizado
+window.addEventListener('dandoraDataSync', () => {
+    let tid = null;
+    if (typeof getActiveTableId === 'function') {
+        tid = getActiveTableId();
+    } else {
+        tid = typeof currentTableId !== 'undefined' ? currentTableId : null;
+    }
+    
+    if (tid && tid !== currentChatTableId) {
+        if (typeof initChatForTable === 'function') {
+            initChatForTable(tid);
+        }
+    }
+});

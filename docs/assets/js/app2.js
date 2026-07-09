@@ -1490,16 +1490,25 @@ function getActiveTableId() {
                     return globalTable.tableId;
                 }
                 
-                // Fallback 2: Tenta recuperar direto da lista de mesas do mestre (que foi sincronizada pelo Firebase)
-                if (pTable.masterEmail) {
-                    const masterTables = JSON.parse(localStorage.getItem(`dandora_tables_${pTable.masterEmail}`)) || [];
-                    const mTable = masterTables.find(t => t.code === pTable.code);
-                    if (mTable) {
-                        pTable.masterTableId = mTable.id;
-                        localStorage.setItem(tablesKey, JSON.stringify(playerTables));
-                        return mTable.id;
+                // Fallback 3: Busca bruta em TODAS as mesas de mestres salvas no localStorage (baixadas pelo Firebase)
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('dandora_tables_')) {
+                        try {
+                            const masterTables = JSON.parse(localStorage.getItem(key)) || [];
+                            const mTable = masterTables.find(t => t.code === pTable.code);
+                            if (mTable) {
+                                pTable.masterTableId = mTable.id;
+                                pTable.masterEmail = key.replace('dandora_tables_', '');
+                                localStorage.setItem(tablesKey, JSON.stringify(playerTables));
+                                return mTable.id;
+                            }
+                        } catch(e) {}
                     }
                 }
+                
+                // Se tudo falhar, tenta usar o próprio código da mesa como ID para que o chat pelo menos abra
+                if (pTable.code) return pTable.code;
             }
         }
     }

@@ -198,7 +198,14 @@ window.addEventListener('dandoraDataSync', () => {
     } else {
         tid = typeof currentTableId !== 'undefined' ? currentTableId : null;
     }
+    
     if (tid) {
-        renderHistoryView();
+        // Se o ID da mesa tiver sido atualizado (ex: o sync do firebase finalmente trouxe o ID do mestre), reinicia a escuta!
+        if (historyRef && historyRef.key !== `dandora_chat_${tid}`) {
+            initHistoryForTable(tid);
+            populateHistoryPlayerSelect(tid);
+        } else {
+            renderHistoryView();
+        }
     }
 });
