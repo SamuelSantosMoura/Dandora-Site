@@ -1554,6 +1554,14 @@
     const d20Result = rolls[winningIndex];
     const finalResult = d20Result + bonus;
     
+    // Calcular Críticos de acordo com as regras:
+    // 20 Natural tem prioridade máxima. 1 Natural é falha se não houver 20.
+    const hasNat20 = rolls.includes(20);
+    const hasNat1 = rolls.includes(1);
+    
+    const isCritSuccess = hasNat20;
+    const isCritFail = hasNat1 && !hasNat20;
+    
     // Criar elementos de dado na arena
     const diceElements = [];
     rolls.forEach((r, idx) => {
@@ -1575,18 +1583,33 @@
         
         if (idx === winningIndex) {
           die.classList.add('winner');
-          if (rolls[idx] === 20) die.classList.add('crit-success');
-          if (rolls[idx] === 1) die.classList.add('crit-fail');
         } else {
           die.classList.add('loser');
         }
+        
+        // Mantém a cor do dado específica caso ele seja o 20 ou 1
+        if (rolls[idx] === 20) die.classList.add('crit-success');
+        if (rolls[idx] === 1 && !isCritSuccess) die.classList.add('crit-fail');
       });
       
       // Mostrar resultado final
-      document.getElementById('roller-final-value').textContent = finalResult;
+      const finalValueEl = document.getElementById('roller-final-value');
+      finalValueEl.textContent = finalResult;
+      
+      // Adicionar animação e brilho
+      finalValueEl.classList.remove('crit-success-glow', 'crit-fail-glow');
       
       let calcStr = `Dado: ${d20Result}`;
       if (bonus !== 0) calcStr += ` ${bonus > 0 ? '+' : ''}${bonus} (Bônus)`;
+      
+      if (isCritSuccess) {
+        finalValueEl.classList.add('crit-success-glow');
+        calcStr += ' | ✨ Acerto Crítico!';
+      } else if (isCritFail) {
+        finalValueEl.classList.add('crit-fail-glow');
+        calcStr += ' | 💥 Falha Crítica!';
+      }
+      
       document.getElementById('roller-calculation').textContent = calcStr;
       
       resultPanel.classList.add('show');
@@ -1598,7 +1621,9 @@
         rolls: rolls,
         winningIndex: winningIndex,
         bonus: bonus,
-        finalResult: finalResult
+        finalResult: finalResult,
+        isCritSuccess: isCritSuccess,
+        isCritFail: isCritFail
       });
       
     }, 1500);
@@ -1634,7 +1659,9 @@
           title: rollData.title,
           detail: `Dado: ${rollData.rolls[rollData.winningIndex]} | Bônus: ${rollData.bonus > 0 ? '+' : ''}${rollData.bonus}`,
           result: rollData.finalResult,
-          naturalRoll: rollData.rolls[rollData.winningIndex]
+          naturalRoll: rollData.rolls[rollData.winningIndex],
+          isCritSuccess: rollData.isCritSuccess,
+          isCritFail: rollData.isCritFail
         })
       }
     }, '*');
@@ -1656,6 +1683,10 @@
       
       let diceStr = r.rolls.map((v, i) => i === r.winningIndex ? `<b>[${v}]</b>` : v).join(', ');
       
+      let critBadge = '';
+      if (r.isCritSuccess) critBadge = '<span style="color:#2ecc71; font-weight:bold; margin-left:5px;">✨ Crítico!</span>';
+      else if (r.isCritFail) critBadge = '<span style="color:#e74c3c; font-weight:bold; margin-left:5px;">💥 Falha!</span>';
+      
       const item = document.createElement('div');
       item.className = 'history-item';
       item.innerHTML = `
@@ -1664,9 +1695,9 @@
         </div>
         <div class="history-item-title">${esc(r.title)}</div>
         <div class="history-item-calc">
-          ðŸŽ² ${diceStr} ${r.bonus !== 0 ? `| Bônus: ${r.bonus > 0 ? '+' : ''}${r.bonus}` : ''}
+          ðŸŽ² ${diceStr} ${r.bonus !== 0 ? `| Bônus: ${r.bonus > 0 ? '+' : ''}${r.bonus}` : ''} ${critBadge}
         </div>
-        <div class="history-item-result">${r.finalResult}</div>
+        <div class="history-item-result" style="color: ${r.isCritSuccess ? '#2ecc71' : (r.isCritFail ? '#e74c3c' : 'var(--text-light)')}">${r.finalResult}</div>
       `;
       list.appendChild(item);
     });

@@ -92,11 +92,25 @@ function renderChatMessage(msg) {
         let rollData;
         try { rollData = JSON.parse(msg.content); } catch(e) { rollData = msg.content; }
         
+        let critBadge = '';
+        let glowClass = '';
+        let finalColor = 'var(--text-light)';
+        
+        if (rollData.isCritSuccess) {
+            critBadge = '<span style="background:#3498db; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:10px;">✨ Acerto Crítico!</span>';
+            glowClass = 'crit-success-glow';
+            finalColor = '#3498db';
+        } else if (rollData.isCritFail) {
+            critBadge = '<span style="background:#e74c3c; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:10px;">💥 Falha Crítica!</span>';
+            glowClass = 'crit-fail-glow';
+            finalColor = '#e74c3c';
+        }
+
         contentHtml = `
-            <div class="chat-roll-card">
-                <div class="chat-roll-title">${rollData.title}</div>
+            <div class="chat-roll-card ${glowClass}">
+                <div class="chat-roll-title">${rollData.title} ${critBadge}</div>
                 <div class="chat-roll-detail">${rollData.detail}</div>
-                <div class="chat-roll-final">${rollData.result}</div>
+                <div class="chat-roll-final" style="color: ${finalColor};">${rollData.result}</div>
             </div>
         `;
     } else if (msg.type === 'skill') {

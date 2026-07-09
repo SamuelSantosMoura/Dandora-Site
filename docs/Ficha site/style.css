@@ -2543,4 +2543,25 @@ input[type="number"]::-webkit-inner-spin-button {
   letter-spacing: 1px;
 }
 
+/* ============================================== */
+/* CRITICAL ROLL ANIMATIONS                       */
+/* ============================================== */
+@keyframes critSuccessPulse {
+    0% { box-shadow: 0 0 5px #2ecc71; text-shadow: 0 0 5px #2ecc71; color: #2ecc71; }
+    50% { box-shadow: 0 0 25px #2ecc71, inset 0 0 15px rgba(46, 204, 113, 0.4); text-shadow: 0 0 15px #2ecc71, 0 0 25px #2ecc71; color: #58d68d; transform: scale(1.05); }
+    100% { box-shadow: 0 0 5px #2ecc71; text-shadow: 0 0 5px #2ecc71; color: #2ecc71; transform: scale(1); }
+}
 
+@keyframes critFailPulse {
+    0% { box-shadow: 0 0 5px #e74c3c; text-shadow: 0 0 5px #e74c3c; color: #e74c3c; }
+    50% { box-shadow: 0 0 25px #e74c3c, inset 0 0 15px rgba(231, 76, 60, 0.4); text-shadow: 0 0 15px #e74c3c, 0 0 25px #e74c3c; color: #ec7063; transform: scale(0.95); }
+    100% { box-shadow: 0 0 5px #e74c3c; text-shadow: 0 0 5px #e74c3c; color: #e74c3c; transform: scale(1); }
+}
+
+.crit-success-glow {
+    animation: critSuccessPulse 1.5s ease-in-out infinite !important;
+}
+
+.crit-fail-glow {
+    animation: critFailPulse 1.5s ease-in-out infinite !important;
+}

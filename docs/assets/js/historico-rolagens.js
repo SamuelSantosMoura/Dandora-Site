@@ -105,30 +105,35 @@ function renderHistoryView() {
         
         let contentHTML = '';
         if (msg.type === 'roll') {
-            let isCritSuccess = false;
-            let isCritFail = false;
+            let isCritSuccess = msg.parsed.isCritSuccess || false;
+            let isCritFail = msg.parsed.isCritFail || false;
             let resultColor = 'var(--text-light)';
             
-            if (msg.parsed.naturalRoll) {
-                if (msg.parsed.naturalRoll === 20) {
-                    isCritSuccess = true;
-                    resultColor = '#2ecc71'; // Verde
-                } else if (msg.parsed.naturalRoll === 1) {
-                    isCritFail = true;
-                    resultColor = '#e74c3c'; // Vermelho
-                }
+            // Suporte legado para rolagens antigas
+            if (!msg.parsed.hasOwnProperty('isCritSuccess') && msg.parsed.naturalRoll) {
+                if (msg.parsed.naturalRoll === 20) isCritSuccess = true;
+                if (msg.parsed.naturalRoll === 1) isCritFail = true;
             }
             
-            const badge = isCritSuccess ? '<span style="background:#2ecc71; color:#000; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:10px;">CRÍTICO!</span>' 
-                        : (isCritFail ? '<span style="background:#e74c3c; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:10px;">FALHA CRÍTICA!</span>' : '');
+            if (isCritSuccess) resultColor = '#3498db';
+            else if (isCritFail) resultColor = '#e74c3c';
+            
+            const badge = isCritSuccess ? '<span style="background:#3498db; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:10px;">✨ Acerto Crítico!</span>' 
+                        : (isCritFail ? '<span style="background:#e74c3c; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:10px;">💥 Falha Crítica!</span>' : '');
             
             contentHTML = `
                 <div style="font-size:1.05rem; font-weight:bold;">${msg.parsed.title} ${badge}</div>
                 <div style="font-size:0.9rem; color:var(--text-muted);">${msg.parsed.detail}</div>
                 <div style="font-size:1.4rem; font-family:var(--font-epic); color:${resultColor}; margin-top:5px;">Resultado: ${msg.parsed.result}</div>
             `;
-            if (isCritSuccess) div.style.borderLeftColor = '#2ecc71';
-            if (isCritFail) div.style.borderLeftColor = '#e74c3c';
+            if (isCritSuccess) {
+                div.style.borderLeftColor = '#3498db';
+                div.classList.add('crit-success-glow');
+            }
+            if (isCritFail) {
+                div.style.borderLeftColor = '#e74c3c';
+                div.classList.add('crit-fail-glow');
+            }
             
         } else if (msg.type === 'skill') {
             contentHTML = `
