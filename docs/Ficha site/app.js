@@ -168,6 +168,7 @@
         altura: val('heranca-altura'),
         peso: val('heranca-peso'),
         fraquezas: val('heranca-fraquezas'),
+        vulnerabilidades: val('heranca-vulnerabilidades'),
         resistencias: val('heranca-resistencias'),
         imunidades: val('heranca-imunidades'),
         sentidos: val('heranca-sentidos'),
@@ -482,6 +483,7 @@
       setVal('heranca-altura', data.herancaInfo.altura);
       setVal('heranca-peso', data.herancaInfo.peso);
       setVal('heranca-fraquezas', data.herancaInfo.fraquezas);
+      setVal('heranca-vulnerabilidades', data.herancaInfo.vulnerabilidades);
       setVal('heranca-resistencias', data.herancaInfo.resistencias);
       setVal('heranca-imunidades', data.herancaInfo.imunidades);
       setVal('heranca-sentidos', data.herancaInfo.sentidos);
