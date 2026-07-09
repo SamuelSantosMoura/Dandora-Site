@@ -13,6 +13,14 @@ const firebaseConfig = {
     appId: "1:195226029108:web:3909e2ecc4c7fdebbece61"
 };
 
+// Funções seguras para Base64 com suporte a acentos/unicode
+function safeBtoa(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+}
+function safeAtob(str) {
+    return decodeURIComponent(escape(atob(str)));
+}
+
 // Se a chave não foi configurada, abortar silenciosamente
 if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     
@@ -36,7 +44,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
         // Só sincroniza se não estiver recebendo da nuvem e se não estiver explicitamente desabilitado
         if (!isSyncingFromCloud && key.startsWith('dandora_') && !window.dandoraDisableSync) {
             try {
-                const safeKey = btoa(key);
+                const safeKey = safeBtoa(key);
                 let toSave = value;
                 try { toSave = JSON.parse(value); } catch(e) {}
                 database.ref('dandora_data/' + safeKey).set(toSave);
@@ -50,7 +58,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
         originalRemoveItem.apply(this, arguments);
         if (!isSyncingFromCloud && key.startsWith('dandora_')) {
             try {
-                const safeKey = btoa(key);
+                const safeKey = safeBtoa(key);
                 database.ref('dandora_data/' + safeKey).remove();
             } catch(e) {}
         }
@@ -68,7 +76,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
                 const key = localStorage.key(i);
                 if (key.startsWith('dandora_')) {
                     const value = localStorage.getItem(key);
-                    const safeKey = btoa(key);
+                    const safeKey = safeBtoa(key);
                     let toSave = value;
                     try { toSave = JSON.parse(value); } catch(e) {}
                     database.ref('dandora_data/' + safeKey).set(toSave);
@@ -89,7 +97,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
             try {
                 const cloudValue = cloudData[safeKey];
                 const cloudString = typeof cloudValue === 'object' ? JSON.stringify(cloudValue) : cloudValue;
-                const originalKey = atob(safeKey); // Desfaz o Base64 para ler a chave original
+                const originalKey = safeAtob(safeKey); // Desfaz o Base64 para ler a chave original
                 const localValue = localStorage.getItem(originalKey);
                 
                 if (localValue !== cloudString) {
