@@ -756,7 +756,7 @@ function openPlayerTable(tableId) {
     const notes = localStorage.getItem(notesKey) || '';
     document.getElementById('pt-notes-area').value = notes;
     
-    renderPlayerVault();
+    renderVaultSheets();
     switchPlayerTab('pt-sheet');
     
     // Initialize History
@@ -767,7 +767,7 @@ function openPlayerTable(tableId) {
     
     // Inicia a sincronização de rolagens e chat
     if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
-    if (typeof initChatForTable === 'function') initChatForTable(tableId);
+    if (typeof initChatForTable === 'function') initChatForTable(table.masterTableId);
 }
 
 function switchPlayerTab(tabId) {

@@ -173,7 +173,12 @@ window.populateHistoryPlayerSelect = function(tableId) {
 
 // Integração com a navegação principal (chamado por app2.js quando uma mesa é aberta)
 function initHistory() {
-    let tid = typeof currentTableId !== 'undefined' ? currentTableId : null;
+    let tid = null;
+    if (typeof getActiveTableId === 'function') {
+        tid = getActiveTableId();
+    } else {
+        tid = typeof currentTableId !== 'undefined' ? currentTableId : null;
+    }
     if (tid) {
         initHistoryForTable(tid);
         populateHistoryPlayerSelect(tid);
