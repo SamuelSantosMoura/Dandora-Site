@@ -341,6 +341,201 @@ window.onerror = function(msg, url, line, col, error) {
         <!-- ============================================== -->
         <section id="player-table-view" class="view dashboard-layout">
             <aside class="sidebar glass-panel">
+                            <option value="master">Modo Mestre</option>
+                        </select>
+                        <small style="color:var(--text-muted); font-size:0.75rem;">Sua conta é única. Você poderá alternar o modo no seu perfil depois.</small>
+                    </div>
+                    <button type="submit" class="btn-epic w-100">Entrar</button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)">
+                    <h2>Novo Aventureiro</h2>
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" id="reg-name" required placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="reg-email" required placeholder="heroi@dandora.com">
+                    </div>
+                    <div class="form-group" style="position: relative;">
+                        <label>Senha</label>
+                        <input type="password" id="reg-password" required placeholder="••••••••" style="padding-right: 40px;">
+                        <i class="fa-solid fa-eye" onclick="togglePasswordVisibility('reg-password', this)" style="position: absolute; right: 15px; top: 38px; cursor: pointer; color: var(--text-muted);" title="Mostrar/Ocultar Senha"></i>
+                    </div>
+                    <div class="form-group">
+                        <label>Seu Papel Inicial</label>
+                        <select id="reg-role" required>
+                            <option value="player">Jogador (Criar fichas, entrar em mesas)</option>
+                            <option value="master">Mestre (Criar mesas, gerenciar jogadores)</option>
+                        </select>
+                        <small style="color:var(--text-muted); font-size:0.75rem;">Sua conta servirá para os dois modos. Isso apenas define como você começará agora.</small>
+                    </div>
+                    <button type="submit" class="btn-epic w-100">Registrar</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- PROFILE VIEW                                   -->
+        <!-- ============================================== -->
+        <section id="profile-view" class="view">
+            <div class="dashboard-header" style="max-width: 900px; margin: 0 auto 2rem auto;">
+                <h2>Perfil do Aventureiro</h2>
+            </div>
+            
+            <div class="profile-container" style="max-width: 900px; margin: 0 auto; display:grid; grid-template-columns: 1fr 300px; gap: 2rem;">
+                <!-- Main Info Card -->
+                <div class="table-card glass-panel" style="display:flex; flex-direction:column; gap:20px;">
+                    <div style="display:flex; align-items:center; gap:20px; border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 20px;">
+                        <div style="width: 100px; height: 100px; border-radius:50%; background:var(--bg-dark); border:2px solid var(--gold-primary); display:flex; align-items:center; justify-content:center; font-size:3rem; color:var(--gold-dim);">
+                            <i class="fa-solid fa-user-astronaut"></i>
+                        </div>
+                        <div>
+                            <h2 id="prof-name" style="margin:0; color:var(--gold-primary); font-family:var(--font-epic); font-size:1.8rem;">Nome</h2>
+                            <p id="prof-email" style="margin:5px 0 0; color:var(--text-muted);">email@example.com</p>
+                            <span id="prof-created" style="display:inline-block; margin-top:10px; font-size:0.8rem; background:rgba(255,255,255,0.1); padding:3px 8px; border-radius:4px; color:var(--text-light);">Conta criada em: ...</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h3 style="margin:0 0 5px; font-size:1.1rem; color:var(--text-light);">Estatísticas da Conta</h3>
+                            <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Sua jornada em Dandora</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px;">
+                        <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(212,175,55,0.2); padding:15px; border-radius:8px; text-align:center;">
+                            <i class="fa-solid fa-scroll" style="font-size:1.5rem; color:var(--gold-dim); margin-bottom:10px;"></i>
+                            <div id="prof-stat-chars" style="font-size:1.5rem; font-weight:bold; color:var(--gold-primary);">0</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Personagens (Jogador)</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(212,175,55,0.2); padding:15px; border-radius:8px; text-align:center;">
+                            <i class="fa-solid fa-dungeon" style="font-size:1.5rem; color:var(--gold-dim); margin-bottom:10px;"></i>
+                            <div id="prof-stat-tables" style="font-size:1.5rem; font-weight:bold; color:var(--gold-primary);">0</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Mesas Criadas (Mestre)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mode Switcher Card -->
+                <div class="table-card glass-panel" style="display:flex; flex-direction:column;">
+                    <h3 style="margin:0 0 15px; font-size:1.2rem; color:var(--gold-primary); text-align:center;">Tipo de Conta</h3>
+                    <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; margin-bottom:20px;">Alterne entre os modos para acessar os recursos específicos. Seus dados são independentes e continuam salvos.</p>
+                    
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div id="mode-card-player" onclick="switchMode('player')" class="mode-card">
+                            <div class="mode-icon"><i class="fa-solid fa-dice-d20"></i></div>
+                            <div class="mode-info">
+                                <h4>Modo Jogador</h4>
+                                <span>Fichas e rolagens</span>
+                            </div>
+                            <div class="mode-check"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                        
+                        <div id="mode-card-master" onclick="switchMode('master')" class="mode-card">
+                            <div class="mode-icon"><i class="fa-solid fa-dragon"></i></div>
+                            <div class="mode-info">
+                                <h4>Modo Mestre</h4>
+                                <span>Gerenciar mesas e NPCs</span>
+                            </div>
+                            <div class="mode-check"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- DASHBOARD MESTRE VIEW                          -->
+        <!-- ============================================== -->
+        <section id="dashboard-master-view" class="view dashboard-layout">
+            <aside class="sidebar glass-panel">
+                <div class="sidebar-user">
+                    <div class="avatar"><i class="fa-solid fa-crown"></i></div>
+                    <div class="user-info">
+                        <span id="master-name" class="name">Mestre</span>
+                        <span class="role">Mestre de Jogo</span>
+                    </div>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="active"><i class="fa-solid fa-table"></i> Minhas Mesas</li>
+                </ul>
+            </aside>
+            <div class="dashboard-content">
+                <div class="dashboard-header">
+                    <h2>Gerenciamento de Mesas</h2>
+                    <button class="btn-epic" onclick="createNewTable()"><i class="fa-solid fa-plus"></i> Criar Nova Mesa</button>
+                </div>
+                <div class="tables-grid" id="master-tables-list">
+                    <!-- Mesas serão injetadas via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- DASHBOARD JOGADOR VIEW                         -->
+        <!-- ============================================== -->
+        <section id="dashboard-player-view" class="view dashboard-layout">
+            <aside class="sidebar glass-panel">
+                <div class="sidebar-user">
+                    <div class="avatar"><i class="fa-solid fa-user-ninja"></i></div>
+                    <div class="user-info">
+                        <span id="player-name" class="name">Jogador</span>
+                        <span class="role">Aventureiro</span>
+                    </div>
+                </div>
+                <ul class="sidebar-menu pd-tabs">
+                    <li class="pd-tab active" onclick="switchPlayerDashTab('pd-aventuras')"><i class="fa-solid fa-table"></i> Minhas Aventuras</li>
+                    <li class="pd-tab" onclick="switchPlayerDashTab('pd-fichas')"><i class="fa-solid fa-scroll"></i> Minhas Fichas</li>
+                    <li class="pd-tab" onclick="switchPlayerDashTab('pd-notes')"><i class="fa-solid fa-book"></i> Anotações Globais</li>
+                    <li onclick="navigateTo('library-view')"><i class="fa-solid fa-book-open"></i> Biblioteca (Livros)</li>
+                </ul>
+            </aside>
+            <div class="dashboard-content">
+                
+                <!-- Aventuras -->
+                <div id="pd-aventuras" class="pd-content active">
+                    <div class="dashboard-header">
+                        <h2>Bem-vindo, Aventureiro</h2>
+                        <button class="btn-epic" onclick="joinTable()"><i class="fa-solid fa-right-to-bracket"></i> Entrar em uma Mesa</button>
+                    </div>
+                    <div class="tables-grid" id="player-tables-list">
+                        <!-- Mesas do jogador serão injetadas aqui -->
+                    </div>
+                </div>
+
+                <!-- Fichas -->
+                <div id="pd-fichas" class="pd-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Cofre de Fichas</h2>
+                        <button class="btn-epic" onclick="createNewBlankSheet()"><i class="fa-solid fa-plus"></i> Criar Ficha Independente</button>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas fichas salvas. Você pode criar novas fichas e depois usá-las em qualquer mesa.</p>
+                    <div class="tables-grid" id="pd-vault-list">
+                        <!-- JS vai injetar as fichas salvas aqui -->
+                    </div>
+                </div>
+
+                <!-- Anotações Globais -->
+                <div id="pd-notes" class="pd-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Anotações Globais</h2>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas ideias de builds, rascunhos e anotações independentes de mesa.</p>
+                    <textarea id="pd-notes-area" style="width: 100%; height: 500px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1.5rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6; font-size: 1.1rem;" oninput="savePlayerGlobalNotes()" placeholder="Escreva aqui suas ideias..."></textarea>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VISÃO DA MESA DO JOGADOR                       -->
+        <!-- ============================================== -->
+        <section id="player-table-view" class="view dashboard-layout">
+            <aside class="sidebar glass-panel">
                 <div class="sidebar-user" style="padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--gold-dim);">
                     <div class="avatar" style="background: var(--gold-primary); color: var(--bg-dark);"><i class="fa-solid fa-dungeon"></i></div>
                     <div class="user-info">
@@ -351,6 +546,7 @@ window.onerror = function(msg, url, line, col, error) {
                 <ul class="sidebar-menu">
                     <li class="pt-tab active" onclick="switchPlayerTab('pt-sheet')"><i class="fa-solid fa-file-signature"></i> Minha Ficha</li>
                     <li class="pt-tab" onclick="switchPlayerTab('pt-notes')"><i class="fa-solid fa-feather"></i> Anotações da Campanha</li>
+                    <li class="pt-tab" onclick="switchPlayerTab('pt-history')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Rolagens</li>
                 </ul>
             </aside>
             <div class="dashboard-content glass-panel" style="padding: 2rem; border-radius: 8px;">
@@ -388,6 +584,28 @@ window.onerror = function(msg, url, line, col, error) {
                     <h2>Anotações da Campanha</h2>
                     <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas anotações pessoais. Apenas você tem acesso.</p>
                     <textarea id="pt-notes-area" style="width: 100%; height: 500px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1.5rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6; font-size: 1.1rem;" oninput="savePlayerNotes()" placeholder="Escreva aqui detalhes sobre NPCs, missões ativas, pistas e eventos importantes..."></textarea>
+                </div>
+
+                <!-- TAB: HISTORY -->
+                <div id="pt-history" class="pt-content hidden">
+                    <div class="dashboard-header" style="margin-bottom:1.8rem;">
+                        <div>
+                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">HISTÓRICO DA MESA</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Visualize todas as rolagens e habilidades usadas na sessão</p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-card" style="display:flex; gap:15px; margin-bottom:20px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" id="pt-history-search" class="input-modern" placeholder="Buscar por habilidade ou magia..." style="flex:1; min-width:200px;" oninput="onHistoryFilterChange()">
+                        <select id="pt-history-player" class="input-modern" style="min-width:180px;" onchange="onHistoryFilterChange()">
+                            <option value="all">Todos os Jogadores</option>
+                        </select>
+                    </div>
+
+                    <div id="pt-history-list" style="overflow-y:auto; max-height:600px; padding-right:10px;">
+                        <!-- Rolagens injetadas via JS -->
+                        <div style="text-align: center; color: var(--text-muted); margin-top: 2rem;">Carregando histórico...</div>
+                    </div>
                 </div>
 
             </div>
@@ -476,20 +694,16 @@ window.onerror = function(msg, url, line, col, error) {
                 </div>
                 <ul class="sidebar-menu">
                     <li class="tm-tab active" onclick="switchTableTab('tm-players')"><i class="fa-solid fa-users"></i> Jogadores</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-notes')"><i class="fa-solid fa-scroll"></i> Anotações</li>
-                    
-                    <div style="margin: 1.5rem 0 0.5rem 1.5rem; font-family: var(--font-epic); font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.1em; text-transform: uppercase;">Planejamento</div>
-                    <li class="tm-tab" onclick="switchTableTab('tm-missions')"><i class="fa-solid fa-map-location-dot"></i> Missões & One-Shots</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-sessions')"><i class="fa-solid fa-calendar-days"></i> Sessões</li>
-                    
-                    <div style="margin: 1.5rem 0 0.5rem 1.5rem; font-family: var(--font-epic); font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.1em; text-transform: uppercase;">Ferramentas do Mestre</div>
-                    <li class="tm-tab" onclick="switchTableTab('tm-npc')"><i class="fa-solid fa-id-card"></i> Gerador de NPC</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-iniciativa')"><i class="fa-solid fa-bolt"></i> Iniciativa</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-eventos')"><i class="fa-solid fa-dice"></i> Eventos</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-itens')"><i class="fa-solid fa-gem"></i> Loot e Itens</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-monstros')"><i class="fa-solid fa-dragon"></i> Monstros</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-dados')"><i class="fa-solid fa-dice-d20"></i> Dados</li>
-                    <li class="tm-tab" onclick="switchTableTab('tm-regras')"><i class="fa-solid fa-book"></i> Regras Rápidas</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-iniciativa')"><i class="fa-solid fa-list-ol"></i> Ordem de Combate</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-history')"><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Rolagens</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-eventos')"><i class="fa-solid fa-dice"></i> Tabela de Eventos</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-itens')"><i class="fa-solid fa-wand-sparkles"></i> Loot & Itens</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-notes')"><i class="fa-solid fa-feather"></i> Anotações da Campanha</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-sessions')"><i class="fa-solid fa-book-journal-whills"></i> Diário de Sessões</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-missions')"><i class="fa-solid fa-map-location-dot"></i> Missões Abertas</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-npc')"><i class="fa-solid fa-user-secret"></i> Gerador de NPC</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-bestiary')"><i class="fa-solid fa-dragon"></i> Bestiário Dandora</li>
+                    <li onclick="switchMode('master')"><i class="fa-solid fa-arrow-left"></i> Voltar ao Painel</li>
                 </ul>
             </aside>
             <div class="dashboard-content glass-panel" style="padding: 2rem; border-radius: 8px;">
@@ -533,7 +747,7 @@ window.onerror = function(msg, url, line, col, error) {
                 <!-- TAB: NOTES -->
                 <div id="tm-notes" class="tm-content hidden">
                     <h2>Anotações da Campanha</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Tudo o que você escrever aqui será salvo automaticamente.</p>
+                    <p style="color:var(--text-muted); margin-bottom: 1rem;">Tudo o que você escrever aqui será salvo automaticamente.</p>
                     <textarea id="tm-notes-area" style="width: 100%; height: 400px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dim); border-radius: 8px; color: var(--text-light); padding: 1rem; font-family: var(--font-ui); resize: vertical; line-height: 1.6;" oninput="saveTableNotes()"></textarea>
                 </div>
 
@@ -609,6 +823,27 @@ window.onerror = function(msg, url, line, col, error) {
                         <tbody id="listBody"></tbody>
                       </table>
                     </section>
+                </div>
+
+                <!-- TAB: HISTORY (Mestre) -->
+                <div id="tm-history" class="tm-content hidden">
+                    <div class="dashboard-header" style="margin-bottom:1.8rem;">
+                        <div>
+                            <h2 style="font-family:'Cinzel',serif; color:var(--gold-primary); letter-spacing:0.15em; margin:0;">HISTÓRICO DE ROLAGENS</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Visualize e filtre todas as rolagens e habilidades usadas pelos jogadores</p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-card" style="display:flex; gap:15px; margin-bottom:20px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" id="tm-history-search" class="input-modern" placeholder="Buscar por habilidade ou magia..." style="flex:1; min-width:200px;" oninput="onHistoryFilterChange()">
+                        <select id="tm-history-player" class="input-modern" style="min-width:180px;" onchange="onHistoryFilterChange()">
+                            <option value="all">Todos os Jogadores</option>
+                        </select>
+                    </div>
+
+                    <div id="tm-history-list" style="overflow-y:auto; max-height:700px; padding-right:10px;">
+                        <div style="text-align: center; color: var(--text-muted); margin-top: 2rem;">Carregando histórico...</div>
+                    </div>
                 </div>
 
                 <!-- TAB: EVENTOS -->
@@ -1152,6 +1387,7 @@ Altura     Dano
     <script src="assets/js/dados.js?v=8"></script>
     <script src="assets/js/missoes.js?v=8"></script>
     <script src="assets/js/sessoes.js?v=8"></script>
-    <script src="assets/js/chat.js"></script>
+    <script src="assets/js/chat.js?v=3"></script>
+    <script src="assets/js/historico-rolagens.js?v=1"></script>
 </body>
 </html>

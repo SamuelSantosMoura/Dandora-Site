@@ -859,7 +859,8 @@
           type: 'skill',
           content: JSON.stringify({
             name: nome,
-            desc: fullDesc
+            desc: fullDesc,
+            cost: custo
           })
         }
       }, '*');
@@ -1401,7 +1402,8 @@
         content: JSON.stringify({
           title: rollData.title,
           detail: `Dado: ${rollData.rolls[rollData.winningIndex]} | Bônus: ${rollData.bonus > 0 ? '+' : ''}${rollData.bonus}`,
-          result: rollData.finalResult
+          result: rollData.finalResult,
+          naturalRoll: rollData.rolls[rollData.winningIndex]
         })
       }
     }, '*');

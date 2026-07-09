@@ -441,6 +441,9 @@ function openTableManager(tableId) {
     // Navigate
     navigateTo('table-manager-view');
     
+    // Initialize History
+    if (typeof initHistory === 'function') initHistory();
+    
     // Inicia a sincronização de rolagens e chat
     if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
     if (typeof initChatForTable === 'function') initChatForTable(tableId);
@@ -753,8 +756,11 @@ function openPlayerTable(tableId) {
     const notes = localStorage.getItem(notesKey) || '';
     document.getElementById('pt-notes-area').value = notes;
     
-    // Reset Tabs
+    renderPlayerVault();
     switchPlayerTab('pt-sheet');
+    
+    // Initialize History
+    if (typeof initHistory === 'function') initHistory();
     
     // Navigate
     navigateTo('player-table-view');
