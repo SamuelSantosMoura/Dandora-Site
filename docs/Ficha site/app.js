@@ -133,10 +133,11 @@
       // INFORMAÇÕES & LORE
       proficiencias: {
         armasSimples: val('prof-armas-simples'),
-        armadurasLeves: val('prof-armaduras-leves'),
         armasMarciais: val('prof-armas-marciais'),
-        armadurasMedias: val('prof-armaduras-medias'),
         armasFogo: val('prof-armas-fogo'),
+        armasExoticas: val('prof-armas-exoticas'),
+        armadurasLeves: val('prof-armaduras-leves'),
+        armadurasMedias: val('prof-armaduras-medias'),
         armadurasPesadas: val('prof-armaduras-pesadas'),
         escudos: val('prof-escudos'),
         extras: val('prof-extras')
@@ -336,6 +337,7 @@
   function applyData(data) {
     if (!data) return;
     const activeEl = document.activeElement;
+    const p = data.proficiencias || {};
 
     // Identidade
     setVal('nome', data.nome);
@@ -446,10 +448,11 @@
     // INFORMAÇÕES & LORE
     if (data.proficiencias) {
       setVal('prof-armas-simples', data.proficiencias.armasSimples);
-      setVal('prof-armaduras-leves', data.proficiencias.armadurasLeves);
       setVal('prof-armas-marciais', data.proficiencias.armasMarciais);
-      setVal('prof-armaduras-medias', data.proficiencias.armadurasMedias);
       setVal('prof-armas-fogo', data.proficiencias.armasFogo);
+      setVal('prof-armas-exoticas', data.proficiencias.armasExoticas);
+      setVal('prof-armaduras-leves', data.proficiencias.armadurasLeves);
+      setVal('prof-armaduras-medias', data.proficiencias.armadurasMedias);
       setVal('prof-armaduras-pesadas', data.proficiencias.armadurasPesadas);
       setVal('prof-escudos', data.proficiencias.escudos);
       setVal('prof-extras', data.proficiencias.extras);
