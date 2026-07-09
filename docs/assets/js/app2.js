@@ -864,8 +864,8 @@ function syncPlayerSheetToTable(data) {
         if (window.dandoraDatabase) {
             try {
                 const cleanData = JSON.parse(JSON.stringify(data));
-                window.dandoraDatabase.ref('dandora_data/' + btoa(sheetKey)).update(cleanData);
-            } catch(e) {}
+                window.dandoraDatabase.ref('dandora_data/' + btoa(unescape(encodeURIComponent(sheetKey)))).update(cleanData);
+            } catch(e) { console.error(e); }
         }
         
         // Mantemos um fallback do nome e dados básicos na lista de membros para caso offline
