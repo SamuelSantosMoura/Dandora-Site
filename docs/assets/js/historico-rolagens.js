@@ -184,3 +184,16 @@ function initHistory() {
         populateHistoryPlayerSelect(tid);
     }
 }
+
+// Escuta atualizações do Firebase Sync para redesenhar o histórico
+window.addEventListener('dandoraDataSync', () => {
+    let tid = null;
+    if (typeof getActiveTableId === 'function') {
+        tid = getActiveTableId();
+    } else {
+        tid = typeof currentTableId !== 'undefined' ? currentTableId : null;
+    }
+    if (tid) {
+        renderHistoryView();
+    }
+});

@@ -767,7 +767,10 @@ function openPlayerTable(tableId) {
     
     // Inicia a sincronização de rolagens e chat
     if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
-    if (typeof initChatForTable === 'function') initChatForTable(table.masterTableId);
+    if (typeof initChatForTable === 'function') {
+        const actualMasterId = getActiveTableId() || (table ? table.masterTableId : null);
+        initChatForTable(actualMasterId);
+    }
 }
 
 function switchPlayerTab(tabId) {
@@ -1472,10 +1475,31 @@ function getActiveTableId() {
         return typeof currentTableId !== 'undefined' ? currentTableId : null;
     } else {
         if (typeof currentPlayerTableId !== 'undefined' && currentPlayerTableId && currentUser) {
-            const playerTables = JSON.parse(localStorage.getItem(`dandora_player_tables_${currentUser.email}`)) || [];
+            const tablesKey = `dandora_player_tables_${currentUser.email}`;
+            const playerTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
             const pTable = playerTables.find(t => t.id === currentPlayerTableId);
-            if (pTable && pTable.masterTableId) {
-                return pTable.masterTableId;
+            if (pTable) {
+                if (pTable.masterTableId) return pTable.masterTableId;
+                
+                // Fallback: Tenta recuperar o ID da mesa master usando o código de convite na lista global
+                const globalTables = JSON.parse(localStorage.getItem('dandora_global_tables')) || [];
+                const globalTable = globalTables.find(t => t.code === pTable.code);
+                if (globalTable) {
+                    pTable.masterTableId = globalTable.tableId;
+                    localStorage.setItem(tablesKey, JSON.stringify(playerTables));
+                    return globalTable.tableId;
+                }
+                
+                // Fallback 2: Tenta recuperar direto da lista de mesas do mestre (que foi sincronizada pelo Firebase)
+                if (pTable.masterEmail) {
+                    const masterTables = JSON.parse(localStorage.getItem(`dandora_tables_${pTable.masterEmail}`)) || [];
+                    const mTable = masterTables.find(t => t.code === pTable.code);
+                    if (mTable) {
+                        pTable.masterTableId = mTable.id;
+                        localStorage.setItem(tablesKey, JSON.stringify(playerTables));
+                        return mTable.id;
+                    }
+                }
             }
         }
     }
