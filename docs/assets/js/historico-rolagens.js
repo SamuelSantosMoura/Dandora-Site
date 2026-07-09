@@ -110,7 +110,7 @@ function renderHistoryView() {
             let resultColor = 'var(--text-light)';
             
             // Suporte legado para rolagens antigas
-            if (!msg.parsed.hasOwnProperty('isCritSuccess') && msg.parsed.naturalRoll) {
+            if (msg.parsed && typeof msg.parsed === 'object' && !('isCritSuccess' in msg.parsed) && msg.parsed.naturalRoll) {
                 if (msg.parsed.naturalRoll === 20) isCritSuccess = true;
                 if (msg.parsed.naturalRoll === 1) isCritFail = true;
             }
