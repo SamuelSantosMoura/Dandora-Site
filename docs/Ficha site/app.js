@@ -704,9 +704,38 @@
         <label class="field-label">Descrição</label>
         <textarea placeholder="Como funciona essa habilidade?">${esc(d.desc)}</textarea>
       </div>
+      <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+          <button class="btn-dandora" style="padding: 5px 15px; font-size: 0.8rem;" onclick="useHabilidadeChat(this)">
+              <i class="fa-solid fa-bolt"></i> Usar
+          </button>
+      </div>
     `;
     container.appendChild(card);
     saveData();
+  };
+
+  window.useHabilidadeChat = function(btn) {
+      const card = btn.closest('.spell-card');
+      const inputs = card.querySelectorAll('input');
+      const textarea = card.querySelector('textarea');
+      
+      const nome = inputs[0] && inputs[0].value ? inputs[0].value : 'Habilidade sem nome';
+      const custo = inputs[2] && inputs[2].value ? inputs[2].value : 'Livre';
+      const desc = textarea && textarea.value ? textarea.value : '';
+      
+      const fullDesc = `[Custo: ${custo}]\n${desc}`;
+      
+      // Broadcast para o Chat Geral
+      window.parent.postMessage({
+        type: 'DANDORA_CHAT_MSG',
+        payload: {
+          type: 'skill',
+          content: JSON.stringify({
+            name: nome,
+            desc: fullDesc
+          })
+        }
+      }, '*');
   };
 
   window.removeHabilidadeCard = function (btn) {
@@ -1138,6 +1167,19 @@
     window.parent.postMessage({
       type: 'DANDORA_ROLL',
       data: broadcastData
+    }, '*');
+
+    // Broadcast para o Chat Geral
+    window.parent.postMessage({
+      type: 'DANDORA_CHAT_MSG',
+      payload: {
+        type: 'roll',
+        content: JSON.stringify({
+          title: rollData.title,
+          detail: `Dado: ${rollData.rolls[rollData.winningIndex]} | Bônus: ${rollData.bonus > 0 ? '+' : ''}${rollData.bonus}`,
+          result: rollData.finalResult
+        })
+      }
     }, '*');
   }
 

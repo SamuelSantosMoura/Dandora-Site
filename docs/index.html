@@ -21,6 +21,7 @@ window.onerror = function(msg, url, line, col, error) {
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/global.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/chat.css">
     
     <!-- PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -1106,6 +1107,39 @@ Altura     Dano
     </dialog>
 
 
+    <!-- ============================================== -->
+    <!-- CHAT GERAL (GLOBAL)                            -->
+    <!-- ============================================== -->
+    <div id="dandora-chat-container" class="chat-container closed">
+        <div class="chat-header" onclick="toggleGlobalChat()">
+            <h3><i class="fa-solid fa-comments"></i> Chat Geral</h3>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span id="chat-unread-badge" class="chat-badge" style="display:none;">0</span>
+                <button class="btn-outline small chat-close-btn"><i class="fa-solid fa-chevron-down"></i></button>
+            </div>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <div class="chat-placeholder">Conectando ao chat da mesa...</div>
+        </div>
+        <div class="chat-input-area">
+            <label for="chat-image-upload" class="chat-img-btn" title="Enviar Imagem">
+                <i class="fa-solid fa-image"></i>
+            </label>
+            <input type="file" id="chat-image-upload" accept="image/*" style="display:none;" onchange="handleChatImageUpload(event)">
+            
+            <textarea id="chat-input" placeholder="Mensagem..." rows="1" onkeypress="handleChatKeyPress(event)"></textarea>
+            
+            <button class="chat-send-btn" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+    
+    <!-- Botão Flutuante do Chat -->
+    <button id="chat-fab" class="chat-fab hidden" onclick="toggleGlobalChat()">
+        <i class="fa-solid fa-message"></i>
+        <span id="chat-fab-badge" class="chat-badge" style="display:none;">0</span>
+    </button>
+
+    <!-- Main scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="assets/js/firebase-sync2.js?v=17"></script>
     <script src="assets/js/app2.js?v=17"></script>
@@ -1118,5 +1152,6 @@ Altura     Dano
     <script src="assets/js/dados.js?v=8"></script>
     <script src="assets/js/missoes.js?v=8"></script>
     <script src="assets/js/sessoes.js?v=8"></script>
+    <script src="assets/js/chat.js"></script>
 </body>
 </html>

@@ -37,6 +37,11 @@ function navigateTo(viewId, isBack = false) {
     sessionStorage.setItem('currentView', currentView);
     sessionStorage.setItem('globalHistory', JSON.stringify(globalHistory));
     
+    // Se saiu de uma mesa, fecha o chat
+    if (viewId !== 'table-manager-view' && viewId !== 'player-table-view') {
+        if (typeof stopChat === 'function') stopChat();
+    }
+    
     window.scrollTo(0, 0);
 }
 
@@ -436,8 +441,9 @@ function openTableManager(tableId) {
     // Navigate
     navigateTo('table-manager-view');
     
-    // Inicia a sincronização de rolagens
+    // Inicia a sincronização de rolagens e chat
     if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
+    if (typeof initChatForTable === 'function') initChatForTable(tableId);
 }
 
 function switchTableTab(tabId) {
@@ -753,8 +759,9 @@ function openPlayerTable(tableId) {
     // Navigate
     navigateTo('player-table-view');
     
-    // Inicia a sincronização de rolagens
+    // Inicia a sincronização de rolagens e chat
     if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
+    if (typeof initChatForTable === 'function') initChatForTable(tableId);
 }
 
 function switchPlayerTab(tabId) {

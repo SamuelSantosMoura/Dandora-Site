@@ -188,6 +188,21 @@ function mdExecuteRoll(diceArray, bonus, title, formula) {
             });
         }
 
+        // Enviar para o Chat Geral
+        if (typeof chatRef !== 'undefined' && chatRef && currentUser) {
+            chatRef.push({
+                senderName: `${currentUser.name} (Mestre)`,
+                senderEmail: currentUser.email,
+                timestamp: Date.now(),
+                type: 'roll',
+                content: JSON.stringify({
+                    title: hItem.title,
+                    detail: hItem.calcStr,
+                    result: hItem.finalResult
+                })
+            });
+        }
+
     }, 1400);
 }
 
