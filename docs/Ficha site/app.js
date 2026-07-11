@@ -92,6 +92,7 @@
     if (!container) return;
 
     container.addEventListener('input', () => {
+      calculateCD();
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
         saveData();
@@ -101,6 +102,7 @@
     });
 
     container.addEventListener('change', () => {
+      calculateCD();
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
         saveData();
@@ -168,6 +170,8 @@
       // Magias header
       atrib_conjuracao: val('atrib-conjuracao'),
       bonus_ataque_magia: val('bonus-ataque-magia'),
+      pericia_primaria: val('pericia-primaria'),
+      atributo_magia: val('atributo-magia'),
       teste_resistencia_magia: val('teste-resistencia-magia'),
 
       // Magias
@@ -531,6 +535,8 @@
     // Magias header
     setVal('atrib-conjuracao', data.atrib_conjuracao);
     setVal('bonus-ataque-magia', data.bonus_ataque_magia);
+    setVal('pericia-primaria', data.pericia_primaria || 'arcanismo');
+    setVal('atributo-magia', data.atributo_magia || 'inteligencia');
     setVal('teste-resistencia-magia', data.teste_resistencia_magia);
 
     // Magias
@@ -626,6 +632,7 @@
     updateAllBars();
     updateAllDice();
     updateSlots();
+    calculateCD();
   }
 
   /* ==========================================================
@@ -650,6 +657,36 @@
       }
     }
   }
+
+  function calculateCD() {
+    const pericia = val('pericia-primaria') || 'arcanismo';
+    const atributo = val('atributo-magia') || 'inteligencia';
+    
+    // Obter bônus da perícia selecionada
+    let skillBonus = 0;
+    const skillRow = document.querySelector(`.skill-row[data-skill="${pericia}"]`);
+    if (skillRow) {
+      const bonusInput = skillRow.querySelector('.skill-bonus');
+      if (bonusInput) {
+        skillBonus = parseInt(bonusInput.value) || 0;
+      }
+    }
+    
+    // Obter valor do atributo selecionado
+    let attrValue = 0;
+    const attrInput = document.getElementById(`attr-${atributo}`);
+    if (attrInput) {
+      attrValue = parseInt(attrInput.value) || 0;
+    }
+    
+    const cd = 10 + skillBonus + attrValue;
+    
+    const cdInput = document.getElementById('teste-resistencia-magia');
+    if (cdInput) {
+      cdInput.value = cd;
+    }
+  }
+  window.calculateCD = calculateCD;
 
   /* ==========================================================
      BARRAS DE RECURSO (PV / PA)

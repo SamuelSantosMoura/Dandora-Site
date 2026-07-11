@@ -149,8 +149,8 @@ function forgotPassword(event) {
 // Login Logic
 function loginUser(userData, initialMode) {
     currentUser = userData;
-    sessionStorage.setItem('currentUser', JSON.stringify(userData));
-    sessionStorage.setItem('currentMode', initialMode || 'player');
+    localStorage.setItem('dandora_currentUser', JSON.stringify(userData));
+    localStorage.setItem('dandora_currentMode', initialMode || 'player');
     
     // Update Navbar UI
     document.getElementById('auth-btn').classList.add('hidden');
@@ -179,7 +179,7 @@ function loginUser(userData, initialMode) {
 
 // Mode / Profile Management
 function getMode() {
-    return sessionStorage.getItem('currentMode') || 'player';
+    return localStorage.getItem('dandora_currentMode') || 'player';
 }
 
 function updateNavBadge() {
@@ -200,7 +200,7 @@ function updateNavBadge() {
 
 function switchMode(newMode) {
     if (!currentUser) return;
-    sessionStorage.setItem('currentMode', newMode);
+    localStorage.setItem('dandora_currentMode', newMode);
     updateNavBadge();
     
     // Atualiza os cards visuais na aba Perfil
@@ -267,10 +267,15 @@ navigateTo = function(viewId, isBack = false) {
 // Logout
 function logout() {
     currentUser = null;
-    sessionStorage.removeItem('currentUser');
-    sessionStorage.removeItem('currentMode');
+    // Limpar dados de autenticação persistentes
+    localStorage.removeItem('dandora_currentUser');
+    localStorage.removeItem('dandora_currentMode');
+    // Limpar estado de navegação temporário
     sessionStorage.removeItem('currentTableId');
     sessionStorage.removeItem('currentTableTab');
+    sessionStorage.removeItem('currentPlayerTableId');
+    sessionStorage.removeItem('currentPlayerTableTab');
+    sessionStorage.removeItem('currentView');
     globalHistory = [];
     sessionStorage.removeItem('globalHistory');
     
@@ -1001,27 +1006,41 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.replaceState({}, '', window.location.pathname);
     }
 
-    // Restore user
-    const storedUser = sessionStorage.getItem('currentUser');
+    // Restore user (persistente via localStorage)
+    const storedUser = localStorage.getItem('dandora_currentUser');
     if (storedUser) {
         currentUser = JSON.parse(storedUser);
         
-        // Update Navbar UI
-        const authBtn = document.getElementById('auth-btn');
-        if(authBtn) authBtn.classList.add('hidden');
-        const dashBtn = document.getElementById('dashboard-btn');
-        if(dashBtn) dashBtn.classList.remove('hidden');
-        const outBtn = document.getElementById('logout-btn');
-        if(outBtn) outBtn.classList.remove('hidden');
-        
-        if (getMode() === 'master') {
-            const mName = document.getElementById('master-name');
-            if(mName) mName.textContent = currentUser.name;
-            renderMasterTables();
+        // Validar que o usuário ainda existe no banco local
+        const usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+        const userStillExists = usersDB.find(u => u.email === currentUser.email);
+        if (!userStillExists) {
+            // Usuário foi removido do banco — limpar sessão
+            currentUser = null;
+            localStorage.removeItem('dandora_currentUser');
+            localStorage.removeItem('dandora_currentMode');
         } else {
-            const pName = document.getElementById('player-name');
-            if(pName) pName.textContent = currentUser.name;
-            renderPlayerTables();
+            // Update Navbar UI
+            const authBtn = document.getElementById('auth-btn');
+            if(authBtn) authBtn.classList.add('hidden');
+            const dashBtn = document.getElementById('dashboard-btn');
+            if(dashBtn) dashBtn.classList.remove('hidden');
+            const profBtn = document.getElementById('profile-btn');
+            if(profBtn) profBtn.classList.remove('hidden');
+            const outBtn = document.getElementById('logout-btn');
+            if(outBtn) outBtn.classList.remove('hidden');
+            
+            updateNavBadge();
+            
+            if (getMode() === 'master') {
+                const mName = document.getElementById('master-name');
+                if(mName) mName.textContent = currentUser.name;
+                renderMasterTables();
+            } else {
+                const pName = document.getElementById('player-name');
+                if(pName) pName.textContent = currentUser.name;
+                renderPlayerTables();
+            }
         }
     }
 
@@ -1102,7 +1121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sessionStorage.removeItem('pendingInvite');
                 const joined = joinTable(pending);
                 if (joined) {
-                    sessionStorage.setItem('currentMode', 'player');
+                    localStorage.setItem('dandora_currentMode', 'player');
                     openDashboard();
                 }
             }
@@ -1116,7 +1135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 window.addEventListener('dandoraDataSync', () => {
     // Restaurar currentUser se houver mudança externa
-    const storedUser = sessionStorage.getItem('currentUser');
+    const storedUser = localStorage.getItem('dandora_currentUser');
     if (storedUser) {
         currentUser = JSON.parse(storedUser);
     }

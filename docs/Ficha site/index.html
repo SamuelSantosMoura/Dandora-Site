@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Ficha de Personagem Digital para o RPG Dandora.">
   <title>Ficha de Personagem — Dandora RPG</title>
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
   <link rel="shortcut icon" href="../Escudo de Mestre/Image/Logo/favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -577,8 +577,23 @@
           <input type="text" id="bonus-ataque-magia" placeholder="+0">
         </div>
         <div class="magic-header-card">
-          <label class="field-label" for="teste-resistencia-magia">Teste de Resistência</label>
-          <input type="text" id="teste-resistencia-magia" placeholder="DT 15">
+          <label class="field-label" for="pericia-primaria">Perícia Primária</label>
+          <select id="pericia-primaria" onchange="calculateCD(); saveData()">
+            <option value="arcanismo">Arcanismo</option>
+            <option value="ocultismo">Ocultismo</option>
+          </select>
+        </div>
+        <div class="magic-header-card">
+          <label class="field-label" for="atributo-magia">Atributo de Magia</label>
+          <select id="atributo-magia" onchange="calculateCD(); saveData()">
+            <option value="inteligencia">Inteligência</option>
+            <option value="vontade">Vontade</option>
+            <option value="carisma">Carisma</option>
+          </select>
+        </div>
+        <div class="magic-header-card">
+          <label class="field-label" for="teste-resistencia-magia">Teste de Resistência (CD)</label>
+          <input type="text" id="teste-resistencia-magia" readonly style="background: rgba(255, 255, 255, 0.05); color: var(--gold-light); font-weight: bold; text-align: center; pointer-events: none;">
         </div>
       </div>
 
@@ -836,7 +851,7 @@
   </div>
 
   <!-- ==================== SCRIPT DE INICIALIZAÇÃO ==================== -->
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
   <script>
     // Sistema de Abas (Tabs)
     function switchTab(tabId) {
