@@ -1104,13 +1104,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        // Force navigation without modifying history again
-        const tempHistory = [...globalHistory];
-        navigateTo(storedView, true);
-        globalHistory = tempHistory;
-        sessionStorage.setItem('globalHistory', JSON.stringify(globalHistory));
+        if (currentUser) {
+            if (storedView === 'home-view' || storedView === 'login-view' || storedView === 'register-view') {
+                openDashboard();
+            } else {
+                // Force navigation without modifying history again
+                const tempHistory = [...globalHistory];
+                navigateTo(storedView, true);
+                globalHistory = tempHistory;
+                sessionStorage.setItem('globalHistory', JSON.stringify(globalHistory));
+            }
+        } else {
+            // Se não está logado, navega para a view armazenada (se pública) ou home
+            if (storedView === 'home-view' || storedView === 'login-view' || storedView === 'register-view') {
+                const tempHistory = [...globalHistory];
+                navigateTo(storedView, true);
+                globalHistory = tempHistory;
+                sessionStorage.setItem('globalHistory', JSON.stringify(globalHistory));
+            } else {
+                navigateTo('home-view');
+            }
+        }
     } else {
-        navigateTo('home-view');
+        if (currentUser) {
+            openDashboard();
+        } else {
+            navigateTo('home-view');
+        }
     }
 
     // Process pending invite if already logged in
