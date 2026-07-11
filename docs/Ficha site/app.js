@@ -168,7 +168,6 @@
       anotacoes: val('anotacoes'),
 
       // Magias header
-      atrib_conjuracao: val('atrib-conjuracao'),
       bonus_ataque_magia: val('bonus-ataque-magia'),
       pericia_primaria: val('pericia-primaria'),
       atributo_magia: val('atributo-magia'),
@@ -533,7 +532,6 @@
     setVal('anotacoes', data.anotacoes);
 
     // Magias header
-    setVal('atrib-conjuracao', data.atrib_conjuracao);
     setVal('bonus-ataque-magia', data.bonus_ataque_magia);
     setVal('pericia-primaria', data.pericia_primaria || 'arcanismo');
     setVal('atributo-magia', data.atributo_magia || 'inteligencia');
