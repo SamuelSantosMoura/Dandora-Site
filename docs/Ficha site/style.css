@@ -1830,13 +1830,117 @@ input[type="number"]::-webkit-inner-spin-button {
 .tabs-nav {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 10px;
   margin-bottom: 20px;
   background: var(--bg-card);
   padding: 10px;
   border-radius: var(--radius);
   border: 1px solid var(--gold-dark);
+  flex-wrap: wrap;
 }
+
+/* === BOTÃO DE MODO VISUALIZAÇÃO / EDIÇÃO === */
+.edit-mode-toggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(192, 57, 43, 0.15);
+  border: 1px solid rgba(192, 57, 43, 0.5);
+  color: #e74c3c;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+.edit-mode-toggle:hover {
+  background: rgba(192, 57, 43, 0.25);
+  box-shadow: 0 0 12px rgba(192, 57, 43, 0.3);
+}
+.edit-mode-toggle.editing {
+  background: rgba(46, 204, 113, 0.15);
+  border-color: rgba(46, 204, 113, 0.5);
+  color: #2ecc71;
+}
+.edit-mode-toggle.editing:hover {
+  background: rgba(46, 204, 113, 0.25);
+  box-shadow: 0 0 12px rgba(46, 204, 113, 0.3);
+}
+.toggle-icon {
+  font-size: 1rem;
+}
+
+/* === MODO VISUALIZAÇÃO (view-mode) === */
+body.view-mode input:not(.view-mode-exempt):not(.btn-roll):not(.cnt-btn):not(.cnt-input),
+body.view-mode textarea:not(.view-mode-exempt),
+body.view-mode select:not(.view-mode-exempt) {
+  pointer-events: none;
+  opacity: 0.75;
+  user-select: none;
+  -webkit-user-select: none;
+}
+body.view-mode input[type="checkbox"]:not(.view-mode-exempt) {
+  pointer-events: none;
+}
+body.view-mode input[type="file"] {
+  pointer-events: none;
+}
+/* Esconder botões de adicionar/remover no modo visualização */
+body.view-mode .spell-remove,
+body.view-mode .spell-share,
+body.view-mode .btn-row .btn:not(.btn-roll),
+body.view-mode .item-remove-btn,
+body.view-mode #btn-remove-portrait,
+body.view-mode .btn-outline[onclick*="add"],
+body.view-mode button[onclick*="addAttackRow"],
+body.view-mode button[onclick*="addSpellCard"],
+body.view-mode button[onclick*="addHabilidadeCard"],
+body.view-mode button[onclick*="addItem"],
+body.view-mode button[onclick*="addOficioRow"],
+body.view-mode button[onclick*="clearHistory"],
+body.view-mode button[onclick*="Clear"],
+body.view-mode button[onclick*="clear"],
+body.view-mode .atk-del-btn {
+  display: none !important;
+}
+/* Manter botões de rolagem sempre acessíveis */
+body.view-mode .btn-roll,
+body.view-mode .cnt-btn,
+body.view-mode button[onclick*="executeCustomRoll"],
+body.view-mode button[onclick*="saveFavoriteRoll"],
+body.view-mode button[onclick*="clearCustomRoller"],
+body.view-mode button[onclick*="rollSkill"],
+body.view-mode button[onclick*="rollAttribute"] {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+/* Manter botões de dados customizados funcionais */
+body.view-mode .cnt-input {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+/* Banner visual indicando modo de visualização */
+body.view-mode .sheet-container::before {
+  content: "🔒 Modo Visualização — Apenas PV e PA podem ser editados";
+  display: block;
+  text-align: center;
+  padding: 8px;
+  background: rgba(192, 57, 43, 0.15);
+  border: 1px dashed rgba(192, 57, 43, 0.4);
+  border-radius: 8px;
+  color: #e74c3c;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  animation: fadeIn 0.4s ease;
+}
+
 .tab-btn {
   background: transparent;
   color: var(--text-muted);
@@ -2583,4 +2687,17 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .crit-fail-glow {
     animation: critFailPulse 1.5s ease-in-out infinite !important;
+}
+
+/* Responsividade do botão de modo */
+@media (max-width: 580px) {
+  .edit-mode-toggle {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    order: 10;
+  }
+  .toggle-label {
+    font-size: 0.75rem;
+  }
 }

@@ -30,6 +30,9 @@
     updateSlots();
     updateSaveIndicator();
 
+    // Aplicar modo de visualização por padrão (travar ficha)
+    applyViewMode();
+
     window.addEventListener('storage', (e) => {
       if (e.key === STORAGE_KEY) {
         loadData();
@@ -37,6 +40,49 @@
       }
     });
   });
+
+  /* ==========================================================
+     MODO VISUALIZAÇÃO / EDIÇÃO
+  ========================================================== */
+  let isEditMode = false;
+
+  function applyViewMode() {
+    document.body.classList.add('view-mode');
+    isEditMode = false;
+    // Marcar inputs de PV e PA como isentos (sempre editáveis)
+    const exemptIds = ['pv-atual', 'pa-atual'];
+    exemptIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('view-mode-exempt');
+    });
+    updateToggleButton();
+  }
+
+  function updateToggleButton() {
+    const btn = document.getElementById('edit-mode-toggle');
+    if (!btn) return;
+    const icon = btn.querySelector('.toggle-icon');
+    const label = btn.querySelector('.toggle-label');
+    if (isEditMode) {
+      btn.classList.add('editing');
+      if (icon) icon.textContent = '🔓';
+      if (label) label.textContent = 'Modo Edição';
+    } else {
+      btn.classList.remove('editing');
+      if (icon) icon.textContent = '🔒';
+      if (label) label.textContent = 'Modo Visualização';
+    }
+  }
+
+  window.toggleEditMode = function() {
+    isEditMode = !isEditMode;
+    if (isEditMode) {
+      document.body.classList.remove('view-mode');
+    } else {
+      document.body.classList.add('view-mode');
+    }
+    updateToggleButton();
+  };
 
   /* ==========================================================
      AUTO-SAVE â€” Debounced (500ms)
