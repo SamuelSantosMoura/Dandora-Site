@@ -1649,6 +1649,11 @@
         width: auto !important;
         opacity: 0.9 !important;
       }
+      #pdf-print-area .def-shield, #pdf-print-area .epic-shield {
+        background: rgba(10, 20, 40, 0.6) !important;
+        border: 2px dashed rgba(201, 168, 76, 0.4) !important;
+        border-radius: 8px !important;
+      }
       #pdf-print-area .pdf-page {
         width: 210mm;
         min-height: 297mm;
@@ -1695,11 +1700,31 @@
         textarea.parentNode.replaceChild(div, textarea);
       });
 
-      // Clean up cloned images to prevent loading/CORS crashes on empty or hidden images
+      // Convert all visible images (like the portrait) to canvas elements to prevent jsPDF from crashing on WebP/unsupported formats
       const clonedImages = clone.querySelectorAll('img');
       clonedImages.forEach(img => {
         if (!img.src || img.src.trim() === '' || img.style.display === 'none' || img.offsetParent === null) {
           img.parentNode.removeChild(img);
+          return;
+        }
+        
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || img.width || 100;
+          canvas.height = img.naturalHeight || img.height || 100;
+          const ctx = canvas.getContext('2d');
+          
+          canvas.style.cssText = img.style.cssText;
+          canvas.className = img.className;
+          canvas.style.display = 'block';
+          
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.getImageData(0, 0, 1, 1); // Verify if tainted
+          
+          img.parentNode.replaceChild(canvas, img);
+        } catch (e) {
+          console.warn("Image tainted or failed to convert to canvas, keeping as image element:", e);
+          img.crossOrigin = "anonymous";
         }
       });
 
