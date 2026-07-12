@@ -1929,6 +1929,29 @@
     printArea.appendChild(page5);
     
     // ----------------------------------------------------
+    // SANITIZE: Remove ALL SVG backgrounds and problematic images
+    // html2canvas reads computed styles, so CSS !important rules
+    // inside <style> tags may be ignored. We must inline-override.
+    // ----------------------------------------------------
+    const allElements = printArea.querySelectorAll('*');
+    allElements.forEach(el => {
+      try {
+        const computedBg = window.getComputedStyle(el).backgroundImage;
+        if (computedBg && computedBg !== 'none' && (computedBg.includes('svg') || computedBg.includes('image/'))) {
+          el.style.backgroundImage = 'none';
+        }
+      } catch(e) { /* ignore */ }
+    });
+
+    // Remove any remaining <img> that might cause issues
+    const allImgs = printArea.querySelectorAll('img');
+    allImgs.forEach(img => {
+      if (!img.src || img.src.trim() === '' || img.src.includes('svg') || img.style.display === 'none') {
+        img.remove();
+      }
+    });
+
+    // ----------------------------------------------------
     // GENERATE PDF VIA HTML2PDF
     // ----------------------------------------------------
     const safeName = charName.replace(/[^a-zA-Z0-9_\-\u00C0-\u017F ]/g, '').replace(/\s+/g, '_');
@@ -1936,7 +1959,7 @@
       margin:       0,
       filename:     `ficha_${safeName}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#070c14' },
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#070c14', allowTaint: true, removeContainer: true },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     
