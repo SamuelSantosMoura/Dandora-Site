@@ -1694,10 +1694,19 @@
         div.textContent = textarea.value;
         textarea.parentNode.replaceChild(div, textarea);
       });
+
+      // Clean up cloned images to prevent loading/CORS crashes on empty or hidden images
+      const clonedImages = clone.querySelectorAll('img');
+      clonedImages.forEach(img => {
+        if (!img.src || img.src.trim() === '' || img.style.display === 'none' || img.offsetParent === null) {
+          img.parentNode.removeChild(img);
+        }
+      });
+
       return clone;
     }
     
-    const charName = document.getElementById('char-nome')?.value || 'Personagem';
+    const charName = document.getElementById('nome')?.value || 'Personagem';
     
     // ----------------------------------------------------
     // PAGE 1: FICHA PRINCIPAL
@@ -1906,16 +1915,38 @@
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     
-    html2pdf().set(opt).from(printArea).save().then(() => {
-      document.body.removeChild(printArea);
-      showToast('✦ PDF gerado com sucesso!');
-    }).catch(err => {
-      console.error("Erro ao gerar PDF:", err);
+    // Obter biblioteca do contexto do iframe ou do contexto pai como fallback
+    const html2pdfLib = window.html2pdf || (window.parent && window.parent.html2pdf);
+    
+    if (!html2pdfLib) {
+      alert("Erro: A biblioteca de PDF (html2pdf) não pôde ser carregada. Certifique-se de estar conectado à internet.");
+      showToast("❌ Erro: html2pdf não encontrado");
+      if (printArea.parentNode) {
+        document.body.removeChild(printArea);
+      }
+      return;
+    }
+    
+    try {
+      html2pdfLib().set(opt).from(printArea).save().then(() => {
+        document.body.removeChild(printArea);
+        showToast('✦ PDF gerado com sucesso!');
+      }).catch(err => {
+        console.error("Erro ao gerar PDF (Promise):", err);
+        alert("Erro ao gerar PDF: " + err.message);
+        if (document.getElementById('pdf-print-area')) {
+          document.body.removeChild(printArea);
+        }
+        showToast('❌ Erro ao gerar PDF');
+      });
+    } catch(err) {
+      console.error("Erro síncrono ao gerar PDF:", err);
+      alert("Erro crítico ao gerar PDF: " + err.message);
       if (document.getElementById('pdf-print-area')) {
         document.body.removeChild(printArea);
       }
-      showToast('❌ Erro ao gerar PDF');
-    });
+      showToast('❌ Erro crítico PDF');
+    }
   };
 
   /* ==========================================================
