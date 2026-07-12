@@ -28,7 +28,6 @@
   <div class="sheet-utilities-bar">
     <button type="button" class="btn small btn-import-json" onclick="triggerImport()"><i class="fa-solid fa-file-import"></i> Importar Ficha</button>
     <button type="button" class="btn small btn-export-json" onclick="exportJSON()"><i class="fa-solid fa-file-export"></i> Exportar Ficha</button>
-    <button type="button" class="btn small btn-print-pdf" onclick="printPDF()"><i class="fa-solid fa-file-pdf"></i> Baixar PDF</button>
     <input type="file" id="import-input" accept=".json" onchange="handleImport(event)" style="display:none;">
   </div>
 
@@ -864,7 +863,7 @@
   </div>
 
   <!-- ==================== SCRIPT DE INICIALIZAÇÃO ==================== -->
-  <script src="app.js?v=21"></script>
+  <script src="app.js?v=22"></script>
   <script>
     // Sistema de Abas (Tabs)
     function switchTab(tabId) {
