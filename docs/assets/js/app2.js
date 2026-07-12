@@ -250,15 +250,15 @@ function renderProfile() {
         document.getElementById('prof-created').textContent = `Conta criada em: ${d.toLocaleDateString()}`;
     }
     
-    // Conta estatísticas (local mock)
+    // Conta estatísticas
     // 1. Quantas mesas (Mestre)
-    const allTables = JSON.parse(localStorage.getItem('dandora_tables')) || [];
-    const myTables = allTables.filter(t => t.masterEmail === currentUser.email);
+    const tablesKey = `dandora_tables_${currentUser.email}`;
+    const myTables = JSON.parse(localStorage.getItem(tablesKey)) || [];
     document.getElementById('prof-stat-tables').textContent = myTables.length;
     
     // 2. Quantas fichas (Jogador)
-    const playerFichasKey = `dandora_fichas_${currentUser.email}`;
-    const myFichas = JSON.parse(localStorage.getItem(playerFichasKey)) || [];
+    const vaultKey = `dandora_vault_${currentUser.email}`;
+    const myFichas = JSON.parse(localStorage.getItem(vaultKey)) || [];
     document.getElementById('prof-stat-chars').textContent = myFichas.length;
     
     // Setar o card ativo
