@@ -1738,3 +1738,54 @@ window.openTable = function(tableId) {
     }
     setTimeout(initRollSync, 500);
 };
+
+/* ==========================================================
+   IMPORTAR FICHA (.JSON) PARA O COFRE DE FICHAS
+   ========================================================== */
+window.triggerVaultImport = function() {
+    const input = document.getElementById('vault-import-input');
+    if (input) input.click();
+};
+
+window.handleVaultImport = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            // Validação básica do arquivo de backup
+            if (!data || typeof data !== 'object') {
+                throw new Error('Formato do arquivo inválido.');
+            }
+            if (data.nome === undefined && data.forca === undefined && data.classe === undefined) {
+                throw new Error('O arquivo selecionado não é uma ficha válida do Dandora RPG.');
+            }
+            
+            // Adicionar ao cofre do usuário atual
+            const vaultKey = `dandora_vault_${currentUser.email}`;
+            let vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+            
+            const vaultId = Date.now().toString();
+            data._vaultId = vaultId;
+            data._saveDate = new Date().toLocaleDateString('pt-BR');
+            
+            vault.push(data);
+            localStorage.setItem(vaultKey, JSON.stringify(vault));
+            
+            alert(`A ficha de ${data.nome} foi importada com sucesso para o seu cofre!`);
+            
+            // Re-renderizar listas de cofre
+            if (typeof renderVaultSheets === 'function') renderVaultSheets();
+            if (typeof renderVaultSheetsDashboard === 'function') renderVaultSheetsDashboard();
+            if (typeof renderProfile === 'function') renderProfile(); // Atualizar contador de perfil!
+        } catch (err) {
+            alert('❌ Erro na importação: ' + err.message);
+            console.error('Erro na importação para o cofre:', err);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+};

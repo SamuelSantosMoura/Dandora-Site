@@ -316,9 +316,13 @@ window.onerror = function(msg, url, line, col, error) {
                 <div id="pd-fichas" class="pd-content hidden">
                     <div class="dashboard-header">
                         <h2>Cofre de Fichas</h2>
-                        <button class="btn-epic" onclick="createNewBlankSheet()"><i class="fa-solid fa-plus"></i> Criar Ficha Independente</button>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-epic" onclick="createNewBlankSheet()"><i class="fa-solid fa-plus"></i> Criar Ficha Independente</button>
+                            <button class="btn-outline" onclick="triggerVaultImport()"><i class="fa-solid fa-file-import"></i> Importar Ficha (.json)</button>
+                        </div>
                     </div>
                     <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas fichas salvas. Você pode criar novas fichas e depois usá-las em qualquer mesa.</p>
+                    <input type="file" id="vault-import-input" accept=".json" onchange="handleVaultImport(event)" style="display:none;">
                     <div class="tables-grid" id="pd-vault-list">
                         <!-- JS vai injetar as fichas salvas aqui -->
                     </div>
@@ -375,7 +379,10 @@ window.onerror = function(msg, url, line, col, error) {
 
                     <div class="dashboard-header" style="margin-top: 2rem; border-top: 1px solid var(--gold-dim); padding-top: 2rem;">
                         <h2>Cofre de Fichas</h2>
-                        <button class="btn-outline" onclick="createNewBlankSheet()"><i class="fa-solid fa-plus"></i> Criar Ficha em Branco</button>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-outline" onclick="createNewBlankSheet()"><i class="fa-solid fa-plus"></i> Criar Ficha em Branco</button>
+                            <button class="btn-outline" onclick="triggerVaultImport()"><i class="fa-solid fa-file-import"></i> Importar Ficha (.json)</button>
+                        </div>
                     </div>
                     <p style="color: var(--text-muted); margin-bottom: 1rem;">Suas fichas salvas. Carregue uma delas para substituir a ficha ativa e jogar com outro personagem.</p>
                     
@@ -1161,7 +1168,7 @@ Altura     Dano
     <!-- Main scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="assets/js/firebase-sync2.js?v=21"></script>
-    <script src="assets/js/app2.js?v=24"></script>
+    <script src="assets/js/app2.js?v=25"></script>
     <script src="assets/js/pdf-viewer.js?v=9"></script>
     <script src="assets/js/npc.js?v=8"></script>
     <script src="assets/js/eventos.js?v=8"></script>

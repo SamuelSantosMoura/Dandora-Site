@@ -2254,7 +2254,7 @@ body.view-mode .sheet-container::before {
 .def-shield {
   width: 80px;
   height: 90px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120"><path d="M50 0 L100 20 L100 70 L50 120 L0 70 L0 20 Z" fill="none" stroke="%23c9a84c" stroke-width="4"/></svg>') no-repeat center center;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTIwIj48cGF0aCBkPSJNNTAgMCBMMTAwIDIwIEwxMDAgNzAgTDUwIDEyMCBMMCA3MCBMMCAyMCBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iNCIvPjwvc3ZnPg==') no-repeat center center;
   background-size: contain;
   display: flex;
   flex-direction: column;
@@ -2436,7 +2436,7 @@ body.view-mode .sheet-container::before {
 .epic-shield {
   width: 110px;
   height: 130px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120"><path d="M50 0 L100 20 L100 70 L50 120 L0 70 L0 20 Z" fill="%230a1428" stroke="%23c9a84c" stroke-width="4"/></svg>') no-repeat center center;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTIwIj48cGF0aCBkPSJNNTAgMCBMMTAwIDIwIEwxMDAgNzAgTDUwIDEyMCBMMCA3MCBMMCAyMCBaIiBmaWxsPSIjMGExNDI4IiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iNCIvPjwvc3ZnPg==') no-repeat center center;
   background-size: contain;
   display: flex;
   flex-direction: column;
