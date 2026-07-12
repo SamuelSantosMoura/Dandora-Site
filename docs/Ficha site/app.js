@@ -33,6 +33,10 @@
     // Aplicar modo de visualização por padrão (travar ficha)
     applyViewMode();
 
+    // Inicializar Drag and Drop para Magias e Habilidades
+    initDragAndDrop('spells-container', saveData);
+    initDragAndDrop('habilidades-container', saveData);
+
     window.addEventListener('storage', (e) => {
       if (e.key === STORAGE_KEY) {
         loadData();
@@ -171,6 +175,8 @@
       bonus_ataque_magia: val('bonus-ataque-magia'),
       pericia_primaria: val('pericia-primaria'),
       atributo_magia: val('atributo-magia'),
+      bonus_resistencia_magia: val('bonus-resistencia-magia'),
+      origem_bonus_resistencia: val('origem-bonus-resistencia'),
       teste_resistencia_magia: val('teste-resistencia-magia'),
 
       // Magias
@@ -301,12 +307,9 @@
     return attacks;
   }
 
-    function collectSpells() {
+  function collectSpells() {
     const spells = [];
     document.querySelectorAll('.spell-card.magia-card').forEach(card => {
-      const inputs = card.querySelectorAll('input[type="text"]');
-      const textarea = card.querySelector('textarea');
-      
       const aprimoramentos = {
         potencia: card.querySelector('.aprimoramento-potencia')?.checked || false,
         alcance: card.querySelector('.aprimoramento-alcance')?.checked || false,
@@ -316,20 +319,19 @@
         difusao: card.querySelector('.aprimoramento-difusao')?.checked || false,
       };
 
-      if (inputs.length >= 8) {
-        spells.push({
-          nome: inputs[0].value,
-          tipo: inputs[1].value,
-          execucao: inputs[2].value,
-          alcance: inputs[3].value,
-          alvo: inputs[4].value,
-          duracao: inputs[5].value,
-          pa: inputs[6].value,
-          resistencia: inputs[7].value,
-          efeito: textarea ? textarea.value : '',
-          aprimoramentos: aprimoramentos
-        });
-      }
+      spells.push({
+        nome: card.querySelector('.spell-nome')?.value || '',
+        circulo: card.querySelector('.spell-circulo')?.value || '1',
+        tipo: card.querySelector('.spell-tipo')?.value || '',
+        execucao: card.querySelector('.spell-execucao')?.value || '',
+        alcance: card.querySelector('.spell-alcance')?.value || '',
+        alvo: card.querySelector('.spell-alvo')?.value || '',
+        duracao: card.querySelector('.spell-duracao')?.value || '',
+        pa: card.querySelector('.spell-pa')?.value || '',
+        resistencia: card.querySelector('.spell-resistencia')?.value || '',
+        efeito: card.querySelector('.spell-efeito')?.value || '',
+        aprimoramentos: aprimoramentos
+      });
     });
     return spells;
   }
@@ -337,16 +339,12 @@
   function collectHabilidades() {
     const habs = [];
     document.querySelectorAll('#habilidades-container .spell-card').forEach(card => {
-      const inputs = card.querySelectorAll('input');
-      const textarea = card.querySelector('textarea');
-      if (inputs.length >= 3 && textarea) {
-        habs.push({
-          nome: inputs[0].value,
-          tipo: inputs[1].value,
-          custo: inputs[2].value,
-          desc: textarea.value
-        });
-      }
+      habs.push({
+        nome: card.querySelector('.hab-nome')?.value || '',
+        tipo: card.querySelector('.hab-fonte')?.value || '',
+        custo: card.querySelector('.hab-custo')?.value || '',
+        desc: card.querySelector('.hab-desc')?.value || ''
+      });
     });
     return habs;
   }
@@ -378,11 +376,21 @@
   /* ==========================================================
      SALVAR NO LOCALSTORAGE
   ========================================================== */
+  let syncTimeout = null;
+
   function saveData() {
     try {
       const data = collectData();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      // Não enviamos mais automaticamente para o mestre! (Salvamento Manual)
+      
+      // Auto-sincronizar com o pai (Mestre / Banco de dados) de forma debasada
+      clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(() => {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'DANDORA_SHEET_UPDATED', data: data }, '*');
+        }
+        updateSaveIndicator();
+      }, 1500);
     } catch (e) {
       console.error('Erro ao salvar:', e);
       if (e.name === 'QuotaExceededError') {
@@ -520,7 +528,7 @@
     setVal('moedas-ouro', data.moedas_ouro);
     setVal('moedas-diamante', data.moedas_diamante);
     const isTypingInItems = activeEl && activeEl.closest('#items-list');
-    if (Array.isArray(data.itens) && data.itens.length > 0 && !isTypingInItems) {
+    if (Array.isArray(data.itens) && !isTypingInItems) {
       const list = document.getElementById('items-list');
       if (list) {
         list.innerHTML = '';
@@ -535,12 +543,14 @@
     setVal('bonus-ataque-magia', data.bonus_ataque_magia);
     setVal('pericia-primaria', data.pericia_primaria || 'arcanismo');
     setVal('atributo-magia', data.atributo_magia || 'inteligencia');
+    setVal('bonus-resistencia-magia', data.bonus_resistencia_magia || 0);
+    setVal('origem-bonus-resistencia', data.origem_bonus_resistencia || '');
     setVal('teste-resistencia-magia', data.teste_resistencia_magia);
 
     // Magias
     const isTypingInSpells = activeEl && activeEl.closest('#spells-container');
     const spellsContainer = document.getElementById('spells-container');
-    if (spellsContainer && Array.isArray(data.magias) && data.magias.length > 0 && !isTypingInSpells) {
+    if (spellsContainer && Array.isArray(data.magias) && !isTypingInSpells) {
       spellsContainer.innerHTML = '';
       data.magias.forEach(m => addSpellCard(m));
     }
@@ -548,7 +558,7 @@
     // Habilidades
     const isTypingInHabs = activeEl && activeEl.closest('#habilidades-container');
     const habsContainer = document.getElementById('habilidades-container');
-    if (habsContainer && Array.isArray(data.habilidades) && data.habilidades.length > 0 && !isTypingInHabs) {
+    if (habsContainer && Array.isArray(data.habilidades) && !isTypingInHabs) {
       habsContainer.innerHTML = '';
       data.habilidades.forEach(hb => addHabilidadeCard(hb));
     }
@@ -656,6 +666,82 @@
     }
   }
 
+  window.moveCardUp = function(btn) {
+    if (document.body.classList.contains('view-mode')) return;
+    const card = btn.closest('.spell-card');
+    if (!card) return;
+    const previous = card.previousElementSibling;
+    if (previous && previous.classList.contains('spell-card')) {
+      card.parentNode.insertBefore(card, previous);
+      saveData();
+    }
+  };
+
+  window.moveCardDown = function(btn) {
+    if (document.body.classList.contains('view-mode')) return;
+    const card = btn.closest('.spell-card');
+    if (!card) return;
+    const next = card.nextElementSibling;
+    if (next && next.classList.contains('spell-card')) {
+      card.parentNode.insertBefore(card, next.nextSibling);
+      saveData();
+    }
+  };
+
+  function initDragAndDrop(containerId, saveFn) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.addEventListener('dragstart', (e) => {
+      if (document.body.classList.contains('view-mode')) {
+        e.preventDefault();
+        return;
+      }
+      const card = e.target.closest('.spell-card');
+      if (!card) return;
+      card.classList.add('dragging');
+    });
+
+    container.addEventListener('dragend', (e) => {
+      const card = e.target.closest('.spell-card');
+      if (card) card.classList.remove('dragging');
+    });
+
+    container.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      if (document.body.classList.contains('view-mode')) return;
+      
+      const draggingCard = container.querySelector('.dragging');
+      if (!draggingCard) return;
+
+      const afterElement = getDragAfterElement(container, e.clientY);
+      if (afterElement == null) {
+        container.appendChild(draggingCard);
+      } else {
+        container.insertBefore(draggingCard, afterElement);
+      }
+    });
+
+    container.addEventListener('drop', (e) => {
+      e.preventDefault();
+      saveFn();
+    });
+  }
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.spell-card:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
   function calculateCD() {
     const pericia = val('pericia-primaria') || 'arcanismo';
     const atributo = val('atributo-magia') || 'inteligencia';
@@ -677,7 +763,11 @@
       attrValue = parseInt(attrInput.value) || 0;
     }
     
-    const cd = 10 + skillBonus + attrValue;
+    // Obter bônus manual
+    const manualInput = document.getElementById('bonus-resistencia-magia');
+    const manualBonus = manualInput ? parseInt(manualInput.value) || 0 : 0;
+    
+    const cd = 10 + skillBonus + attrValue + manualBonus;
     
     const cdInput = document.getElementById('teste-resistencia-magia');
     if (cdInput) {
@@ -951,9 +1041,6 @@
     executeRoll(`Ofício (${spec}) [${mapped ? mapped.name : attrText}]`, attrValue, bonus, `Rolagem de Ofício`);
   };
 
-  /* ==========================================================
-     MAGIAS DINÃ‚MICAS
-  ========================================================== */
   window.addSpellCard = function (data) {
     const container = document.getElementById('spells-container');
     if (!container) return;
@@ -963,48 +1050,57 @@
     
     const card = document.createElement('div');
     card.className = 'spell-card magia-card';
+    card.setAttribute('draggable', 'true');
     card.innerHTML = `
+      <button class="spell-move-up" onclick="moveCardUp(this)" title="Mover para cima">▲</button>
+      <button class="spell-move-down" onclick="moveCardDown(this)" title="Mover para baixo">▼</button>
       <button class="spell-share" onclick="shareSpellCard(this)" title="Compartilhar no Chat"><i class="fa-solid fa-share-nodes"></i></button>
       <button class="spell-remove" onclick="removeSpellCard(this)" title="Remover magia">✕</button>
       <div class="spell-top">
         <div>
           <label class="field-label">Nome da Magia / Ritual</label>
-          <input type="text" value="${esc(d.nome)}" placeholder="Nome da magia...">
+          <input type="text" class="spell-nome" value="${esc(d.nome)}" placeholder="Nome da magia...">
+        </div>
+        <div>
+          <label class="field-label">Círculo</label>
+          <select class="spell-circulo" onchange="saveData()">
+            ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(c => `<option value="${c}" ${d.circulo == c ? 'selected' : ''}>${c}º Círculo</option>`).join('')}
+          </select>
         </div>
         <div>
           <label class="field-label">Tipo da Magia</label>
-          <input type="text" value="${esc(d.tipo)}" placeholder="Arcana, Divina...">
+          <input type="text" class="spell-tipo" value="${esc(d.tipo)}" placeholder="Arcana, Divina...">
         </div>
       </div>
       <div class="spell-meta">
         <div>
           <label class="field-label">Execução</label>
-          <input type="text" value="${esc(d.execucao)}" placeholder="Padrão">
+          <input type="text" class="spell-execucao" value="${esc(d.execucao)}" placeholder="Padrão">
         </div>
         <div>
           <label class="field-label">Alcance</label>
-          <input type="text" value="${esc(d.alcance)}" placeholder="9m">
+          <input type="text" class="spell-alcance" value="${esc(d.alcance)}" placeholder="9m">
         </div>
         <div>
           <label class="field-label">Alvo</label>
-          <input type="text" value="${esc(d.alvo)}" placeholder="1 criatura">
+          <input type="text" class="spell-alvo" value="${esc(d.alvo)}" placeholder="1 criatura">
         </div>
         <div>
           <label class="field-label">Duração</label>
-          <input type="text" value="${esc(d.duracao)}" placeholder="Instantânea">
+          <input type="text" class="spell-duracao" value="${esc(d.duracao)}" placeholder="Instantânea">
         </div>
         <div>
           <label class="field-label">PA Base</label>
-          <input type="text" value="${esc(d.pa)}" placeholder="2">
+          <input type="text" class="spell-pa" value="${esc(d.pa)}" placeholder="2">
         </div>
       </div>
       <div class="spell-resistance">
         <label class="field-label">Resistência</label>
-        <input type="text" value="${esc(d.resistencia)}" placeholder="Vontade anula">
+        <input type="text" class="spell-resistencia" value="${esc(d.resistencia)}" placeholder="Vontade anula">
       </div>
       <div class="spell-effect">
         <label class="field-label">Dano / Efeito</label>
-        <textarea placeholder="Descreva o efeito da magia...">${esc(d.efeito)}</textarea>
+        <textarea class="spell-efeito" placeholder="Descreva o efeito da magia...">${esc(d.efeito)}</textarea>
       </div>
       
       <!-- Aprimoramentos -->
@@ -1057,13 +1153,12 @@
 
   window.useMagiaChat = function(btn) {
       const card = btn.closest('.spell-card');
-      const inputs = card.querySelectorAll('input[type="text"]');
-      const textarea = card.querySelector('textarea');
-      
-      const nome = inputs[0] && inputs[0].value ? inputs[0].value : 'Magia sem nome';
-      let pa = inputs[6] && inputs[6].value ? parseInt(inputs[6].value) || 0 : 0;
-      let dt = inputs[7] && inputs[7].value ? inputs[7].value : 'Não possui';
-      let desc = textarea && textarea.value ? textarea.value : '';
+      if (!card) return;
+      const nome = card.querySelector('.spell-nome')?.value || 'Magia sem nome';
+      const circulo = card.querySelector('.spell-circulo')?.value || '1';
+      let pa = parseInt(card.querySelector('.spell-pa')?.value) || 0;
+      let dt = card.querySelector('.spell-resistencia')?.value || 'Não possui';
+      let desc = card.querySelector('.spell-efeito')?.value || '';
       
       let modificadoresTxt = [];
       
@@ -1089,7 +1184,7 @@
           modificadoresTxt.push('✦ Difusão (+1 Alvo)');
       }
       
-      let fullDesc = `[Custo: ${pa} PA] | [Resistência: ${dt}]\n\n`;
+      let fullDesc = `[Círculo: ${circulo}º] | [Custo: ${pa} PA] | [Resistência: ${dt}]\n\n`;
       
       if (modificadoresTxt.length > 0) {
           fullDesc += `[APRIMORADA]:\n${modificadoresTxt.join('\n')}\n\n`;
@@ -1103,7 +1198,7 @@
         payload: {
           type: 'skill',
           content: JSON.stringify({
-            name: nome,
+            name: `${nome} (${circulo}º Círculo)`,
             desc: fullDesc,
             cost: pa + ' PA'
           })
@@ -1118,26 +1213,29 @@
     const d = data || {};
     const card = document.createElement('div');
     card.className = 'spell-card';
+    card.setAttribute('draggable', 'true');
     card.innerHTML = `
+      <button class="spell-move-up" onclick="moveCardUp(this)" title="Mover para cima">▲</button>
+      <button class="spell-move-down" onclick="moveCardDown(this)" title="Mover para baixo">▼</button>
       <button class="spell-share" onclick="shareHabilidadeCard(this)" title="Compartilhar no Chat"><i class="fa-solid fa-share-nodes"></i></button>
       <button class="spell-remove" onclick="removeHabilidadeCard(this)" title="Remover habilidade">✕</button>
       <div class="spell-top">
         <div style="flex: 2;">
           <label class="field-label">Nome da Habilidade</label>
-          <input type="text" value="${esc(d.nome)}" placeholder="Nome...">
+          <input type="text" class="hab-nome" value="${esc(d.nome)}" placeholder="Nome...">
         </div>
         <div>
           <label class="field-label">Fonte</label>
-          <input type="text" value="${esc(d.tipo)}" placeholder="Classe, Origem...">
+          <input type="text" class="hab-fonte" value="${esc(d.tipo)}" placeholder="Classe, Origem...">
         </div>
         <div style="flex: 0.5;">
           <label class="field-label">Custo (PA)</label>
-          <input type="text" value="${esc(d.custo)}" placeholder="Ex: 1">
+          <input type="text" class="hab-custo" value="${esc(d.custo)}" placeholder="Ex: 1">
         </div>
       </div>
       <div class="spell-desc">
         <label class="field-label">Descrição</label>
-        <textarea placeholder="Como funciona essa habilidade?">${esc(d.desc)}</textarea>
+        <textarea class="hab-desc" placeholder="Como funciona essa habilidade?">${esc(d.desc)}</textarea>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
           <button class="btn-dandora" style="padding: 5px 15px; font-size: 0.8rem;" onclick="useHabilidadeChat(this)">
@@ -1151,12 +1249,9 @@
 
   window.useHabilidadeChat = function(btn) {
       const card = btn.closest('.spell-card');
-      const inputs = card.querySelectorAll('input');
-      const textarea = card.querySelector('textarea');
-      
-      const nome = inputs[0] && inputs[0].value ? inputs[0].value : 'Habilidade sem nome';
-      const custo = inputs[2] && inputs[2].value ? inputs[2].value : 'Livre';
-      const desc = textarea && textarea.value ? textarea.value : '';
+      const nome = card.querySelector('.hab-nome')?.value || 'Habilidade sem nome';
+      const custo = card.querySelector('.hab-custo')?.value || 'Livre';
+      const desc = card.querySelector('.hab-desc')?.value || '';
       
       const fullDesc = `[Custo: ${custo}]\n${desc}`;
       
@@ -1394,18 +1489,26 @@
   window.shareSpellCard = function(btn) {
       const card = btn.closest('.spell-card');
       if (!card) return;
-      const name = getInputValue(card, 'Nome da Magia') || 'Magia Desconhecida';
-      const cost = getInputValue(card, 'PA Base') || '';
-      const range = getInputValue(card, 'Alcance') || '';
-      const duration = getInputValue(card, 'Duração') || '';
-      const castTime = getInputValue(card, 'Execução') || '';
-      const desc = getInputValue(card, 'Dano / Efeito') || '';
+      const name = card.querySelector('.spell-nome')?.value || 'Magia Desconhecida';
+      const circulo = card.querySelector('.spell-circulo')?.value || '1';
+      const cost = card.querySelector('.spell-pa')?.value || '';
+      const range = card.querySelector('.spell-alcance')?.value || '';
+      const duration = card.querySelector('.spell-duracao')?.value || '';
+      const castTime = card.querySelector('.spell-execucao')?.value || '';
+      const desc = card.querySelector('.spell-efeito')?.value || '';
       
       window.parent.postMessage({
           type: 'DANDORA_CHAT_MSG',
           payload: {
               type: 'skill_share',
-              content: JSON.stringify({ name, cost: cost ? cost + ' PA' : '', range, duration, castTime, desc })
+              content: JSON.stringify({ 
+                  name: `${name} (${circulo}º Círculo)`, 
+                  cost: cost ? cost + ' PA' : '', 
+                  range, 
+                  duration, 
+                  castTime, 
+                  desc 
+              })
           }
       }, '*');
   };
@@ -1413,9 +1516,9 @@
   window.shareHabilidadeCard = function(btn) {
       const card = btn.closest('.spell-card');
       if (!card) return;
-      const name = getInputValue(card, 'Nome da Habilidade') || 'Habilidade Desconhecida';
-      const cost = getInputValue(card, 'Custo (PA)') || '';
-      const desc = getInputValue(card, 'Descrição') || '';
+      const name = card.querySelector('.hab-nome')?.value || 'Habilidade Desconhecida';
+      const cost = card.querySelector('.hab-custo')?.value || '';
+      const desc = card.querySelector('.hab-desc')?.value || '';
       
       window.parent.postMessage({
           type: 'DANDORA_CHAT_MSG',

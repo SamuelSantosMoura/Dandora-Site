@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Ficha de Personagem Digital para o RPG Dandora.">
   <title>Ficha de Personagem — Dandora RPG</title>
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=11">
   <link rel="shortcut icon" href="../Escudo de Mestre/Image/Logo/favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -588,6 +588,14 @@
           </select>
         </div>
         <div class="magic-header-card">
+          <label class="field-label" for="bonus-resistencia-magia">Bônus Resistência</label>
+          <input type="number" id="bonus-resistencia-magia" value="0" placeholder="+0" oninput="calculateCD(); saveData()">
+        </div>
+        <div class="magic-header-card">
+          <label class="field-label" for="origem-bonus-resistencia">Origem do Bônus</label>
+          <input type="text" id="origem-bonus-resistencia" placeholder="Talento, Item..." oninput="saveData()">
+        </div>
+        <div class="magic-header-card">
           <label class="field-label" for="teste-resistencia-magia">Teste de Resistência (DT)</label>
           <input type="text" id="teste-resistencia-magia" readonly style="background: rgba(255, 255, 255, 0.05); color: var(--gold-light); font-weight: bold; text-align: center; pointer-events: none;">
         </div>
@@ -847,7 +855,7 @@
   </div>
 
   <!-- ==================== SCRIPT DE INICIALIZAÇÃO ==================== -->
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
   <script>
     // Sistema de Abas (Tabs)
     function switchTab(tabId) {

@@ -917,8 +917,38 @@ input[type="number"]::-webkit-inner-spin-button {
   opacity: 0;
 }
 
+.spell-card .spell-move-down {
+  position: absolute;
+  top: 8px;
+  right: 86px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  transition: color 0.2s;
+  opacity: 0;
+}
+
+.spell-card .spell-move-up {
+  position: absolute;
+  top: 8px;
+  right: 112px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  transition: color 0.2s;
+  opacity: 0;
+}
+
 .spell-card:hover .spell-remove,
-.spell-card:hover .spell-share {
+.spell-card:hover .spell-share,
+.spell-card:hover .spell-move-down,
+.spell-card:hover .spell-move-up {
   opacity: 1;
 }
 
@@ -928,6 +958,11 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .spell-card .spell-share:hover {
   color: #3498db;
+}
+
+.spell-card .spell-move-up:hover,
+.spell-card .spell-move-down:hover {
+  color: var(--gold);
 }
 
 /* === ANOTAÇÕES === */
@@ -1893,6 +1928,8 @@ body.view-mode input[type="file"] {
 /* Esconder botões de adicionar/remover no modo visualização */
 body.view-mode .spell-remove,
 body.view-mode .spell-share,
+body.view-mode .spell-move-up,
+body.view-mode .spell-move-down,
 body.view-mode .btn-row .btn:not(.btn-roll),
 body.view-mode .item-remove-btn,
 body.view-mode #btn-remove-portrait,
