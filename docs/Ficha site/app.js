@@ -1600,13 +1600,14 @@
     
     const printArea = document.createElement('div');
     printArea.id = 'pdf-print-area';
-    printArea.style.position = 'fixed';
-    printArea.style.left = '-9999px';
+    printArea.style.position = 'absolute';
+    printArea.style.left = '0';
     printArea.style.top = '0';
     printArea.style.width = '210mm';
     printArea.style.background = '#070c14';
     printArea.style.color = '#e2e8f0';
     printArea.style.fontFamily = "'Inter', sans-serif";
+    printArea.style.zIndex = '-9999'; // Render behind everything else, but ON screen
     document.body.appendChild(printArea);
     
     // Add print styles
@@ -1931,11 +1932,20 @@
     const opt = {
       margin:       0,
       filename:     `ficha_${safeName}.pdf`,
-      image:        { type: 'png' },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#070c14', logging: false, imageTimeout: 0 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#070c14', logging: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['css', 'legacy'] }
     };
     
+    // Position it safely for html2canvas
+    printArea.style.position = 'absolute';
+    printArea.style.left = '0';
+    printArea.style.top = '0';
+    printArea.style.zIndex = '-9999';
+    // We do NOT use display: none or visibility: hidden because html2canvas ignores them.
+    // Instead we put it behind the current page.
+
     // Obter biblioteca do contexto do iframe ou do contexto pai como fallback
     const html2pdfLib = window.html2pdf || (window.parent && window.parent.html2pdf);
     
