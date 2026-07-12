@@ -937,13 +937,34 @@ function renderActiveSheet() {
                 </div>
             `;
         } else {
-            infoContainer.innerHTML = `
-                <i class="fa-solid fa-file-circle-question" style="font-size: 2.5rem; color: var(--text-muted);"></i>
-                <div>
-                    <h3 style="margin:0; color: var(--text-muted);">Slot Vazio</h3>
-                    <p style="margin:0; color: var(--text-muted);">Nenhuma ficha em uso</p>
-                </div>
-            `;
+            const vaultKey = `dandora_vault_${currentUser.email}`;
+            const vault = JSON.parse(localStorage.getItem(vaultKey)) || [];
+            
+            if (vault.length > 0) {
+                infoContainer.innerHTML = `
+                    <i class="fa-solid fa-file-circle-question" style="font-size: 2.5rem; color: var(--text-muted);"></i>
+                    <div>
+                        <h3 style="margin:0; color: var(--text-muted); font-size: 1.1rem;">Slot Vazio</h3>
+                        <div style="display:flex; gap:10px; align-items:center; margin-top:5px; flex-wrap: wrap;">
+                            <select id="pt-import-select" style="background: rgba(10, 20, 40, 0.8); border: 1px solid rgba(201,168,76,0.35); color: var(--text-light); padding: 6px 12px; border-radius: 4px; font-family: var(--font-body); font-size: 0.9rem; outline: none; width: auto; max-width: 250px;">
+                                <option value="">-- Escolha uma Ficha do Cofre --</option>
+                                ${vault.map(s => `<option value="${s._vaultId}">${s.nome} (${s.classe || 'Aventureiro'})</option>`).join('')}
+                            </select>
+                            <button class="btn-epic" style="padding: 6px 14px; font-size: 0.85rem;" onclick="importSheetFromVaultSelect()">
+                                <i class="fa-solid fa-upload"></i> Carregar Ficha
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                infoContainer.innerHTML = `
+                    <i class="fa-solid fa-file-circle-question" style="font-size: 2.5rem; color: var(--text-muted);"></i>
+                    <div>
+                        <h3 style="margin:0; color: var(--text-muted);">Slot Vazio</h3>
+                        <p style="margin:0; color: var(--text-muted);">Nenhuma ficha em uso. Crie uma abaixo no cofre.</p>
+                    </div>
+                `;
+            }
         }
     } catch (e) {
         console.error(e);
@@ -1052,10 +1073,25 @@ function loadSheetFromVault(id) {
     if (sheet) {
         const sheetKey = getActiveSheetKey();
         localStorage.setItem(sheetKey, JSON.stringify(sheet));
+        
+        // Sincronizar nova ficha com o Mestre e a Mesa
+        syncPlayerSheetToTable(sheet);
+        
         renderActiveSheet();
         alert(`A ficha de ${sheet.nome} foi carregada e está ativa.`);
     }
 }
+
+window.importSheetFromVaultSelect = function() {
+    const select = document.getElementById('pt-import-select');
+    if (!select) return;
+    const val = select.value;
+    if (!val) {
+        alert("Por favor, selecione uma ficha do cofre.");
+        return;
+    }
+    loadSheetFromVault(val);
+};
 
 function deleteSheetFromVault(id) {
     if(!confirm("Tem certeza que deseja excluir essa ficha do seu cofre permanentemente?")) return;
