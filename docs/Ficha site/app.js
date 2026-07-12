@@ -1700,33 +1700,8 @@
         textarea.parentNode.replaceChild(div, textarea);
       });
 
-      // Convert all visible images (like the portrait) to canvas elements to prevent jsPDF from crashing on WebP/unsupported formats
-      const clonedImages = clone.querySelectorAll('img');
-      clonedImages.forEach(img => {
-        if (!img.src || img.src.trim() === '' || img.style.display === 'none' || img.offsetParent === null) {
-          img.parentNode.removeChild(img);
-          return;
-        }
-        
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth || img.width || 100;
-          canvas.height = img.naturalHeight || img.height || 100;
-          const ctx = canvas.getContext('2d');
-          
-          canvas.style.cssText = img.style.cssText;
-          canvas.className = img.className;
-          canvas.style.display = 'block';
-          
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          ctx.getImageData(0, 0, 1, 1); // Verify if tainted
-          
-          img.parentNode.replaceChild(canvas, img);
-        } catch (e) {
-          console.warn("Image tainted or failed to convert to canvas, keeping as image element:", e);
-          img.crossOrigin = "anonymous";
-        }
-      });
+      // Remove all images from clone - they will be stripped anyway by the sanitizer
+      clone.querySelectorAll('img').forEach(img => img.remove());
 
       return clone;
     }
@@ -1929,37 +1904,35 @@
     printArea.appendChild(page5);
     
     // ----------------------------------------------------
-    // SANITIZE: Remove ALL SVG backgrounds and problematic images
-    // html2canvas reads computed styles, so CSS !important rules
-    // inside <style> tags may be ignored. We must inline-override.
+    // SANITIZE: Nuclear cleanup of ALL images before PDF
+    // html2canvas reads computed styles and tries to load
+    // images from data URIs. jsPDF only supports JPEG/PNG.
+    // We must remove EVERYTHING image-related.
     // ----------------------------------------------------
-    const allElements = printArea.querySelectorAll('*');
-    allElements.forEach(el => {
-      try {
-        const computedBg = window.getComputedStyle(el).backgroundImage;
-        if (computedBg && computedBg !== 'none' && (computedBg.includes('svg') || computedBg.includes('image/'))) {
-          el.style.backgroundImage = 'none';
-        }
-      } catch(e) { /* ignore */ }
+    
+    // 1. Remove ALL <img> tags entirely from the print area
+    printArea.querySelectorAll('img').forEach(img => img.remove());
+    
+    // 2. Remove ALL <canvas> elements (from our earlier conversions)
+    printArea.querySelectorAll('canvas').forEach(c => c.remove());
+    
+    // 3. Force-clear background-image on EVERY element via inline style
+    printArea.querySelectorAll('*').forEach(el => {
+      el.style.backgroundImage = 'none';
     });
-
-    // Remove any remaining <img> that might cause issues
-    const allImgs = printArea.querySelectorAll('img');
-    allImgs.forEach(img => {
-      if (!img.src || img.src.trim() === '' || img.src.includes('svg') || img.style.display === 'none') {
-        img.remove();
-      }
-    });
+    
+    // 4. Also clear the printArea itself
+    printArea.style.backgroundImage = 'none';
 
     // ----------------------------------------------------
     // GENERATE PDF VIA HTML2PDF
     // ----------------------------------------------------
-    const safeName = charName.replace(/[^a-zA-Z0-9_\-\u00C0-\u017F ]/g, '').replace(/\s+/g, '_');
+    const safeName = charName.replace(/[^a-zA-Z0-9_\-\u00C0-\u017F ]/g, '').replace(/\s+/g, '_') || 'Personagem';
     const opt = {
       margin:       0,
       filename:     `ficha_${safeName}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#070c14', allowTaint: true, removeContainer: true },
+      image:        { type: 'png' },
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#070c14', logging: false, imageTimeout: 0 },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     
@@ -1969,30 +1942,24 @@
     if (!html2pdfLib) {
       alert("Erro: A biblioteca de PDF (html2pdf) não pôde ser carregada. Certifique-se de estar conectado à internet.");
       showToast("❌ Erro: html2pdf não encontrado");
-      if (printArea.parentNode) {
-        document.body.removeChild(printArea);
-      }
+      if (printArea.parentNode) document.body.removeChild(printArea);
       return;
     }
     
     try {
       html2pdfLib().set(opt).from(printArea).save().then(() => {
-        document.body.removeChild(printArea);
+        if (printArea.parentNode) document.body.removeChild(printArea);
         showToast('✦ PDF gerado com sucesso!');
       }).catch(err => {
         console.error("Erro ao gerar PDF (Promise):", err);
-        alert("Erro ao gerar PDF: " + err.message);
-        if (document.getElementById('pdf-print-area')) {
-          document.body.removeChild(printArea);
-        }
+        alert("Erro ao gerar PDF: " + (err.message || err));
+        if (printArea.parentNode) document.body.removeChild(printArea);
         showToast('❌ Erro ao gerar PDF');
       });
     } catch(err) {
       console.error("Erro síncrono ao gerar PDF:", err);
-      alert("Erro crítico ao gerar PDF: " + err.message);
-      if (document.getElementById('pdf-print-area')) {
-        document.body.removeChild(printArea);
-      }
+      alert("Erro crítico ao gerar PDF: " + (err.message || err));
+      if (printArea.parentNode) document.body.removeChild(printArea);
       showToast('❌ Erro crítico PDF');
     }
   };
