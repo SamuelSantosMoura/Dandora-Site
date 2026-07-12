@@ -1549,7 +1549,7 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    showToast('âœ¦ Ficha exportada com sucesso!');
+    showToast('✦ Ficha exportada com sucesso!');
   };
 
   /* ==========================================================
@@ -1567,19 +1567,355 @@
     reader.onload = function (e) {
       try {
         const data = JSON.parse(e.target.result);
+        
+        // Validação básica do arquivo de backup
+        if (!data || typeof data !== 'object') {
+          throw new Error('Formato do arquivo inválido.');
+        }
+        if (data.nome === undefined && data.forca === undefined && data.classe === undefined) {
+          throw new Error('O arquivo selecionado não é uma ficha válida do Dandora RPG.');
+        }
+        
         applyData(data);
         saveData();
         updateAllBars();
         updateAllDice();
         updateSlots();
-        showToast('âœ¦ Ficha importada com sucesso!');
+        showToast('✦ Ficha importada com sucesso!');
       } catch (err) {
-        showToast('âš  Erro ao ler o arquivo JSON');
+        alert('❌ Erro na importação: ' + err.message);
+        showToast('⚠ Erro ao ler o arquivo JSON');
         console.error('Erro na importação:', err);
       }
     };
     reader.readAsText(file);
     event.target.value = '';
+  };
+
+  /* ==========================================================
+     EXPORTAR PARA PDF (IMPRESSÃO)
+  ========================================================== */
+  window.printPDF = function() {
+    showToast('⏳ Gerando PDF da ficha...');
+    
+    const printArea = document.createElement('div');
+    printArea.id = 'pdf-print-area';
+    printArea.style.position = 'fixed';
+    printArea.style.left = '-9999px';
+    printArea.style.top = '0';
+    printArea.style.width = '210mm';
+    printArea.style.background = '#070c14';
+    printArea.style.color = '#e2e8f0';
+    printArea.style.fontFamily = "'Inter', sans-serif";
+    document.body.appendChild(printArea);
+    
+    // Add print styles
+    const style = document.createElement('style');
+    style.innerHTML = `
+      #pdf-print-area button, 
+      #pdf-print-area .btn-roll,
+      #pdf-print-area .roller-btn,
+      #pdf-print-area .attack-delete-btn,
+      #pdf-print-area .spell-delete-btn,
+      #pdf-print-area .spell-share-btn,
+      #pdf-print-area .spell-move-up,
+      #pdf-print-area .spell-move-down,
+      #pdf-print-area .hab-delete-btn,
+      #pdf-print-area .hab-move-up,
+      #pdf-print-area .hab-move-down,
+      #pdf-print-area .btn-add,
+      #pdf-print-area #btn-remove-portrait,
+      #pdf-print-area .item-delete-btn {
+        display: none !important;
+      }
+      #pdf-print-area input, #pdf-print-area select {
+        border: none !important;
+        background: transparent !important;
+        color: #e2e8f0 !important;
+        pointer-events: none !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        font-family: inherit !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        padding: 2px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      #pdf-print-area input[type="checkbox"] {
+        appearance: checkbox !important;
+        -webkit-appearance: checkbox !important;
+        display: inline-block !important;
+        width: auto !important;
+        opacity: 0.9 !important;
+      }
+      #pdf-print-area .pdf-page {
+        width: 210mm;
+        min-height: 297mm;
+        padding: 15mm;
+        box-sizing: border-box;
+        page-break-after: always;
+        position: relative;
+        background: #070c14;
+      }
+      #pdf-print-area .pdf-page:last-child {
+        page-break-after: avoid;
+      }
+    `;
+    printArea.appendChild(style);
+    
+    // Copy helper
+    function cloneWithValues(element) {
+      const clone = element.cloneNode(true);
+      const originalInputs = element.querySelectorAll('input, select, textarea');
+      const clonedInputs = clone.querySelectorAll('input, select, textarea');
+      originalInputs.forEach((input, index) => {
+        if (input.type === 'checkbox') {
+          clonedInputs[index].checked = input.checked;
+        } else {
+          clonedInputs[index].value = input.value;
+        }
+      });
+      
+      const clonedTextareas = clone.querySelectorAll('textarea');
+      clonedTextareas.forEach(textarea => {
+        const div = document.createElement('div');
+        div.style.whiteSpace = 'pre-wrap';
+        div.style.background = 'rgba(10, 20, 40, 0.8)';
+        div.style.border = '1px solid rgba(201, 168, 76, 0.35)';
+        div.style.padding = '9px 12px';
+        div.style.borderRadius = '4px';
+        div.style.color = '#e2e8f0';
+        div.style.minHeight = textarea.style.height || textarea.style.minHeight || '60px';
+        div.style.fontFamily = 'var(--font-body)';
+        div.style.fontSize = '14px';
+        div.style.boxSizing = 'border-box';
+        div.style.width = '100%';
+        div.textContent = textarea.value;
+        textarea.parentNode.replaceChild(div, textarea);
+      });
+      return clone;
+    }
+    
+    const charName = document.getElementById('char-nome')?.value || 'Personagem';
+    
+    // ----------------------------------------------------
+    // PAGE 1: FICHA PRINCIPAL
+    // ----------------------------------------------------
+    const page1 = document.createElement('div');
+    page1.className = 'pdf-page';
+    
+    const headerHtml = `
+      <div style="text-align: center; margin-bottom: 15px; border-bottom: 2px solid var(--gold); padding-bottom: 10px;">
+        <h1 style="font-family: 'Cinzel', serif; color: var(--gold-light); margin: 0; font-size: 2rem; letter-spacing: 2px;">DANDORA RPG</h1>
+        <p style="margin: 3px 0 0; color: var(--gold-dim); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Ficha Oficial de Personagem</p>
+      </div>
+    `;
+    page1.innerHTML = headerHtml;
+    
+    const mainTab = cloneWithValues(document.getElementById('tab-principal'));
+    mainTab.style.display = 'block';
+    
+    // Scale main tab down to fit beautifully on page 1
+    const mainWrapper = document.createElement('div');
+    mainWrapper.style.transform = 'scale(0.85)';
+    mainWrapper.style.transformOrigin = 'top center';
+    mainWrapper.style.width = '117%';
+    mainWrapper.style.marginBottom = '-100px';
+    mainWrapper.appendChild(mainTab);
+    
+    page1.appendChild(mainWrapper);
+    printArea.appendChild(page1);
+    
+    // ----------------------------------------------------
+    // PAGE 2: HABILIDADES
+    // ----------------------------------------------------
+    const page2 = document.createElement('div');
+    page2.className = 'pdf-page';
+    page2.innerHTML = `
+      <div style="border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-bottom: 15px;">
+        <h2 style="font-family: 'Cinzel', serif; color: var(--gold-light); margin: 0; font-size: 1.6rem;">🏅 HABILIDADES & TALENTOS</h2>
+      </div>
+    `;
+    
+    const habs = collectHabilidades();
+    if (habs.length === 0) {
+      page2.innerHTML += `<p style="color: var(--text-muted); font-style: italic;">Nenhuma habilidade cadastrada.</p>`;
+    } else {
+      const habsList = document.createElement('div');
+      habsList.style.display = 'flex';
+      habsList.style.flexDirection = 'column';
+      habsList.style.gap = '12px';
+      
+      habs.forEach(hab => {
+        const card = document.createElement('div');
+        card.style.background = 'rgba(0, 0, 0, 0.4)';
+        card.style.border = '1px solid rgba(201, 168, 76, 0.25)';
+        card.style.borderRadius = '6px';
+        card.style.padding = '12px';
+        card.style.pageBreakInside = 'avoid';
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(201, 168, 76, 0.15); padding-bottom: 4px; margin-bottom: 6px;">
+            <h3 style="font-family: 'Cinzel', serif; color: var(--gold); margin: 0; font-size: 1.1rem;">${hab.nome}</h3>
+            <span style="font-size: 0.8rem; background: rgba(201, 168, 76, 0.15); color: var(--gold-light); padding: 2px 6px; border-radius: 4px;">Custo: ${hab.custo || '0'} PA</span>
+          </div>
+          <p style="margin: 2px 0; font-size: 0.8rem; color: var(--text-muted);"><strong>Fonte/Tipo:</strong> ${hab.tipo || 'Geral'}</p>
+          <p style="margin: 6px 0 0; line-height: 1.45; font-size: 0.9rem; white-space: pre-wrap; color: #cbd5e1;">${hab.desc}</p>
+        `;
+        habsList.appendChild(card);
+      });
+      page2.appendChild(habsList);
+    }
+    printArea.appendChild(page2);
+    
+    // ----------------------------------------------------
+    // PAGE 3: MAGIAS
+    // ----------------------------------------------------
+    const page3 = document.createElement('div');
+    page3.className = 'pdf-page';
+    page3.innerHTML = `
+      <div style="border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-bottom: 15px;">
+        <h2 style="font-family: 'Cinzel', serif; color: var(--gold-light); margin: 0; font-size: 1.6rem;">✨ MAGIAS & RITUAIS</h2>
+      </div>
+    `;
+    
+    const periciaPrimaria = document.getElementById('pericia-primaria')?.value || 'arcanismo';
+    const atributoMagia = document.getElementById('atributo-magia')?.value || 'inteligencia';
+    const bonusAtaque = document.getElementById('bonus-ataque-magia')?.value || '+0';
+    const dt = document.getElementById('teste-resistencia-magia')?.value || '10';
+    const bonusManual = document.getElementById('bonus-resistencia-magia')?.value || '0';
+    const origemBonus = document.getElementById('origem-bonus-resistencia')?.value || '';
+    
+    page3.innerHTML += `
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: rgba(201, 168, 76, 0.08); border: 1px solid rgba(201, 168, 76, 0.3); padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.8rem;">
+        <div><strong>Ataque Mágico:</strong> ${bonusAtaque}</div>
+        <div><strong>Perícia Primária:</strong> ${periciaPrimaria.toUpperCase()}</div>
+        <div><strong>Atributo:</strong> ${atributoMagia.toUpperCase()}</div>
+        <div style="color: var(--gold-light);"><strong>DT Resistência:</strong> ${dt}</div>
+        ${origemBonus ? `<div style="grid-column: 1/-1; font-size: 0.75rem; color: var(--text-muted);">Bônus Manual: ${bonusManual > 0 ? '+' : ''}${bonusManual} (Origem: ${origemBonus})</div>` : ''}
+      </div>
+    `;
+    
+    const spells = collectSpells();
+    if (spells.length === 0) {
+      page3.innerHTML += `<p style="color: var(--text-muted); font-style: italic;">Nenhuma magia cadastrada.</p>`;
+    } else {
+      const spellsList = document.createElement('div');
+      spellsList.style.display = 'flex';
+      spellsList.style.flexDirection = 'column';
+      spellsList.style.gap = '12px';
+      
+      spells.forEach(spell => {
+        const card = document.createElement('div');
+        card.style.background = 'rgba(0, 0, 0, 0.4)';
+        card.style.border = '1px solid rgba(201, 168, 76, 0.25)';
+        card.style.borderRadius = '6px';
+        card.style.padding = '12px';
+        card.style.pageBreakInside = 'avoid';
+        
+        let enhancementsTxt = [];
+        if (spell.aprimoramentos) {
+          if (spell.aprimoramentos.potencia) enhancementsTxt.push('Potência');
+          if (spell.aprimoramentos.alcance) enhancementsTxt.push('Alcance');
+          if (spell.aprimoramentos.persist) enhancementsTxt.push('Persistência');
+          if (spell.aprimoramentos.coercao) enhancementsTxt.push('Coerção');
+          if (spell.aprimoramentos.eficiencia) enhancementsTxt.push('Eficiência');
+          if (spell.aprimoramentos.difusao) enhancementsTxt.push('Difusão');
+        }
+        
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(201, 168, 76, 0.15); padding-bottom: 4px; margin-bottom: 6px;">
+            <h3 style="font-family: 'Cinzel', serif; color: var(--gold); margin: 0; font-size: 1.1rem;">${spell.nome}</h3>
+            <span style="font-size: 0.8rem; background: rgba(201, 168, 76, 0.15); color: var(--gold-light); padding: 2px 6px; border-radius: 4px;">${spell.circulo || '1'}º Círculo</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-muted);">
+            <div><strong>Tipo:</strong> ${spell.tipo || 'Arcana'}</div>
+            <div><strong>Custo:</strong> ${spell.pa || '0'} PA</div>
+            <div><strong>Execução:</strong> ${spell.execucao || 'Padrão'}</div>
+            <div><strong>Alcance:</strong> ${spell.alcance || 'Pessoal'}</div>
+            <div><strong>Alvo/Área:</strong> ${spell.alvo || 'N/A'}</div>
+            <div><strong>Duração:</strong> ${spell.duracao || 'Instantânea'}</div>
+            <div style="grid-column: 1/-1;"><strong>Resistência:</strong> ${spell.resistencia || 'Nenhuma'}</div>
+          </div>
+          <p style="margin: 6px 0 0; line-height: 1.45; font-size: 0.9rem; white-space: pre-wrap; color: #cbd5e1;">${spell.efeito}</p>
+          ${enhancementsTxt.length > 0 ? `<div style="margin-top: 8px; font-size: 0.75rem; color: var(--gold-light); font-style: italic;">✦ Aprimoramentos ativos: ${enhancementsTxt.join(', ')}</div>` : ''}
+        `;
+        spellsList.appendChild(card);
+      });
+      page3.appendChild(spellsList);
+    }
+    printArea.appendChild(page3);
+    
+    // ----------------------------------------------------
+    // PAGE 4: INVENTÁRIO
+    // ----------------------------------------------------
+    const page4 = document.createElement('div');
+    page4.className = 'pdf-page';
+    page4.innerHTML = `
+      <div style="border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-bottom: 15px;">
+        <h2 style="font-family: 'Cinzel', serif; color: var(--gold-light); margin: 0; font-size: 1.6rem;">🎒 INVENTÁRIO & EQUIPAMENTOS</h2>
+      </div>
+    `;
+    
+    const invTab = cloneWithValues(document.getElementById('tab-inventario'));
+    invTab.style.display = 'block';
+    
+    const invWrapper = document.createElement('div');
+    invWrapper.style.transform = 'scale(0.9)';
+    invWrapper.style.transformOrigin = 'top center';
+    invWrapper.style.width = '111%';
+    invWrapper.style.marginBottom = '-50px';
+    invWrapper.appendChild(invTab);
+    
+    page4.appendChild(invWrapper);
+    printArea.appendChild(page4);
+    
+    // ----------------------------------------------------
+    // PAGE 5: LORE & DIÁRIO
+    // ----------------------------------------------------
+    const page5 = document.createElement('div');
+    page5.className = 'pdf-page';
+    page5.innerHTML = `
+      <div style="border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-bottom: 15px;">
+        <h2 style="font-family: 'Cinzel', serif; color: var(--gold-light); margin: 0; font-size: 1.6rem;">📖 LORE & DIÁRIO</h2>
+      </div>
+    `;
+    
+    const loreTab = cloneWithValues(document.getElementById('tab-informacoes'));
+    loreTab.style.display = 'block';
+    
+    const loreWrapper = document.createElement('div');
+    loreWrapper.style.transform = 'scale(0.95)';
+    loreWrapper.style.transformOrigin = 'top center';
+    loreWrapper.style.width = '105%';
+    loreWrapper.style.marginBottom = '-20px';
+    loreWrapper.appendChild(loreTab);
+    
+    page5.appendChild(loreWrapper);
+    printArea.appendChild(page5);
+    
+    // ----------------------------------------------------
+    // GENERATE PDF VIA HTML2PDF
+    // ----------------------------------------------------
+    const safeName = charName.replace(/[^a-zA-Z0-9_\-\u00C0-\u017F ]/g, '').replace(/\s+/g, '_');
+    const opt = {
+      margin:       0,
+      filename:     `ficha_${safeName}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#070c14' },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(printArea).save().then(() => {
+      document.body.removeChild(printArea);
+      showToast('✦ PDF gerado com sucesso!');
+    }).catch(err => {
+      console.error("Erro ao gerar PDF:", err);
+      if (document.getElementById('pdf-print-area')) {
+        document.body.removeChild(printArea);
+      }
+      showToast('❌ Erro ao gerar PDF');
+    });
   };
 
   /* ==========================================================

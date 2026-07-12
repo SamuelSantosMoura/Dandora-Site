@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Ficha de Personagem Digital para o RPG Dandora.">
   <title>Ficha de Personagem — Dandora RPG</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css?v=11">
   <link rel="shortcut icon" href="../Escudo de Mestre/Image/Logo/favicon.ico" type="image/x-icon">
 </head>
@@ -22,6 +23,14 @@
       <span class="toggle-label">Modo Visualização</span>
     </button>
   </nav>
+
+  <!-- ==================== SHEET UTILITIES BAR ==================== -->
+  <div class="sheet-utilities-bar">
+    <button type="button" class="btn small btn-import-json" onclick="triggerImport()"><i class="fa-solid fa-file-import"></i> Importar Ficha</button>
+    <button type="button" class="btn small btn-export-json" onclick="exportJSON()"><i class="fa-solid fa-file-export"></i> Exportar Ficha</button>
+    <button type="button" class="btn small btn-print-pdf" onclick="printPDF()"><i class="fa-solid fa-file-pdf"></i> Baixar PDF</button>
+    <input type="file" id="import-input" accept=".json" onchange="handleImport(event)" style="display:none;">
+  </div>
 
 
   <div class="container sheet-container">
@@ -855,7 +864,8 @@
   </div>
 
   <!-- ==================== SCRIPT DE INICIALIZAÇÃO ==================== -->
-  <script src="app.js?v=12"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="app.js?v=13"></script>
   <script>
     // Sistema de Abas (Tabs)
     function switchTab(tabId) {

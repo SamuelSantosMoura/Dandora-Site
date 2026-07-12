@@ -2738,3 +2738,77 @@ body.view-mode .sheet-container::before {
     font-size: 0.75rem;
   }
 }
+
+/* ============================================== */
+/* SHEET UTILITIES BAR                            */
+/* ============================================== */
+.sheet-utilities-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin: 15px auto 5px;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.sheet-utilities-bar .btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-ui);
+}
+
+.btn-import-json {
+  background: rgba(46, 204, 113, 0.12) !important;
+  border: 1px solid rgba(46, 204, 113, 0.4) !important;
+  color: #2ecc71 !important;
+}
+.btn-import-json:hover {
+  background: rgba(46, 204, 113, 0.22) !important;
+  box-shadow: 0 0 8px rgba(46, 204, 113, 0.2);
+}
+
+.btn-export-json {
+  background: rgba(52, 152, 219, 0.12) !important;
+  border: 1px solid rgba(52, 152, 219, 0.4) !important;
+  color: #3498db !important;
+}
+.btn-export-json:hover {
+  background: rgba(52, 152, 219, 0.22) !important;
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
+}
+
+.btn-print-pdf {
+  background: rgba(230, 126, 34, 0.12) !important;
+  border: 1px solid rgba(230, 126, 34, 0.4) !important;
+  color: #e67e22 !important;
+}
+.btn-print-pdf:hover {
+  background: rgba(230, 126, 34, 0.22) !important;
+  box-shadow: 0 0 8px rgba(230, 126, 34, 0.2);
+}
+
+body.view-mode .btn-import-json {
+  display: none !important;
+}
+
+@media (max-width: 580px) {
+  .sheet-utilities-bar {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 10px;
+  }
+  .sheet-utilities-bar .btn {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    flex-grow: 1;
+    justify-content: center;
+  }
+}
