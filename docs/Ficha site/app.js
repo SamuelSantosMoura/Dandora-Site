@@ -1598,17 +1598,25 @@
   window.printPDF = function() {
     showToast('⏳ Gerando PDF da ficha...');
     
+    const wrapper = document.createElement('div');
+    wrapper.id = 'pdf-sanitize-wrapper';
+    wrapper.style.position = 'absolute';
+    wrapper.style.left = '0';
+    wrapper.style.top = '0';
+    wrapper.style.width = '0';
+    wrapper.style.height = '0';
+    wrapper.style.overflow = 'hidden';
+    wrapper.style.zIndex = '-9999';
+
     const printArea = document.createElement('div');
     printArea.id = 'pdf-print-area';
-    printArea.style.position = 'absolute';
-    printArea.style.left = '0';
-    printArea.style.top = '0';
     printArea.style.width = '210mm';
     printArea.style.background = '#070c14';
     printArea.style.color = '#e2e8f0';
     printArea.style.fontFamily = "'Inter', sans-serif";
-    printArea.style.zIndex = '-9999'; // Render behind everything else, but ON screen
-    document.body.appendChild(printArea);
+    
+    wrapper.appendChild(printArea);
+    document.body.appendChild(wrapper);
     
     // Add print styles
     const style = document.createElement('style');
@@ -1938,38 +1946,30 @@
       pagebreak:    { mode: ['css', 'legacy'] }
     };
     
-    // Position it safely for html2canvas
-    printArea.style.position = 'absolute';
-    printArea.style.left = '0';
-    printArea.style.top = '0';
-    printArea.style.zIndex = '-9999';
-    // We do NOT use display: none or visibility: hidden because html2canvas ignores them.
-    // Instead we put it behind the current page.
-
     // Obter biblioteca do contexto do iframe ou do contexto pai como fallback
     const html2pdfLib = window.html2pdf || (window.parent && window.parent.html2pdf);
     
     if (!html2pdfLib) {
       alert("Erro: A biblioteca de PDF (html2pdf) não pôde ser carregada. Certifique-se de estar conectado à internet.");
       showToast("❌ Erro: html2pdf não encontrado");
-      if (printArea.parentNode) document.body.removeChild(printArea);
+      if (wrapper.parentNode) document.body.removeChild(wrapper);
       return;
     }
     
     try {
       html2pdfLib().set(opt).from(printArea).save().then(() => {
-        if (printArea.parentNode) document.body.removeChild(printArea);
+        if (wrapper.parentNode) document.body.removeChild(wrapper);
         showToast('✦ PDF gerado com sucesso!');
       }).catch(err => {
         console.error("Erro ao gerar PDF (Promise):", err);
         alert("Erro ao gerar PDF: " + (err.message || err));
-        if (printArea.parentNode) document.body.removeChild(printArea);
+        if (wrapper.parentNode) document.body.removeChild(wrapper);
         showToast('❌ Erro ao gerar PDF');
       });
     } catch(err) {
       console.error("Erro síncrono ao gerar PDF:", err);
       alert("Erro crítico ao gerar PDF: " + (err.message || err));
-      if (printArea.parentNode) document.body.removeChild(printArea);
+      if (wrapper.parentNode) document.body.removeChild(wrapper);
       showToast('❌ Erro crítico PDF');
     }
   };
