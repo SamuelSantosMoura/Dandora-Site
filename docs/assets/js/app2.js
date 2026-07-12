@@ -561,7 +561,7 @@ function openSheetModal(tId = null, pEmail = null, isReadOnly = false, vaultId =
             } else {
                 localStorage.setItem(`dandora_sheet_vault_${vaultId}_${currentUser.email}`, "{}");
             }
-            iframe.src = `Ficha site/index.html?v=11&tableId=vault_${vaultId}&playerEmail=${currentUser.email}&readOnly=false&vaultId=${vaultId}`;
+            iframe.src = `Ficha site/index.html?v=12&tableId=vault_${vaultId}&playerEmail=${currentUser.email}&readOnly=false&vaultId=${vaultId}`;
         } else {
             let tableId = tId;
             let playerEmail = pEmail;
@@ -583,9 +583,9 @@ function openSheetModal(tId = null, pEmail = null, isReadOnly = false, vaultId =
             }
             
             if (tableId && playerEmail) {
-                iframe.src = `Ficha site/index.html?v=11&tableId=${tableId}&playerEmail=${playerEmail}&readOnly=${isReadOnly}`;
+                iframe.src = `Ficha site/index.html?v=12&tableId=${tableId}&playerEmail=${playerEmail}&readOnly=${isReadOnly}`;
             } else {
-                iframe.src = `Ficha site/index.html?v=11`;
+                iframe.src = `Ficha site/index.html?v=12`;
             }
         }
     }
