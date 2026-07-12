@@ -36,13 +36,16 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     
     // Flag para evitar loops infinitos
     let isSyncingFromCloud = false;
+
+    // Chaves locais que nunca devem ser sincronizadas para a nuvem
+    const EXCLUDED_KEYS = ['dandora_currentUser', 'dandora_currentMode', 'dandora_users'];
     
     // 1. Interceptar escritas no localStorage (Enviar para a nuvem)
     localStorage.setItem = function(key, value) {
         originalSetItem.apply(this, arguments); // Salva localmente primeiro
         
-        // Só sincroniza se não estiver recebendo da nuvem e se não estiver explicitamente desabilitado
-        if (!isSyncingFromCloud && key.startsWith('dandora_') && !window.dandoraDisableSync) {
+        // Só sincroniza se não estiver recebendo da nuvem, se não for uma chave excluída e se não estiver explicitamente desabilitado
+        if (!isSyncingFromCloud && key.startsWith('dandora_') && !EXCLUDED_KEYS.includes(key) && !window.dandoraDisableSync) {
             try {
                 const safeKey = safeBtoa(key);
                 let toSave = value;
@@ -56,7 +59,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     
     localStorage.removeItem = function(key) {
         originalRemoveItem.apply(this, arguments);
-        if (!isSyncingFromCloud && key.startsWith('dandora_')) {
+        if (!isSyncingFromCloud && key.startsWith('dandora_') && !EXCLUDED_KEYS.includes(key)) {
             try {
                 const safeKey = safeBtoa(key);
                 database.ref('dandora_data/' + safeKey).remove();
@@ -74,7 +77,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
             isSyncingFromCloud = true;
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key.startsWith('dandora_')) {
+                if (key.startsWith('dandora_') && !EXCLUDED_KEYS.includes(key)) {
                     const value = localStorage.getItem(key);
                     const safeKey = safeBtoa(key);
                     let toSave = value;
@@ -98,6 +101,10 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
                 const cloudValue = cloudData[safeKey];
                 const cloudString = typeof cloudValue === 'object' ? JSON.stringify(cloudValue) : cloudValue;
                 const originalKey = safeAtob(safeKey); // Desfaz o Base64 para ler a chave original
+                
+                // Ignorar chaves de sessão locais
+                if (EXCLUDED_KEYS.includes(originalKey)) continue;
+
                 const localValue = localStorage.getItem(originalKey);
                 
                 if (localValue !== cloudString) {
