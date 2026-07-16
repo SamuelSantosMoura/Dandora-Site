@@ -1,0 +1,21 @@
+{
+  "name": "Dandora RPG",
+  "short_name": "Dandora VTT",
+  "description": "Plataforma VTT de Dandora RPG",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0d12",
+  "theme_color": "#0d0d12",
+  "icons": [
+    {
+      "src": "assets/images/dandora-icon.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "assets/images/dandora-icon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

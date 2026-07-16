@@ -449,6 +449,7 @@ function openTableManager(tableId) {
     
     // Inicia a sincronização de rolagens e chat
     if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
+    if (typeof initInitiativeSync === 'function') initInitiativeSync();
     if (typeof initChatForTable === 'function') initChatForTable(tableId);
 }
 
@@ -507,6 +508,10 @@ function renderTablePlayers() {
                     <div>
                         <h3 style="margin:0;">${m.playerName}</h3>
                         <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">${p.nome} - ${pClass} <span style="font-size: 0.8rem; color: var(--gold-dim);">${level}</span></p>
+                        <div style="display: flex; gap: 15px; margin-top: 5px; font-size: 0.85rem;">
+                            <span style="color: #e74c3c;"><i class="fa-solid fa-heart"></i> PV: ${p.vidaAtual || p.pv_atual || 0}/${p.vidaMax || p.pv_max || 0}</span>
+                            <span style="color: #3498db;"><i class="fa-solid fa-shield"></i> PA: ${p.paAtual || p.pa_atual || 0}/${p.paMax || p.pa_max || 0}</span>
+                        </div>
                     </div>
                 </div>
                 <div style="display:flex; gap:8px; width: 100%; margin-top: 5px;">
@@ -534,6 +539,11 @@ function renderTablePlayers() {
             `;
         }
     }).join('');
+    
+    // Fallback hook for battle manager
+    if (typeof renderBattlePlayers === 'function') {
+        renderBattlePlayers();
+    }
 }
 
 function masterViewPlayerSheet(memberIdx) {
@@ -770,6 +780,7 @@ function openPlayerTable(tableId) {
     
     // Inicia a sincronização de rolagens e chat
     if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
+    if (typeof initInitiativeSync === 'function') initInitiativeSync();
     if (typeof initChatForTable === 'function') {
         const actualMasterId = getActiveTableId() || (table ? table.masterTableId : null);
         initChatForTable(actualMasterId);
@@ -1402,6 +1413,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         switchTableTab('tm-players');
                     }
+                    if (typeof initHistory === 'function') initHistory();
+                    if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
+                    if (typeof initInitiativeSync === 'function') initInitiativeSync();
+                    if (typeof initChatForTable === 'function') initChatForTable(currentTableId);
+                    
+                    // Fallback load for battle manager
+                    if (typeof initBattleMonsters === 'function') {
+                        setTimeout(() => {
+                            initBattleMonsters();
+                            renderBattleMonsters();
+                            renderBattlePlayers();
+                        }, 500);
+                    }
                 }
             }
         } else if (storedView === 'player-table-view') {
@@ -1420,11 +1444,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     const notesEl = document.getElementById('pt-notes-area');
                     if(notesEl) notesEl.value = localStorage.getItem(notesKey) || '';
                     
+                    
                     const storedTab = sessionStorage.getItem('currentPlayerTableTab');
                     if (storedTab) {
                         switchPlayerTab(storedTab);
                     } else {
                         switchPlayerTab('pt-sheet');
+                    }
+                    
+                    if (typeof initHistory === 'function') initHistory();
+                    if (typeof initRollSync === 'function') setTimeout(initRollSync, 500);
+                    if (typeof initInitiativeSync === 'function') initInitiativeSync();
+                    if (typeof initChatForTable === 'function') {
+                        const actualMasterId = (typeof getActiveTableId === 'function' ? getActiveTableId() : null) || (table ? table.masterTableId : null);
+                        if (actualMasterId) initChatForTable(actualMasterId);
                     }
                 }
             }
@@ -1529,6 +1562,10 @@ window.addEventListener('message', (event) => {
         // Broadcast the roll if we are in a table
         if (getActiveTableId() && window.dandoraDatabase) {
             broadcastRoll(event.data.data);
+        }
+    } else if (event.data && event.data.type === 'DANDORA_SYNC_INITIATIVE') {
+        if (typeof window.addInitiativeFromSheet === 'function') {
+            window.addInitiativeFromSheet(event.data.payload);
         }
     }
 });
@@ -1789,3 +1826,14 @@ window.handleVaultImport = function(event) {
     reader.readAsText(file);
     event.target.value = '';
 };
+
+// --- PWA Service Worker Registration ---
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(registration => {
+      console.log('SW registered: ', registration);
+    }).catch(registrationError => {
+      console.log('SW registration failed: ', registrationError);
+    });
+  });
+}

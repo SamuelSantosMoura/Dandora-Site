@@ -76,6 +76,24 @@
       if (icon) icon.textContent = '🔒';
       if (label) label.textContent = 'Modo Visualização';
     }
+
+    // Gerenciar readonly dos campos
+    const allFields = document.querySelectorAll('input:not(.view-mode-exempt), textarea:not(.view-mode-exempt), select:not(.view-mode-exempt)');
+    allFields.forEach(f => {
+      // Ignora botões e campos de dados customizados
+      if (f.classList.contains('btn-roll') || f.classList.contains('cnt-btn') || f.classList.contains('cnt-input')) return;
+      
+      if (!isEditMode) {
+        if (f.tagName === 'SELECT' || f.type === 'checkbox' || f.type === 'radio' || f.type === 'file') {
+            f.disabled = true;
+        } else {
+            f.readOnly = true;
+        }
+      } else {
+        f.disabled = false;
+        f.readOnly = false;
+      }
+    });
   }
 
   window.toggleEditMode = function() {
@@ -423,6 +441,7 @@
       if (!raw) return;
       const data = JSON.parse(raw);
       applyData(data);
+      updateToggleButton();
     } catch (e) {
       console.error('Erro ao carregar:', e);
     }
@@ -1193,17 +1212,21 @@
       fullDesc += `${desc}`;
       
       // Broadcast para o Chat Geral
-      window.parent.postMessage({
-        type: 'DANDORA_CHAT_MSG',
-        payload: {
-          type: 'skill',
-          content: JSON.stringify({
-            name: `${nome} (${circulo}º Círculo)`,
-            desc: fullDesc,
-            cost: pa + ' PA'
-          })
-        }
-      }, '*');
+      if (tableId && !tableId.startsWith('vault_')) {
+        window.parent.postMessage({
+          type: 'DANDORA_CHAT_MSG',
+          payload: {
+            type: 'skill',
+            content: JSON.stringify({
+              name: `${nome} (${circulo}º Círculo)`,
+              desc: fullDesc,
+              cost: pa + ' PA'
+            })
+          }
+        }, '*');
+      } else {
+        showToast('⚠️ Magia usada fora de uma mesa (não enviada ao chat)');
+      }
   };
 
   window.addHabilidadeCard = function (data) {
@@ -1256,17 +1279,21 @@
       const fullDesc = `[Custo: ${custo}]\n${desc}`;
       
       // Broadcast para o Chat Geral
-      window.parent.postMessage({
-        type: 'DANDORA_CHAT_MSG',
-        payload: {
-          type: 'skill',
-          content: JSON.stringify({
-            name: nome,
-            desc: fullDesc,
-            cost: custo
-          })
-        }
-      }, '*');
+      if (tableId && !tableId.startsWith('vault_')) {
+        window.parent.postMessage({
+          type: 'DANDORA_CHAT_MSG',
+          payload: {
+            type: 'skill',
+            content: JSON.stringify({
+              name: nome,
+              desc: fullDesc,
+              cost: custo
+            })
+          }
+        }, '*');
+      } else {
+        showToast('⚠️ Habilidade usada fora de uma mesa (não enviada ao chat)');
+      }
   };
 
   window.removeHabilidadeCard = function (btn) {
@@ -1497,20 +1524,24 @@
       const castTime = card.querySelector('.spell-execucao')?.value || '';
       const desc = card.querySelector('.spell-efeito')?.value || '';
       
-      window.parent.postMessage({
-          type: 'DANDORA_CHAT_MSG',
-          payload: {
-              type: 'skill_share',
-              content: JSON.stringify({ 
-                  name: `${name} (${circulo}º Círculo)`, 
-                  cost: cost ? cost + ' PA' : '', 
-                  range, 
-                  duration, 
-                  castTime, 
-                  desc 
-              })
-          }
-      }, '*');
+      if (tableId && !tableId.startsWith('vault_')) {
+          window.parent.postMessage({
+              type: 'DANDORA_CHAT_MSG',
+              payload: {
+                  type: 'skill_share',
+                  content: JSON.stringify({ 
+                      name: `${name} (${circulo}º Círculo)`, 
+                      cost: cost ? cost + ' PA' : '', 
+                      range, 
+                      duration, 
+                      castTime, 
+                      desc 
+                  })
+              }
+          }, '*');
+      } else {
+          showToast('⚠️ Magia compartilhada fora de uma mesa (não enviada ao chat)');
+      }
   };
 
   window.shareHabilidadeCard = function(btn) {
@@ -1520,13 +1551,17 @@
       const cost = card.querySelector('.hab-custo')?.value || '';
       const desc = card.querySelector('.hab-desc')?.value || '';
       
-      window.parent.postMessage({
-          type: 'DANDORA_CHAT_MSG',
-          payload: {
-              type: 'skill_share',
-              content: JSON.stringify({ name, cost: cost ? cost + ' PA' : '', desc })
-          }
-      }, '*');
+      if (tableId && !tableId.startsWith('vault_')) {
+          window.parent.postMessage({
+              type: 'DANDORA_CHAT_MSG',
+              payload: {
+                  type: 'skill_share',
+                  content: JSON.stringify({ name, cost: cost ? cost + ' PA' : '', desc })
+              }
+          }, '*');
+      } else {
+          showToast('⚠️ Habilidade compartilhada fora de uma mesa (não enviada ao chat)');
+      }
   };
 
   /* ==========================================================
@@ -1688,6 +1723,20 @@
     'Car': { id: 'carisma', name: 'Carisma' }
   };
 
+  window.rollInitiative = function() {
+    const destreza = parseInt(val('attr-destreza')) || 0;
+    
+    // Rola usando a interface gráfica da ficha (Apenas 1d20, forçando single roll)
+    // O bônus passa a ser a destreza (attrValue = 0 para não usar regras de vantagem)
+    executeRoll('Iniciativa', 0, destreza, `Teste de Iniciativa (1d20 + ${destreza})`, true);
+    
+    // O executeRoll é assíncrono porque espera a animação de rolagem de dados no popup.
+    // Então, precisamos mandar o DANDORA_SYNC_INITIATIVE dentro do executeRoll ou setTimeout.
+    // Na verdade, o executeRoll mostra a animação e no final (depois de 1.5s) salva no history.
+    // Mas o mais confiável é enviar a mensagem quando o executeRoll finalizar e salvar.
+    // Vamos enviar o evento em addRollToHistory!
+  };
+
   window.rollAttribute = function(attrId, attrName) {
     const valStr = val('attr-' + attrId);
     const attrValue = parseInt(valStr) || 0;
@@ -1762,8 +1811,11 @@
   }
 
   // --- Execução da Rolagem e Animação ---
-  function executeRoll(title, attrValue, bonus, subtitle) {
-    const config = calcDiceConfig(attrValue);
+  function executeRoll(title, attrValue, bonus, subtitle, forceSingle = false) {
+    let config = calcDiceConfig(attrValue);
+    if (forceSingle) {
+        config = { count: 1, strategy: 'single' };
+    }
     
     // Preparar UI do Overlay
     const overlay = document.getElementById('roller-overlay');
@@ -1882,6 +1934,9 @@
 
   // --- Histórico de Rolagem ---
   function addRollToHistory(rollData) {
+    const isSecret = document.getElementById('secret-roll-checkbox') ? document.getElementById('secret-roll-checkbox').checked : false;
+    rollData.isSecret = isSecret;
+
     window.rollHistory.unshift(rollData);
     if (window.rollHistory.length > 50) {
       window.rollHistory.pop(); // Limita a 50 itens
@@ -1898,22 +1953,39 @@
     }, '*');
 
     // Broadcast para o Chat Geral
-    window.parent.postMessage({
-      type: 'DANDORA_CHAT_MSG',
-      payload: {
-        type: 'roll',
-        content: JSON.stringify({
-          title: rollData.title,
-          detail: `Bônus Aplicado: ${rollData.bonus > 0 ? '+' : ''}${rollData.bonus}`,
-          formula: `${rollData.rolls.length}d20${rollData.bonus !== 0 ? (rollData.bonus > 0 ? '+' + rollData.bonus : rollData.bonus) : ''}`,
-          diceStr: rollData.rolls.join(', '),
-          result: rollData.finalResult,
-          naturalRoll: rollData.rolls[rollData.winningIndex],
-          isCritSuccess: rollData.isCritSuccess,
-          isCritFail: rollData.isCritFail
-        })
+    if (tableId && !tableId.startsWith('vault_')) {
+      window.parent.postMessage({
+        type: 'DANDORA_CHAT_MSG',
+        payload: {
+          type: 'roll',
+          content: JSON.stringify({
+            title: rollData.title,
+            detail: `Bônus Aplicado: ${rollData.bonus > 0 ? '+' : ''}${rollData.bonus}`,
+            formula: `${rollData.rolls.length}d20${rollData.bonus !== 0 ? (rollData.bonus > 0 ? '+' + rollData.bonus : rollData.bonus) : ''}`,
+            diceStr: rollData.rolls.join(', '),
+            result: rollData.finalResult,
+            naturalRoll: rollData.rolls[rollData.winningIndex],
+            isCritSuccess: rollData.isCritSuccess,
+            isCritFail: rollData.isCritFail,
+            isSecret: isSecret
+          })
+        }
+      }, '*');
+
+      // Se for rolagem de iniciativa, envia evento específico
+      if (rollData.title && rollData.title.includes('Iniciativa')) {
+        window.parent.postMessage({
+          type: 'DANDORA_SYNC_INITIATIVE',
+          payload: {
+            name: val('nome') || 'Personagem',
+            init: rollData.finalResult,
+            playerEmail: playerEmail
+          }
+        }, '*');
       }
-    }, '*');
+    } else {
+      showToast('⚠️ Rolagem feita fora de uma mesa (não enviada ao chat)');
+    }
   }
 
   function renderHistory() {
@@ -2238,10 +2310,12 @@
         if (currentPV < lastPV) {
           const diff = lastPV - currentPV;
           const charName = val('nome') || 'Personagem Desconhecido';
-          window.parent.postMessage({
-            type: 'DANDORA_CHAT_MSG',
-            payload: { type: 'system', content: `${charName} perdeu ${diff} Pontos de Vida (PV).` }
-          }, '*');
+          if (tableId && !tableId.startsWith('vault_')) {
+            window.parent.postMessage({
+              type: 'DANDORA_CHAT_MSG',
+              payload: { type: 'system', content: `${charName} perdeu ${diff} Pontos de Vida (PV).` }
+            }, '*');
+          }
         }
         lastPV = currentPV;
       });
@@ -2254,10 +2328,12 @@
         if (currentPA < lastPA) {
           const diff = lastPA - currentPA;
           const charName = val('nome') || 'Personagem Desconhecido';
-          window.parent.postMessage({
-            type: 'DANDORA_CHAT_MSG',
-            payload: { type: 'system', content: `${charName} consumiu ${diff} Pontos de Ação (PA).` }
-          }, '*');
+          if (tableId && !tableId.startsWith('vault_')) {
+            window.parent.postMessage({
+              type: 'DANDORA_CHAT_MSG',
+              payload: { type: 'system', content: `${charName} consumiu ${diff} Pontos de Ação (PA).` }
+            }, '*');
+          }
         }
         lastPA = currentPA;
       });

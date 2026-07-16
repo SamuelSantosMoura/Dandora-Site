@@ -63,6 +63,13 @@ function initChatForTable(tableId) {
                 opt.textContent = msg.senderName;
                 playerSelect.appendChild(opt);
             }
+            const whisperSelect = document.getElementById('chat-whisper-target');
+            if (whisperSelect && msg.senderEmail !== window.currentUser?.email) {
+                const optW = document.createElement('option');
+                optW.value = msg.senderEmail;
+                optW.textContent = `Sussurrar: ${msg.senderName}`;
+                whisperSelect.appendChild(optW);
+            }
         }
         
         renderAllChatMessages();
@@ -116,25 +123,42 @@ function renderAllChatMessages() {
     
     container.innerHTML = '';
     
-    if (allChatMessages.length === 0) {
+    // Filtra as mensagens
+    let filtered = allChatMessages.filter(msg => {
+        // --- FILTRO DE WHISPERS ---
+        if (msg.targetEmail && msg.targetEmail !== 'all') {
+            const isMaster = sessionStorage.getItem('currentMode') === 'master';
+            const isSender = (window.currentUser && msg.senderEmail === window.currentUser.email);
+            const isTarget = (window.currentUser && msg.targetEmail === window.currentUser.email);
+            const targetIsMaster = (msg.targetEmail === 'master');
+            
+            if (!isSender && !isTarget) {
+                if (!(targetIsMaster && isMaster)) {
+                    return false; // Esconder a mensagem completamente se não for para mim, nem sou o remetente, nem sou o mestre (se foi pro mestre)
+                }
+            }
+        }
+        
+        // --- FILTROS DE DROPDOWN ---
+        if (filterPlayer !== 'all' && msg.senderEmail !== filterPlayer) return false;
+        
+        if (filterType !== 'all') {
+            if (filterType === 'text' && msg.type !== 'text' && msg.type !== 'image') return false;
+            if (filterType === 'roll' && msg.type !== 'roll') return false;
+            if (filterType === 'skill' && msg.type !== 'skill' && msg.type !== 'skill_share') return false;
+            if (filterType === 'system' && msg.type !== 'system') return false;
+        }
+        return true;
+    });
+
+    if (filtered.length === 0) {
         container.innerHTML = '<div class="chat-placeholder">Nenhuma mensagem ainda.</div>';
         return;
     }
     
     let renderedCount = 0;
     
-    allChatMessages.forEach(msg => {
-        // Filter logic
-        if (filterPlayer !== 'all' && msg.senderEmail !== filterPlayer) return;
-        
-        let typeMatch = true;
-        if (filterType === 'text') typeMatch = (msg.type === 'text' || msg.type === 'image');
-        else if (filterType === 'roll') typeMatch = (msg.type === 'roll');
-        else if (filterType === 'skill') typeMatch = (msg.type === 'skill' || msg.type === 'skill_share');
-        else if (filterType === 'system') typeMatch = (msg.type === 'system');
-        
-        if (!typeMatch) return;
-        
+    filtered.forEach(msg => {
         if (searchStr) {
             let contentStr = '';
             if (msg.type === 'text' || msg.type === 'system') contentStr = msg.content;
@@ -159,8 +183,15 @@ function renderAllChatMessages() {
         if (msg.type === 'image') {
             contentHtml = `<img src="${msg.content}" class="chat-img" onclick="window.open('${msg.content}', '_blank')">`;
         } else if (msg.type === 'roll') {
-            let rollData;
-            try { rollData = JSON.parse(msg.content); } catch(e) { rollData = { title: 'Rolagem', detail: msg.content, result: '?' }; }
+            let rollData = {};
+            try { 
+                rollData = JSON.parse(msg.content); 
+                if (typeof rollData !== 'object' || rollData === null) {
+                    rollData = { title: 'Rolagem', detail: msg.content, result: '?' };
+                }
+            } catch(e) { 
+                rollData = { title: 'Rolagem', detail: msg.content, result: '?' }; 
+            }
             
             let critBadge = '';
             let glowClass = '';
@@ -170,7 +201,7 @@ function renderAllChatMessages() {
             let isCritSuccess = rollData.isCritSuccess || false;
             let isCritFail = rollData.isCritFail || false;
             
-            if (!rollData.hasOwnProperty('isCritSuccess') && rollData.naturalRoll) {
+            if (rollData && typeof rollData === 'object' && !('isCritSuccess' in rollData) && rollData.naturalRoll) {
                 if (rollData.naturalRoll === 20) isCritSuccess = true;
                 if (rollData.naturalRoll === 1) isCritFail = true;
             }
@@ -193,17 +224,37 @@ function renderAllChatMessages() {
                 extraDetails += `<div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">Dados: [${rollData.diceStr}]</div>`;
             }
 
-            contentHtml = `
-                <div class="chat-roll-card ${glowClass}">
-                    <div class="chat-roll-title">${rollData.title} ${critBadge}</div>
-                    <div class="chat-roll-detail">${rollData.detail}</div>
-                    ${extraDetails}
-                    <div class="chat-roll-final" style="color: ${finalColor};">${rollData.result}</div>
-                </div>
-            `;
+            const isMaster = sessionStorage.getItem('currentMode') === 'master';
+            const isSender = (window.currentUser && msg.senderEmail === window.currentUser.email);
+            
+            if (rollData.isSecret && !isMaster && !isSender) {
+                contentHtml = `
+                    <div class="chat-roll-card" style="border-color: #6a0dad; background: rgba(106, 13, 173, 0.1);">
+                        <div class="chat-roll-title"><i class="fa-solid fa-user-secret"></i> Rolagem Secreta</div>
+                        <div class="chat-roll-detail">O mestre está observando os dados rolarem nas sombras...</div>
+                    </div>
+                `;
+            } else {
+                let extraSecretBadge = rollData.isSecret ? '<span style="color: #6a0dad; font-size:0.8rem; border:1px solid #6a0dad; padding:2px 5px; border-radius:4px; margin-left:10px;"><i class="fa-solid fa-user-secret"></i> Secreta</span>' : '';
+                contentHtml = `
+                    <div class="chat-roll-card ${glowClass}">
+                        <div class="chat-roll-title">${rollData.title} ${critBadge} ${extraSecretBadge}</div>
+                        <div class="chat-roll-detail">${rollData.detail}</div>
+                        ${extraDetails}
+                        <div class="chat-roll-final" style="color: ${finalColor};">${rollData.result}</div>
+                    </div>
+                `;
+            }
         } else if (msg.type === 'skill' || msg.type === 'skill_share') {
-            let skillData;
-            try { skillData = JSON.parse(msg.content); } catch(e) { skillData = { name: 'Habilidade', desc: msg.content }; }
+            let skillData = {};
+            try { 
+                skillData = JSON.parse(msg.content); 
+                if (typeof skillData !== 'object' || skillData === null) {
+                    skillData = { name: 'Habilidade', desc: msg.content };
+                }
+            } catch(e) { 
+                skillData = { name: 'Habilidade', desc: msg.content }; 
+            }
             
             let tagsHtml = '';
             if (skillData.cost) tagsHtml += `<span class="skill-tag"><i class="fa-solid fa-droplet"></i> Custo: ${skillData.cost}</span>`;
@@ -225,12 +276,17 @@ function renderAllChatMessages() {
             contentHtml = `<div class="chat-text">${msg.content}</div>`;
         }
         
+        let whisperBadge = '';
+        if (msg.targetEmail && msg.targetEmail !== 'all') {
+            whisperBadge = '<span style="color:#6a0dad; font-size:0.8rem; margin-left: 8px;"><i class="fa-solid fa-user-secret"></i> (Sussurro)</span>';
+        }
+
         if (msg.type === 'system') {
             div.innerHTML = contentHtml; // System messages don't have standard headers
         } else {
             div.innerHTML = `
                 <div class="chat-meta">
-                    <span class="chat-sender">${msg.senderName}</span>
+                    <span class="chat-sender">${msg.senderName} ${whisperBadge}</span>
                     <span class="chat-time">${timeStr}</span>
                 </div>
                 ${contentHtml}
@@ -255,30 +311,48 @@ function scrollToBottom() {
     if (container) container.scrollTop = container.scrollHeight;
 }
 
-function sendChatMessage() {
+window.sendChatMessage = function() {
     const input = document.getElementById('chat-input');
+    const whisperTarget = document.getElementById('chat-whisper-target');
     const text = input.value.trim();
-    if (!text || !currentChatTableId || !currentUser) return;
+    if (!text) return;
+    
+    if (!currentChatTableId || !firebase) {
+        alert('Não conectado ao chat da mesa.');
+        return;
+    }
+    
+    input.disabled = true;
     
     const msg = {
-        senderName: getMode() === 'master' ? `${currentUser.name} (Mestre)` : currentUser.name,
         senderEmail: currentUser.email,
-        timestamp: Date.now(),
+        senderName: currentUser.name,
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
         type: 'text',
         content: text
     };
     
-    chatRef.push(msg);
-    input.value = '';
-    input.style.height = 'auto';
-}
+    if (whisperTarget && whisperTarget.value !== 'all') {
+        msg.targetEmail = whisperTarget.value;
+    }
+    
+    chatRef.push(msg).then(() => {
+        input.value = '';
+        input.disabled = false;
+        input.focus();
+    }).catch(err => {
+        console.error("Erro ao enviar mensagem:", err);
+        input.disabled = false;
+        alert("Erro ao enviar mensagem.");
+    });
+};
 
-function handleChatKeyPress(e) {
+window.handleChatKeyPress = function(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         sendChatMessage();
     }
-}
+};
 
 // Compress and send image
 function handleChatImageUpload(e) {

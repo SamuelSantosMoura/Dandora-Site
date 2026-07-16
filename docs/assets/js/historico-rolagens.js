@@ -19,9 +19,12 @@ function initHistoryForTable(tableId) {
         const msg = snapshot.val();
         if (msg.type === 'roll' || msg.type === 'skill') {
             // Processa mensagem
-            let parsedContent;
+            let parsedContent = {};
             try {
                 parsedContent = JSON.parse(msg.content);
+                if (typeof parsedContent !== 'object' || parsedContent === null) {
+                    parsedContent = { title: 'Desconhecido', detail: msg.content };
+                }
             } catch(e) {
                 parsedContent = { title: 'Desconhecido', detail: msg.content };
             }
@@ -121,11 +124,22 @@ function renderHistoryView() {
             const badge = isCritSuccess ? '<span style="background:#3498db; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:10px;">✨ Acerto Crítico!</span>' 
                         : (isCritFail ? '<span style="background:#e74c3c; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:10px;">💥 Falha Crítica!</span>' : '');
             
-            contentHTML = `
-                <div style="font-size:1.05rem; font-weight:bold;">${msg.parsed.title} ${badge}</div>
-                <div style="font-size:0.9rem; color:var(--text-muted);">${msg.parsed.detail}</div>
-                <div style="font-size:1.4rem; font-family:var(--font-epic); color:${resultColor}; margin-top:5px;">Resultado: ${msg.parsed.result}</div>
-            `;
+            const isSender = (window.currentUser && msg.senderEmail === window.currentUser.email);
+            
+            if (msg.parsed.isSecret && !isMaster && !isSender) {
+                contentHTML = `
+                    <div style="font-size:1.05rem; font-weight:bold; color:#6a0dad;"><i class="fa-solid fa-user-secret"></i> Rolagem Secreta</div>
+                    <div style="font-size:0.9rem; color:var(--text-muted);">O mestre está observando os dados rolarem nas sombras...</div>
+                `;
+                div.style.borderLeftColor = '#6a0dad';
+            } else {
+                let extraSecretBadge = msg.parsed.isSecret ? '<span style="color: #6a0dad; font-size:0.7rem; border:1px solid #6a0dad; padding:2px 5px; border-radius:4px; margin-left:10px;"><i class="fa-solid fa-user-secret"></i> Secreta</span>' : '';
+                contentHTML = `
+                    <div style="font-size:1.05rem; font-weight:bold;">${msg.parsed.title} ${badge} ${extraSecretBadge}</div>
+                    <div style="font-size:0.9rem; color:var(--text-muted);">${msg.parsed.detail}</div>
+                    <div style="font-size:1.4rem; font-family:var(--font-epic); color:${resultColor}; margin-top:5px;">Resultado: ${msg.parsed.result}</div>
+                `;
+            }
             if (isCritSuccess) {
                 div.style.borderLeftColor = '#3498db';
                 div.classList.add('crit-success-glow');

@@ -2,12 +2,15 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0d0d12">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../assets/images/dandora-icon.jpg">
   <meta name="description" content="Ficha de Personagem Digital para o RPG Dandora.">
   <title>Ficha de Personagem — Dandora RPG</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css?v=12">
-  <link rel="shortcut icon" href="../Escudo de Mestre/Image/Logo/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../assets/images/dandora-icon.jpg" type="image/jpeg">
 </head>
 <body>
 
@@ -119,7 +122,11 @@
             </div>
             
             <div class="quick-stats-col">
-              <div class="q-stat"><label>Iniciativa</label><input type="text" id="iniciativa" placeholder="0"></div>
+              <div class="q-stat" style="position: relative;">
+                <label>Iniciativa</label>
+                <input type="text" id="iniciativa" placeholder="0">
+                <button type="button" class="btn-roll" onclick="rollInitiative()" style="position: absolute; right: 5px; top: 25px; background: none; border: none; cursor: pointer; font-size: 1.2rem;" title="Rolar Iniciativa">🎲</button>
+              </div>
               <div class="q-stat"><label>Deslocamento</label><input type="text" id="deslocamento" placeholder="9m"></div>
               <div class="q-stat"><label>Pts. Destino</label><input type="text" id="pontos-destino" placeholder="0"></div>
             </div>
@@ -804,6 +811,13 @@
     <div class="roller-content">
       <h3 class="roller-title" id="roller-title">Rolando Atributo</h3>
       <p class="roller-subtitle" id="roller-subtitle">Vantagem / Desvantagem</p>
+      
+      <div style="text-align: center; margin-bottom: 15px;">
+        <label class="checkbox-wrapper" style="display: inline-flex; color: var(--text-muted); font-size: 0.9rem;">
+          <input type="checkbox" id="secret-roll-checkbox">
+          <span class="checkbox-mark"></span> Rolagem Secreta (Apenas Mestre)
+        </label>
+      </div>
       
       <div class="dice-arena" id="dice-arena">
         <!-- Dados 3D gerados dinamicamente -->

@@ -86,8 +86,20 @@ function renderSessions() {
     const list = document.getElementById('tm-sessions-list');
     if (!list || !currentTableId) return;
     
-    const sessions = JSON.parse(localStorage.getItem(`dandora_sessions_${currentTableId}`)) || [];
+    let sessions = JSON.parse(localStorage.getItem(`dandora_sessions_${currentTableId}`)) || [];
     
+    // Sort sessions by number extracted from title (e.g. "Sessão 2.5" -> 2.5)
+    sessions.sort((a, b) => {
+        const extractNum = (str) => {
+            const match = (str || "").match(/[\d.]+/);
+            return match && !isNaN(parseFloat(match[0])) ? parseFloat(match[0]) : Infinity;
+        };
+        const numA = extractNum(a.title);
+        const numB = extractNum(b.title);
+        if (numA !== numB) return numA - numB;
+        return (a.title || "").localeCompare(b.title || "");
+    });
+
     if (sessions.length === 0) {
         list.innerHTML = `<p style="color:var(--text-muted); grid-column:1/-1; text-align:center; margin-top:2rem;">Nenhuma sessão planejada. Clique em "Nova Sessão" para organizar a campanha.</p>`;
         return;

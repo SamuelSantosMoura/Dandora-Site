@@ -37,11 +37,15 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     // Flag para evitar loops infinitos
     let isSyncingFromCloud = false;
 
+    // Track when a key was last written locally to prevent cloud overwriting it during typing
+    const lastLocalWrite = {};
+
     // Chaves locais que nunca devem ser sincronizadas para a nuvem
     const EXCLUDED_KEYS = ['dandora_currentUser', 'dandora_currentMode', 'dandora_users'];
     
     // 1. Interceptar escritas no localStorage (Enviar para a nuvem)
     localStorage.setItem = function(key, value) {
+        lastLocalWrite[key] = Date.now();
         originalSetItem.apply(this, arguments); // Salva localmente primeiro
         
         // Só sincroniza se não estiver recebendo da nuvem, se não for uma chave excluída e se não estiver explicitamente desabilitado
@@ -58,6 +62,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     };
     
     localStorage.removeItem = function(key) {
+        lastLocalWrite[key] = Date.now();
         originalRemoveItem.apply(this, arguments);
         if (!isSyncingFromCloud && key.startsWith('dandora_') && !EXCLUDED_KEYS.includes(key)) {
             try {
@@ -104,10 +109,36 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
                 
                 // Ignorar chaves de sessão locais
                 if (EXCLUDED_KEYS.includes(originalKey)) continue;
+                
+                // Ignorar se a chave foi alterada localmente nos ultimos 3 segundos (evita sobrescrever quem esta digitando)
+                if (Date.now() - (lastLocalWrite[originalKey] || 0) < 3000) continue;
 
                 const localValue = localStorage.getItem(originalKey);
                 
-                if (localValue !== cloudString) {
+                let isDifferent = true;
+                if (localValue) {
+                    try {
+                        const localParsed = JSON.parse(localValue);
+                        const cloudParsed = typeof cloudValue === 'object' ? cloudValue : JSON.parse(cloudValue);
+                        
+                        function deepEq(a, b) {
+                            if (a === b) return true;
+                            if (a == null || typeof a != "object" || b == null || typeof b != "object") return false;
+                            let keysA = Object.keys(a), keysB = Object.keys(b);
+                            if (keysA.length != keysB.length) return false;
+                            for (let key of keysA) {
+                                if (!keysB.includes(key) || !deepEq(a[key], b[key])) return false;
+                            }
+                            return true;
+                        }
+                        
+                        isDifferent = !deepEq(localParsed, cloudParsed);
+                    } catch (e) {
+                        isDifferent = localValue !== cloudString;
+                    }
+                }
+                
+                if (isDifferent) {
                     let finalValue = cloudString;
                     originalSetItem.call(localStorage, originalKey, finalValue);
                     dataChanged = true;

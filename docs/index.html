@@ -354,8 +354,8 @@ window.onerror = function(msg, url, line, col, error) {
                 </div>
                 <ul class="sidebar-menu">
                     <li class="pt-tab active" onclick="switchPlayerTab('pt-sheet')"><i class="fa-solid fa-file-signature"></i> Minha Ficha</li>
+                    <li class="pt-tab" onclick="switchPlayerTab('pt-iniciativa')"><i class="fa-solid fa-list-ol"></i> Iniciativa</li>
                     <li class="pt-tab" onclick="switchPlayerTab('pt-notes')"><i class="fa-solid fa-feather"></i> Anotações da Campanha</li>
-                    <!-- Aba do histórico de rolagens foi removida (unificada no chat) -->
                 </ul>
             </aside>
             <div class="dashboard-content glass-panel" style="padding: 2rem; border-radius: 8px;">
@@ -389,6 +389,24 @@ window.onerror = function(msg, url, line, col, error) {
                     <div class="tables-grid" id="pt-vault-list">
                         <!-- JS vai injetar as fichas salvas aqui -->
                     </div>
+                </div>
+
+                <!-- TAB: INICIATIVA (JOGADOR) -->
+                <div id="pt-iniciativa" class="pt-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Ordem de Combate</h2>
+                    </div>
+                    <section class="table-card" style="margin-top: 20px;">
+                      <table style="width:100%; text-align:left; border-collapse:collapse; color: var(--text-light);">
+                        <thead>
+                          <tr style="border-bottom:1px solid var(--gold-dim); color:var(--gold-primary);">
+                            <th style="padding:10px;">Nome</th>
+                            <th style="padding:10px; text-align:right;">Iniciativa</th>
+                          </tr>
+                        </thead>
+                        <tbody id="pt-initiative-list"></tbody>
+                      </table>
+                    </section>
                 </div>
 
                 <!-- TAB: NOTES -->
@@ -492,6 +510,7 @@ window.onerror = function(msg, url, line, col, error) {
                     <div style="margin: 1.5rem 0 0.5rem 1.5rem; font-family: var(--font-epic); font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.1em; text-transform: uppercase;">Ferramentas do Mestre</div>
                     <li class="tm-tab" onclick="switchTableTab('tm-npc')"><i class="fa-solid fa-id-card"></i> Gerador de NPC</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-iniciativa')"><i class="fa-solid fa-bolt"></i> Iniciativa</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-batalha')"><i class="fa-solid fa-khanda"></i> Batalha</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-eventos')"><i class="fa-solid fa-dice"></i> Eventos</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-itens')"><i class="fa-solid fa-gem"></i> Loot e Itens</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-monstros')"><i class="fa-solid fa-dragon"></i> Monstros</li>
@@ -618,6 +637,30 @@ window.onerror = function(msg, url, line, col, error) {
                         <tbody id="listBody"></tbody>
                       </table>
                     </section>
+                </div>
+
+                <!-- TAB: GERENCIADOR DE BATALHA -->
+                <div id="tm-batalha" class="tm-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Gerenciador de Batalha</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--gold-primary); border-bottom: 1px solid var(--gold-dim); padding-bottom: 5px;">Personagens</h3>
+                        <div id="battle-players-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 10px;">
+                            <!-- Personagens injetados via JS -->
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gold-dim); padding-bottom: 5px; margin-bottom: 10px;">
+                            <h3 style="color: var(--gold-primary); margin:0;">Monstros / Inimigos</h3>
+                            <button class="btn-outline" onclick="addBattleMonster()"><i class="fa-solid fa-plus"></i> Novo Inimigo</button>
+                        </div>
+                        <div id="battle-monsters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                            <!-- Monstros injetados via JS -->
+                        </div>
+                    </div>
                 </div>
 
                 <!-- TAB: EVENTOS -->
@@ -1172,6 +1215,7 @@ Altura     Dano
     <script src="assets/js/npc.js?v=8"></script>
     <script src="assets/js/eventos.js?v=8"></script>
     <script src="assets/js/iniciativa.js?v=8"></script>
+    <script src="assets/js/batalha.js?v=4"></script>
     <script src="assets/js/itens.js?v=8"></script>
     <script src="assets/js/monstros.js?v=8"></script>
     <script src="assets/js/dados.js?v=8"></script>
