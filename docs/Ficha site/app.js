@@ -40,7 +40,9 @@
     window.addEventListener('storage', (e) => {
       if (e.key === STORAGE_KEY) {
         loadData();
-        showToast('Atualização recebida do Mestre!');
+        if (tableId && !tableId.startsWith('vault_')) {
+          showToast('Atualização recebida do Mestre!');
+        }
       }
     });
   });

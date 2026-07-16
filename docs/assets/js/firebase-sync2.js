@@ -41,7 +41,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     const lastLocalWrite = {};
 
     // Chaves locais que nunca devem ser sincronizadas para a nuvem
-    const EXCLUDED_KEYS = ['dandora_currentUser', 'dandora_currentMode', 'dandora_users'];
+    const EXCLUDED_KEYS = ['dandora_currentUser', 'dandora_currentMode', 'dandora_users', 'dandora-ficha-v1'];
     
     // 1. Interceptar escritas no localStorage (Enviar para a nuvem)
     localStorage.setItem = function(key, value) {
