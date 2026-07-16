@@ -31,6 +31,9 @@ window.onerror = function(msg, url, line, col, error) {
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- YouTube API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <!-- Site Icon -->
     <link rel="icon" href="assets/images/dandora-icon.jpg" type="image/jpeg">
 </head>
@@ -512,6 +515,7 @@ window.onerror = function(msg, url, line, col, error) {
                     <li class="tm-tab" onclick="switchTableTab('tm-iniciativa')"><i class="fa-solid fa-bolt"></i> Iniciativa</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-batalha')"><i class="fa-solid fa-khanda"></i> Batalha</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-eventos')"><i class="fa-solid fa-dice"></i> Eventos</li>
+                    <li class="tm-tab" onclick="switchTableTab('tm-audio')"><i class="fa-solid fa-music"></i> Áudio da Mesa</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-itens')"><i class="fa-solid fa-gem"></i> Loot e Itens</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-monstros')"><i class="fa-solid fa-dragon"></i> Monstros</li>
                     <li class="tm-tab" onclick="switchTableTab('tm-dados')"><i class="fa-solid fa-dice-d20"></i> Dados</li>
@@ -678,6 +682,40 @@ window.onerror = function(msg, url, line, col, error) {
                       <button class="btn-outline" onclick="rolarEvento('gelido')">❄️ Gélido</button>
                     </div>
                     <div id="evento" class="table-card" style="margin-bottom:20px; min-height: 100px;"></div>
+                </div>
+
+                <!-- TAB: AUDIO DA MESA (MESTRE) -->
+                <div id="tm-audio" class="tm-content hidden">
+                    <div class="dashboard-header">
+                        <h2>Áudio da Mesa</h2>
+                    </div>
+                    <section class="table-card" style="margin-top: 20px;">
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.5rem;">Configure trilhas sonoras do YouTube. Os jogadores receberão uma notificação e deverão clicar para autorizar o áudio no próprio navegador.</p>
+                        
+                        <div style="display:flex; gap:15px; margin-bottom:20px;">
+                            <div style="flex:3;">
+                                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">URL do YouTube</label>
+                                <input type="text" id="audio-url-input" class="modern-input" placeholder="Ex: https://www.youtube.com/watch?v=...">
+                            </div>
+                            <div style="flex:1;">
+                                <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Início (segundos)</label>
+                                <input type="number" id="audio-start-input" class="modern-input" placeholder="0" min="0">
+                            </div>
+                        </div>
+
+                        <div style="display:flex; flex-wrap: wrap; gap:10px; margin-bottom:20px;">
+                            <button class="btn-epic" onclick="startMasterAudio()"><i class="fa-solid fa-play"></i> Iniciar Trilha</button>
+                            <button class="btn-outline" onclick="pauseMasterAudio()"><i class="fa-solid fa-pause"></i> Pausar</button>
+                            <button class="btn-outline" onclick="resumeMasterAudio()"><i class="fa-solid fa-play"></i> Retomar</button>
+                            <button class="btn-outline" style="border-color: #e74c3c; color: #e74c3c;" onclick="stopMasterAudio()"><i class="fa-solid fa-stop"></i> Parar Tudo</button>
+                        </div>
+
+                        <div style="border-top: 1px solid var(--gold-dim); padding-top: 20px;">
+                            <label style="display:block; font-size:0.85rem; color:var(--gold-dim); margin-bottom:0.5rem; text-transform:uppercase;">Volume Padrão da Mesa</label>
+                            <input type="range" id="master-volume-input" min="0" max="100" value="50" onchange="setMasterVolume(this.value)" style="width: 100%; accent-color: var(--gold-primary);">
+                            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:5px;">Este volume será aplicado para todos os jogadores que não ajustaram o volume localmente.</p>
+                        </div>
+                    </section>
                 </div>
 
                 <!-- TAB: LOOT E ITENS -->
@@ -1216,6 +1254,7 @@ Altura     Dano
     <script src="assets/js/eventos.js?v=8"></script>
     <script src="assets/js/iniciativa.js?v=8"></script>
     <script src="assets/js/batalha.js?v=4"></script>
+    <script src="assets/js/audio.js?v=2"></script>
     <script src="assets/js/itens.js?v=8"></script>
     <script src="assets/js/monstros.js?v=8"></script>
     <script src="assets/js/dados.js?v=8"></script>
@@ -1223,4 +1262,19 @@ Altura     Dano
     <script src="assets/js/sessoes.js?v=8"></script>
     <script src="assets/js/chat.js?v=7"></script>
 </body>
+
+    <!-- WIDGET DE AUDIO DO JOGADOR -->
+    <div id="player-audio-widget" class="hidden glass-panel" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 8px; border: 1px solid var(--gold-primary); display: flex; flex-direction: column; gap: 10px; width: 300px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin: 0; color: var(--gold-primary); font-size: 0.9rem;"><i class="fa-solid fa-music"></i> Trilha da Sessão</h4>
+            <span id="player-audio-status" style="font-size: 0.75rem; color: var(--text-muted);">Aguardando...</span>
+        </div>
+        <button id="player-audio-auth-btn" class="btn-epic" style="width: 100%; padding: 8px; font-size: 0.85rem;" onclick="authorizePlayerAudio()"><i class="fa-solid fa-play"></i> Ouvir Áudio</button>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-volume-low" style="color: var(--gold-dim); font-size: 0.8rem;"></i>
+            <input type="range" id="player-volume-input" min="0" max="100" value="50" oninput="changeLocalVolume(this.value)" style="flex: 1; accent-color: var(--gold-primary);">
+            <i class="fa-solid fa-volume-high" style="color: var(--gold-dim); font-size: 0.8rem;"></i>
+        </div>
+        <div id="youtube-player" style="display:none;"></div>
+    </div>
 </html>
