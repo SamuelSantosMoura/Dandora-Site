@@ -14,6 +14,25 @@ window.onYouTubeIframeAPIReady = function() {
     }
 };
 
+// Check if API is already loaded (just in case)
+if (typeof YT !== 'undefined' && YT && YT.Player) {
+    ytReady = true;
+} else {
+    // Dynamically load the YouTube Iframe API to ensure the callback fires
+    (function() {
+        if (document.getElementById('youtube-iframe-api')) return;
+        var tag = document.createElement('script');
+        tag.id = 'youtube-iframe-api';
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        if (firstScriptTag && firstScriptTag.parentNode) {
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        } else {
+            document.head.appendChild(tag);
+        }
+    })();
+}
+
 function initYTPlayer() {
     if (!ytReady || ytPlayer) return;
     
