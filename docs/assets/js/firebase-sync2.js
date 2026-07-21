@@ -44,7 +44,8 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     const lastSentToCloud = {};
 
     // Chaves locais que nunca devem ser sincronizadas para a nuvem
-    const EXCLUDED_KEYS = ['dandora_currentUser', 'dandora_currentMode', 'dandora_users', 'dandora-ficha-v1'];
+    // NOTA: dandora_users FOI REMOVIDO desta lista para permitir login entre dispositivos
+    const EXCLUDED_KEYS = ['dandora_currentUser', 'dandora_currentMode', 'dandora-ficha-v1'];
     
     // 1. Interceptar escritas no localStorage (Enviar para a nuvem)
     localStorage.setItem = function(key, value) {
@@ -153,6 +154,53 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
                 
                 if (isDifferent) {
                     let finalValue = cloudString;
+                    
+                    // Merge inteligente para dandora_users (banco de contas)
+                    // Preserva contas de AMBOS os dispositivos para evitar perda de dados
+                    if (originalKey === 'dandora_users') {
+                        try {
+                            const localUsers = localValue ? JSON.parse(localValue) : [];
+                            const cloudUsers = typeof cloudValue === 'object' ? cloudValue : JSON.parse(cloudValue);
+                            
+                            if (Array.isArray(localUsers) && Array.isArray(cloudUsers)) {
+                                // Criar mapa por email para merge
+                                const mergedMap = new Map();
+                                
+                                // Adicionar todos os usuários da nuvem primeiro
+                                cloudUsers.forEach(u => { if (u && u.email) mergedMap.set(u.email, u); });
+                                
+                                // Adicionar/atualizar com usuários locais
+                                localUsers.forEach(u => {
+                                    if (!u || !u.email) return;
+                                    const existing = mergedMap.get(u.email);
+                                    if (!existing) {
+                                        // Usuário só existe localmente, adicionar
+                                        mergedMap.set(u.email, u);
+                                    } else {
+                                        // Usuário existe em ambos — manter o com acesso mais recente
+                                        const localTime = u.lastAccess ? new Date(u.lastAccess).getTime() : 0;
+                                        const cloudTime = existing.lastAccess ? new Date(existing.lastAccess).getTime() : 0;
+                                        if (localTime > cloudTime) {
+                                            mergedMap.set(u.email, u);
+                                        }
+                                        // Se cloud é mais recente, já está no mapa
+                                    }
+                                });
+                                
+                                const mergedUsers = Array.from(mergedMap.values());
+                                finalValue = JSON.stringify(mergedUsers);
+                                
+                                // Se o merge resultou em mais usuários que a nuvem, enviar de volta
+                                if (mergedUsers.length > cloudUsers.length) {
+                                    database.ref('dandora_data/' + safeKey).set(mergedUsers);
+                                }
+                            }
+                        } catch (mergeErr) {
+                            console.error('Erro no merge de usuários:', mergeErr);
+                            // Em caso de erro, aceitar dados da nuvem como fallback
+                        }
+                    }
+                    
                     originalSetItem.call(localStorage, originalKey, finalValue);
                     dataChanged = true;
                 }

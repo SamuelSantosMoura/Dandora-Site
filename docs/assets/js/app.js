@@ -65,13 +65,13 @@ function switchAuthTab(tab) {
 // Login Handler
 function handleLogin(event) {
     event.preventDefault();
-    const email = document.getElementById('login-email').value;
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
     const password = document.getElementById('login-password').value;
     const mode = document.getElementById('login-role').value; // Apenas o modo inicial
     
     let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
     
-    const userIndex = usersDB.findIndex(u => u.email === email && u.password === password);
+    const userIndex = usersDB.findIndex(u => u.email.toLowerCase() === email && u.password === password);
     
     if (userIndex !== -1) {
         // Atualiza último acesso
@@ -80,38 +80,128 @@ function handleLogin(event) {
         
         loginUser(usersDB[userIndex], mode);
     } else {
-        alert("Credenciais inválidas. Verifique seus dados ou crie uma nova conta.");
+        // Fallback: Tentar buscar os usuários diretamente do Firebase
+        // Isso resolve o caso em que o celular ainda não terminou a sincronização
+        if (window.dandoraDatabase) {
+            const safeBtoa = (str) => btoa(unescape(encodeURIComponent(str)));
+            const safeKey = safeBtoa('dandora_users');
+            
+            window.dandoraDatabase.ref('dandora_data/' + safeKey).once('value').then(snapshot => {
+                if (snapshot.exists()) {
+                    let cloudUsers = snapshot.val();
+                    // O Firebase pode retornar como objeto ou array
+                    if (typeof cloudUsers === 'string') {
+                        try { cloudUsers = JSON.parse(cloudUsers); } catch(e) { cloudUsers = []; }
+                    }
+                    if (!Array.isArray(cloudUsers)) cloudUsers = Object.values(cloudUsers || {});
+                    
+                    // Fazer merge com os locais para não perder nada
+                    const localUsers = JSON.parse(localStorage.getItem('dandora_users')) || [];
+                    const mergedMap = new Map();
+                    cloudUsers.forEach(u => { if (u && u.email) mergedMap.set(u.email.toLowerCase(), u); });
+                    localUsers.forEach(u => { if (u && u.email && !mergedMap.has(u.email.toLowerCase())) mergedMap.set(u.email.toLowerCase(), u); });
+                    const mergedUsers = Array.from(mergedMap.values());
+                    
+                    // Salvar merge localmente (sem reenviar ao Firebase)
+                    window.dandoraDisableSync = true;
+                    localStorage.setItem('dandora_users', JSON.stringify(mergedUsers));
+                    window.dandoraDisableSync = false;
+                    
+                    // Tentar login novamente com dados atualizados
+                    const retryIndex = mergedUsers.findIndex(u => u.email.toLowerCase() === email && u.password === password);
+                    if (retryIndex !== -1) {
+                        mergedUsers[retryIndex].lastAccess = new Date().toISOString();
+                        localStorage.setItem('dandora_users', JSON.stringify(mergedUsers));
+                        loginUser(mergedUsers[retryIndex], mode);
+                    } else {
+                        alert("Credenciais inválidas. Verifique seus dados ou crie uma nova conta.");
+                    }
+                } else {
+                    alert("Credenciais inválidas. Verifique seus dados ou crie uma nova conta.");
+                }
+            }).catch(err => {
+                console.error("Erro ao buscar usuários no Firebase:", err);
+                alert("Credenciais inválidas. Verifique seus dados ou crie uma nova conta.");
+            });
+        } else {
+            alert("Credenciais inválidas. Verifique seus dados ou crie uma nova conta.");
+        }
     }
 }
 
 // Register Handler
 function handleRegister(event) {
     event.preventDefault();
-    const name = document.getElementById('reg-name').value;
-    const email = document.getElementById('reg-email').value;
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim().toLowerCase();
     const password = document.getElementById('reg-password').value;
     const mode = document.getElementById('reg-role').value; // Apenas o modo inicial
     
-    const usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+    // Função interna para completar o registro após verificação
+    function completeRegistration(usersDB) {
+        if (usersDB.find(u => u.email.toLowerCase() === email)) {
+            alert("Este email já está cadastrado no sistema! Tente fazer login.");
+            return;
+        }
+        
+        const newUser = { 
+            name, 
+            email, 
+            password, 
+            createdAt: new Date().toISOString(),
+            lastAccess: new Date().toISOString()
+        };
+        usersDB.push(newUser);
+        
+        localStorage.setItem('dandora_users', JSON.stringify(usersDB));
+        
+        alert("Conta criada com sucesso! Bem-vindo(a) a Dandora.");
+        loginUser(newUser, mode);
+    }
     
-    if (usersDB.find(u => u.email === email)) {
-        alert("Este email já está cadastrado no sistema!");
+    let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+    
+    // Verificar localmente primeiro
+    if (usersDB.find(u => u.email.toLowerCase() === email)) {
+        alert("Este email já está cadastrado no sistema! Tente fazer login.");
         return;
     }
     
-    const newUser = { 
-        name, 
-        email, 
-        password, 
-        createdAt: new Date().toISOString(),
-        lastAccess: new Date().toISOString()
-    };
-    usersDB.push(newUser);
-    
-    localStorage.setItem('dandora_users', JSON.stringify(usersDB));
-    
-    alert("Conta criada com sucesso! Bem-vindo(a) a Dandora.");
-    loginUser(newUser, mode);
+    // Verificar também no Firebase para evitar contas duplicadas entre dispositivos
+    if (window.dandoraDatabase) {
+        const safeBtoa = (str) => btoa(unescape(encodeURIComponent(str)));
+        const safeKey = safeBtoa('dandora_users');
+        
+        window.dandoraDatabase.ref('dandora_data/' + safeKey).once('value').then(snapshot => {
+            if (snapshot.exists()) {
+                let cloudUsers = snapshot.val();
+                if (typeof cloudUsers === 'string') {
+                    try { cloudUsers = JSON.parse(cloudUsers); } catch(e) { cloudUsers = []; }
+                }
+                if (!Array.isArray(cloudUsers)) cloudUsers = Object.values(cloudUsers || {});
+                
+                // Merge com locais antes de registrar
+                const mergedMap = new Map();
+                cloudUsers.forEach(u => { if (u && u.email) mergedMap.set(u.email.toLowerCase(), u); });
+                usersDB.forEach(u => { if (u && u.email && !mergedMap.has(u.email.toLowerCase())) mergedMap.set(u.email.toLowerCase(), u); });
+                const mergedUsers = Array.from(mergedMap.values());
+                
+                // Atualizar local com merge
+                window.dandoraDisableSync = true;
+                localStorage.setItem('dandora_users', JSON.stringify(mergedUsers));
+                window.dandoraDisableSync = false;
+                
+                completeRegistration(mergedUsers);
+            } else {
+                completeRegistration(usersDB);
+            }
+        }).catch(err => {
+            console.error("Erro ao verificar Firebase:", err);
+            completeRegistration(usersDB);
+        });
+    } else {
+        completeRegistration(usersDB);
+    }
 }
 
 // Forgot Password Flow
@@ -120,29 +210,71 @@ function forgotPassword(event) {
     const email = prompt("Digite o e-mail da sua conta para recuperar a senha:");
     if (!email) return;
     
-    let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
-    const userIndex = usersDB.findIndex(u => u.email === email);
+    const normalizedEmail = email.trim().toLowerCase();
     
-    if (userIndex === -1) {
-        alert("Não encontramos nenhuma conta com esse e-mail.");
-        return;
+    function resetPassword(usersDB) {
+        const userIndex = usersDB.findIndex(u => u.email.toLowerCase() === normalizedEmail);
+        
+        if (userIndex === -1) {
+            alert("Não encontramos nenhuma conta com esse e-mail.");
+            return;
+        }
+        
+        // Simula o envio de e-mail e clique no link
+        alert(`[Simulação de E-mail]\nUm link de redefinição foi enviado para ${email}.\n(Clique em OK para simular que você abriu o link)`);
+        
+        const newPassword = prompt("Insira sua nova senha:");
+        if (newPassword && newPassword.trim().length > 0) {
+            usersDB[userIndex].password = newPassword.trim();
+            localStorage.setItem('dandora_users', JSON.stringify(usersDB));
+            alert("Senha redefinida com sucesso! Você pode fazer login com sua nova senha.");
+            
+            // Se a pessoa estiver logada e alterar a própria senha, desconecta por segurança
+            if (currentUser && currentUser.email.toLowerCase() === normalizedEmail) {
+                logout();
+            }
+        } else {
+            alert("Operação cancelada.");
+        }
     }
     
-    // Simula o envio de e-mail e clique no link
-    alert(`[Simulação de E-mail]\nUm link de redefinição foi enviado para ${email}.\n(Clique em OK para simular que você abriu o link)`);
+    let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+    const userIndex = usersDB.findIndex(u => u.email.toLowerCase() === normalizedEmail);
     
-    const newPassword = prompt("Insira sua nova senha:");
-    if (newPassword && newPassword.trim().length > 0) {
-        usersDB[userIndex].password = newPassword.trim();
-        localStorage.setItem('dandora_users', JSON.stringify(usersDB));
-        alert("Senha redefinida com sucesso! Você pode fazer login com sua nova senha.");
+    if (userIndex !== -1) {
+        resetPassword(usersDB);
+    } else if (window.dandoraDatabase) {
+        // Fallback: buscar do Firebase
+        const safeBtoa = (str) => btoa(unescape(encodeURIComponent(str)));
+        const safeKey = safeBtoa('dandora_users');
         
-        // Se a pessoa estiver logada e alterar a própria senha, desconecta por segurança
-        if (currentUser && currentUser.email === email) {
-            logout();
-        }
+        window.dandoraDatabase.ref('dandora_data/' + safeKey).once('value').then(snapshot => {
+            if (snapshot.exists()) {
+                let cloudUsers = snapshot.val();
+                if (typeof cloudUsers === 'string') {
+                    try { cloudUsers = JSON.parse(cloudUsers); } catch(e) { cloudUsers = []; }
+                }
+                if (!Array.isArray(cloudUsers)) cloudUsers = Object.values(cloudUsers || {});
+                
+                // Merge
+                const mergedMap = new Map();
+                cloudUsers.forEach(u => { if (u && u.email) mergedMap.set(u.email.toLowerCase(), u); });
+                usersDB.forEach(u => { if (u && u.email && !mergedMap.has(u.email.toLowerCase())) mergedMap.set(u.email.toLowerCase(), u); });
+                const mergedUsers = Array.from(mergedMap.values());
+                
+                window.dandoraDisableSync = true;
+                localStorage.setItem('dandora_users', JSON.stringify(mergedUsers));
+                window.dandoraDisableSync = false;
+                
+                resetPassword(mergedUsers);
+            } else {
+                alert("Não encontramos nenhuma conta com esse e-mail.");
+            }
+        }).catch(() => {
+            alert("Não encontramos nenhuma conta com esse e-mail.");
+        });
     } else {
-        alert("Operação cancelada.");
+        alert("Não encontramos nenhuma conta com esse e-mail.");
     }
 }
 
