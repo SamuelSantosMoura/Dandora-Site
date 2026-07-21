@@ -465,9 +465,16 @@ function switchTableTab(tabId) {
     }
     
     document.querySelectorAll('.tm-content').forEach(c => c.classList.add('hidden'));
-    document.getElementById(tabId).classList.remove('hidden');
     
-    sessionStorage.setItem('currentTableTab', tabId);
+    const contentEl = document.getElementById(tabId);
+    if (contentEl) {
+        contentEl.classList.remove('hidden');
+        sessionStorage.setItem('currentTableTab', tabId);
+    } else {
+        const defaultContent = document.getElementById('tm-players');
+        if (defaultContent) defaultContent.classList.remove('hidden');
+        sessionStorage.setItem('currentTableTab', 'tm-players');
+    }
 }
 
 function saveTableNotes() {
@@ -799,14 +806,21 @@ function switchPlayerTab(tabId) {
     }
     
     document.querySelectorAll('.pt-content').forEach(c => c.classList.add('hidden'));
-    document.getElementById(tabId).classList.remove('hidden');
     
-    if (tabId === 'pt-sheet') {
+    const contentEl = document.getElementById(tabId);
+    if (contentEl) {
+        contentEl.classList.remove('hidden');
+        sessionStorage.setItem('currentPlayerTableTab', tabId);
+    } else {
+        const defaultContent = document.getElementById('pt-sheet');
+        if (defaultContent) defaultContent.classList.remove('hidden');
+        sessionStorage.setItem('currentPlayerTableTab', 'pt-sheet');
+    }
+    
+    if (tabId === 'pt-sheet' || !contentEl) {
         if(typeof renderActiveSheet === 'function') renderActiveSheet();
         if(typeof renderVaultSheets === 'function') renderVaultSheets();
     }
-    
-    sessionStorage.setItem('currentPlayerTableTab', tabId);
 }
 
 function switchPlayerDashTab(tabId) {
@@ -821,9 +835,16 @@ function switchPlayerDashTab(tabId) {
     }
     
     document.querySelectorAll('.pd-content').forEach(c => c.classList.add('hidden'));
-    document.getElementById(tabId).classList.remove('hidden');
     
-    sessionStorage.setItem('currentPlayerDashTab', tabId);
+    const contentEl = document.getElementById(tabId);
+    if (contentEl) {
+        contentEl.classList.remove('hidden');
+        sessionStorage.setItem('currentPlayerDashTab', tabId);
+    } else {
+        const defaultContent = document.getElementById('pd-aventuras');
+        if (defaultContent) defaultContent.classList.remove('hidden');
+        sessionStorage.setItem('currentPlayerDashTab', 'pd-aventuras');
+    }
 }
 
 function savePlayerGlobalNotes() {
