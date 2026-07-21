@@ -892,11 +892,21 @@ function syncPlayerSheetToTable(data) {
     
     if (targetTableId && targetEmail) {
         const sheetKey = `dandora_sheet_${targetTableId}_${targetEmail}`;
+        const newDataJSON = JSON.stringify(data);
+        
+        // Evitar reenviar dados idênticos ao que já está salvo
+        const currentStoredData = localStorage.getItem(sheetKey);
+        if (currentStoredData === newDataJSON) return; // Dados iguais, nada a fazer
         
         // Salvar localmente sem ativar o trigger global do firebase-sync (que faria set total)
         window.dandoraDisableSync = true;
-        localStorage.setItem(sheetKey, JSON.stringify(data));
+        localStorage.setItem(sheetKey, newDataJSON);
         window.dandoraDisableSync = false;
+        
+        // Atualizar o tracker de dados sincronizados para evitar que o dandoraDataSync reenvie ao iframe
+        if (typeof _lastSyncedSheetData !== 'undefined') {
+            _lastSyncedSheetData[sheetKey] = newDataJSON;
+        }
         
         // Realizar o UPDATE campo a campo no Firebase para mesclar sem conflitos!
         if (window.dandoraDatabase) {
@@ -1537,44 +1547,74 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 // FIREBASE SYNC LISTENER
 // ==========================================
+let _lastSyncedSheetData = {}; // Rastrear dados de fichas já sincronizadas para evitar envios desnecessários
+let _syncDebounceTimer = null;
+
 window.addEventListener('dandoraDataSync', () => {
-    // Restaurar currentUser se houver mudanï¿½a externa
+    // Restaurar currentUser se houver mudança externa
     const storedUser = sessionStorage.getItem('currentUser');
     if (storedUser) {
         currentUser = JSON.parse(storedUser);
     }
     
-    // Atualiza a interface baseada na tela atual sem recarregar a pï¿½gina
-    if (currentView === 'dashboard-master-view') {
-        renderMasterTables();
-    } else if (currentView === 'dashboard-player-view') {
-        renderPlayerTables();
-    } else if (currentView === 'table-manager-view') {
-        renderTablePlayers();
-        
-        const notesKey = `dandora_notes_${currentTableId}`;
-        const notesEl = document.getElementById('tm-notes-area');
-        // Sï¿½ atualiza o texto se o mestre nï¿½o estiver digitando nele no momento
-        if (notesEl && document.activeElement !== notesEl) {
-            notesEl.value = localStorage.getItem(notesKey) || '';
+    // Debounce para evitar múltiplas sincronizações em sequência rápida
+    clearTimeout(_syncDebounceTimer);
+    _syncDebounceTimer = setTimeout(() => {
+        // Atualiza a interface baseada na tela atual sem recarregar a página
+        if (currentView === 'dashboard-master-view') {
+            renderMasterTables();
+        } else if (currentView === 'dashboard-player-view') {
+            renderPlayerTables();
+        } else if (currentView === 'table-manager-view') {
+            renderTablePlayers();
+            
+            const notesKey = `dandora_notes_${currentTableId}`;
+            const notesEl = document.getElementById('tm-notes-area');
+            // Só atualiza o texto se o mestre não estiver digitando nele no momento
+            if (notesEl && document.activeElement !== notesEl) {
+                notesEl.value = localStorage.getItem(notesKey) || '';
+            }
+            
+            if (typeof renderMissions === 'function') renderMissions();
+            if (typeof renderSessions === 'function') renderSessions();
+            
+            // Só notificar o iframe se os dados da ficha realmente mudaram
+            const iframe = document.getElementById('sheet-iframe');
+            if (iframe && iframe.contentWindow && document.getElementById('sheet-modal').classList.contains('active')) {
+                const iframeSrc = iframe.src || '';
+                const iframeParams = new URLSearchParams(iframeSrc.split('?')[1] || '');
+                const sheetTableId = iframeParams.get('tableId');
+                const sheetEmail = iframeParams.get('playerEmail');
+                if (sheetTableId && sheetEmail) {
+                    const sheetKey = `dandora_sheet_${sheetTableId}_${sheetEmail}`;
+                    const currentSheetData = localStorage.getItem(sheetKey) || '';
+                    if (currentSheetData !== _lastSyncedSheetData[sheetKey]) {
+                        _lastSyncedSheetData[sheetKey] = currentSheetData;
+                        iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_UPDATE' }, '*');
+                    }
+                }
+            }
+        } else if (currentView === 'table-player-view') {
+            if (typeof renderPlayerCompanions === 'function') renderPlayerCompanions();
+            
+            // Sincronizar Ficha do Jogador — só se dados realmente mudaram
+            const iframe = document.getElementById('sheet-iframe');
+            if (iframe && iframe.contentWindow) {
+                const iframeSrc = iframe.src || '';
+                const iframeParams = new URLSearchParams(iframeSrc.split('?')[1] || '');
+                const sheetTableId = iframeParams.get('tableId');
+                const sheetEmail = iframeParams.get('playerEmail');
+                if (sheetTableId && sheetEmail) {
+                    const sheetKey = `dandora_sheet_${sheetTableId}_${sheetEmail}`;
+                    const currentSheetData = localStorage.getItem(sheetKey) || '';
+                    if (currentSheetData !== _lastSyncedSheetData[sheetKey]) {
+                        _lastSyncedSheetData[sheetKey] = currentSheetData;
+                        iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_UPDATE' }, '*');
+                    }
+                }
+            }
         }
-        
-        if (typeof renderMissions === 'function') renderMissions();
-        if (typeof renderSessions === 'function') renderSessions();
-        
-        const iframe = document.getElementById('sheet-iframe');
-        if (iframe && iframe.contentWindow && document.getElementById('sheet-modal').classList.contains('active')) {
-            iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_UPDATE' }, '*');
-        }
-    } else if (currentView === 'table-player-view') {
-        if (typeof renderPlayerCompanions === 'function') renderPlayerCompanions();
-        
-        // Sincronizar Ficha do Jogador
-        const iframe = document.getElementById('sheet-iframe');
-        if (iframe && iframe.contentWindow) {
-            iframe.contentWindow.postMessage({ type: 'DANDORA_SYNC_UPDATE' }, '*');
-        }
-    }
+    }, 1000); // 1 segundo de debounce para agrupar múltiplos eventos
 });
 window.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'DANDORA_SHEET_UPDATED') {

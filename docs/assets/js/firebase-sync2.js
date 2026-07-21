@@ -40,6 +40,9 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
     // Track when a key was last written locally to prevent cloud overwriting it during typing
     const lastLocalWrite = {};
 
+    // Track the last value sent to the cloud so we can ignore echoes
+    const lastSentToCloud = {};
+
     // Chaves locais que nunca devem ser sincronizadas para a nuvem
     const EXCLUDED_KEYS = ['dandora_currentUser', 'dandora_currentMode', 'dandora_users', 'dandora-ficha-v1'];
     
@@ -54,6 +57,7 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
                 const safeKey = safeBtoa(key);
                 let toSave = value;
                 try { toSave = JSON.parse(value); } catch(e) {}
+                lastSentToCloud[key] = value; // Rastrear o valor enviado para ignorar eco
                 database.ref('dandora_data/' + safeKey).set(toSave);
             } catch(e) {
                 console.error("Erro ao sincronizar com Firebase:", e);
@@ -110,8 +114,17 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
                 // Ignorar chaves de sessão locais
                 if (EXCLUDED_KEYS.includes(originalKey)) continue;
                 
-                // Ignorar se a chave foi alterada localmente nos ultimos 3 segundos (evita sobrescrever quem esta digitando)
-                if (Date.now() - (lastLocalWrite[originalKey] || 0) < 3000) continue;
+                // Ignorar se a chave foi alterada localmente nos ultimos 5 segundos (evita sobrescrever quem esta digitando)
+                if (Date.now() - (lastLocalWrite[originalKey] || 0) < 5000) continue;
+                
+                // Ignorar eco: se o valor da nuvem é igual ao que acabamos de enviar
+                if (lastSentToCloud[originalKey] !== undefined) {
+                    const sentString = lastSentToCloud[originalKey];
+                    if (sentString === cloudString) {
+                        delete lastSentToCloud[originalKey]; // Limpar após confirmar eco
+                        continue;
+                    }
+                }
 
                 const localValue = localStorage.getItem(originalKey);
                 

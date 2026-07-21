@@ -18,6 +18,7 @@
   const readOnly = urlParams.get('readOnly') === 'true';
 
   let saveTimeout = null;
+  let isSyncingFromExternal = false; // Flag para evitar loop infinito de sincronização
 
   /* ==========================================================
      INICIALIZAÇÃO
@@ -39,10 +40,14 @@
 
     window.addEventListener('storage', (e) => {
       if (e.key === STORAGE_KEY) {
+        isSyncingFromExternal = true;
         loadData();
         if (tableId && !tableId.startsWith('vault_')) {
           showToast('Atualização recebida do Mestre!');
         }
+        // Desligar a flag após um breve delay para garantir que eventos input/change
+        // disparados pela aplicação de dados sejam ignorados
+        setTimeout(() => { isSyncingFromExternal = false; }, 500);
       }
     });
   });
@@ -116,6 +121,7 @@
     if (!container) return;
 
     container.addEventListener('input', () => {
+      if (isSyncingFromExternal) return; // Ignorar eventos disparados por sync externo
       calculateCD();
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
@@ -126,6 +132,7 @@
     });
 
     container.addEventListener('change', () => {
+      if (isSyncingFromExternal) return; // Ignorar eventos disparados por sync externo
       calculateCD();
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
@@ -401,7 +408,11 @@
   function saveData() {
     try {
       const data = collectData();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      const json = JSON.stringify(data);
+      
+      // Atualizar o lastAppliedDataJSON para evitar que o próprio save dispare um reload
+      lastAppliedDataJSON = json;
+      localStorage.setItem(STORAGE_KEY, json);
       
       // Auto-sincronizar com o pai (Mestre / Banco de dados) de forma debasada
       clearTimeout(syncTimeout);
@@ -437,11 +448,18 @@
   /* ==========================================================
      CARREGAR DO LOCALSTORAGE
   ========================================================== */
+  let lastAppliedDataJSON = ''; // Armazena o JSON da última versão aplicada para comparação
+
   function loadData() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
+      
+      // Evitar aplicar dados idênticos ao que já está renderizado
+      if (raw === lastAppliedDataJSON) return;
+      
       const data = JSON.parse(raw);
+      lastAppliedDataJSON = raw;
       applyData(data);
       updateToggleButton();
     } catch (e) {
@@ -1703,7 +1721,17 @@
 
   window.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'DANDORA_SYNC_UPDATE') {
+      // Verificar se os dados realmente mudaram antes de recarregar
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const currentData = raw ? JSON.parse(raw) : null;
+      const currentJSON = currentData ? JSON.stringify(currentData) : '';
+      
+      // Comparar com o que já está renderizado (guardamos a última versão aplicada)
+      if (currentJSON === lastAppliedDataJSON) return; // Nada mudou, ignorar
+      
+      isSyncingFromExternal = true;
       loadData();
+      setTimeout(() => { isSyncingFromExternal = false; }, 500);
     }
   });
 
