@@ -70,8 +70,9 @@ function handleLogin(event) {
     const mode = document.getElementById('login-role').value; // Apenas o modo inicial
     
     let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+    if (!Array.isArray(usersDB)) usersDB = Object.values(usersDB || {});
     
-    const userIndex = usersDB.findIndex(u => u.email.toLowerCase() === email && u.password === password);
+    const userIndex = usersDB.findIndex(u => u && u.email && u.email.toLowerCase() === email && u.password === password);
     
     if (userIndex !== -1) {
         // Atualiza último acesso
@@ -139,7 +140,7 @@ function handleRegister(event) {
     
     // Função interna para completar o registro após verificação
     function completeRegistration(usersDB) {
-        if (usersDB.find(u => u.email.toLowerCase() === email)) {
+        if (usersDB.find(u => u && u.email && u.email.toLowerCase() === email)) {
             alert("Este email já está cadastrado no sistema! Tente fazer login.");
             return;
         }
@@ -160,9 +161,10 @@ function handleRegister(event) {
     }
     
     let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+    if (!Array.isArray(usersDB)) usersDB = Object.values(usersDB || {});
     
     // Verificar localmente primeiro
-    if (usersDB.find(u => u.email.toLowerCase() === email)) {
+    if (usersDB.find(u => u && u.email && u.email.toLowerCase() === email)) {
         alert("Este email já está cadastrado no sistema! Tente fazer login.");
         return;
     }
@@ -213,7 +215,7 @@ function forgotPassword(event) {
     const normalizedEmail = email.trim().toLowerCase();
     
     function resetPassword(usersDB) {
-        const userIndex = usersDB.findIndex(u => u.email.toLowerCase() === normalizedEmail);
+        const userIndex = usersDB.findIndex(u => u && u.email && u.email.toLowerCase() === normalizedEmail);
         
         if (userIndex === -1) {
             alert("Não encontramos nenhuma conta com esse e-mail.");
@@ -239,7 +241,8 @@ function forgotPassword(event) {
     }
     
     let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
-    const userIndex = usersDB.findIndex(u => u.email.toLowerCase() === normalizedEmail);
+    if (!Array.isArray(usersDB)) usersDB = Object.values(usersDB || {});
+    const userIndex = usersDB.findIndex(u => u && u.email && u.email.toLowerCase() === normalizedEmail);
     
     if (userIndex !== -1) {
         resetPassword(usersDB);
@@ -1144,8 +1147,9 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser = JSON.parse(storedUser);
         
         // Validar que o usuário ainda existe no banco local
-        const usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
-        const userStillExists = usersDB.find(u => u.email === currentUser.email);
+        let usersDB = JSON.parse(localStorage.getItem('dandora_users')) || [];
+        if (!Array.isArray(usersDB)) usersDB = Object.values(usersDB || {});
+        const userStillExists = usersDB.find(u => u && u.email === currentUser.email);
         if (!userStillExists) {
             // Usuário foi removido do banco — limpar sessão
             currentUser = null;

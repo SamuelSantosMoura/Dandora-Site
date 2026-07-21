@@ -159,23 +159,27 @@ if (firebaseConfig.apiKey !== "COLE_SUA_CHAVE_AQUI") {
                     // Preserva contas de AMBOS os dispositivos para evitar perda de dados
                     if (originalKey === 'dandora_users') {
                         try {
-                            const localUsers = localValue ? JSON.parse(localValue) : [];
-                            const cloudUsers = typeof cloudValue === 'object' ? cloudValue : JSON.parse(cloudValue);
+                            let localUsers = localValue ? JSON.parse(localValue) : [];
+                            let cloudUsers = typeof cloudValue === 'object' ? cloudValue : JSON.parse(cloudValue);
+                            
+                            if (!Array.isArray(localUsers)) localUsers = Object.values(localUsers || {});
+                            if (!Array.isArray(cloudUsers)) cloudUsers = Object.values(cloudUsers || {});
                             
                             if (Array.isArray(localUsers) && Array.isArray(cloudUsers)) {
                                 // Criar mapa por email para merge
                                 const mergedMap = new Map();
                                 
                                 // Adicionar todos os usuários da nuvem primeiro
-                                cloudUsers.forEach(u => { if (u && u.email) mergedMap.set(u.email, u); });
+                                cloudUsers.forEach(u => { if (u && u.email) mergedMap.set(u.email.toLowerCase(), u); });
                                 
                                 // Adicionar/atualizar com usuários locais
                                 localUsers.forEach(u => {
                                     if (!u || !u.email) return;
-                                    const existing = mergedMap.get(u.email);
+                                    const emailLower = u.email.toLowerCase();
+                                    const existing = mergedMap.get(emailLower);
                                     if (!existing) {
                                         // Usuário só existe localmente, adicionar
-                                        mergedMap.set(u.email, u);
+                                        mergedMap.set(emailLower, u);
                                     } else {
                                         // Usuário existe em ambos — manter o com acesso mais recente
                                         const localTime = u.lastAccess ? new Date(u.lastAccess).getTime() : 0;
